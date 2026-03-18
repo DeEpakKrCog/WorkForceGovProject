@@ -1,0 +1,71 @@
+@model WorkForceGov.Models.ProgramManagerDashboardViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Program Manager Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+        }
+
+        .card {
+            flex: 1;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 26px;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Program Manager Dashboard</h2>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Total Programs</h3>
+            <p>@Model.TotalPrograms</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Budget</h3>
+            <p>₹@Model.TotalBudget</p>
+        </div>
+
+        <div class="card">
+            <h3>Active Training Programs</h3>
+            <p>@Model.ActiveTrainingPrograms</p>
+        </div>
+
+        <div class="card">
+            <h3>Performance</h3>
+            <p>@Model.PerformancePercentage %</p>
+        </div>
+    </div>
+
+</body>
+</html>
