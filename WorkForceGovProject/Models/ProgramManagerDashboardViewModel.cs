@@ -1,4 +1,4 @@
-namespace WorkForceGov.Models
+namespace WorkForceGovProject.Models
 {
     public class ProgramManagerDashboardViewModel
     {
