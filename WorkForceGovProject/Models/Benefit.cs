@@ -1,0 +1,35 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WorkForceGovProject.Models
+{
+    public class Benefit
+    {
+        [Key] // Primary Key
+        public int BenefitID { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(18,2)")] // Currency precision
+        [Display(Name = "Benefit Amount")]
+        public decimal Amount { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Benefit Date")]
+        public DateTime Date { get; set; }
+
+        // Foreign Key relationship to EmploymentProgram
+        [Required]
+        public int ProgramID { get; set; }
+
+        [ForeignKey("ProgramID")]
+        public virtual EmploymentProgram? EmploymentProgram { get; set; }
+
+        // Foreign Key relationship to Citizen
+        [Required]
+        public int CitizenID { get; set; }
+
+        [ForeignKey("CitizenID")]
+        public virtual Citizen? Citizen { get; set; }
+    }
+}

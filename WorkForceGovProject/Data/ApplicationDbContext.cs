@@ -9,5 +9,10 @@ namespace WorkForceGovProject.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Citizen> Citizens { get; set; }
+        public DbSet<EmploymentProgram> EmploymentPrograms { get; set; }
+        public DbSet<Training> Trainings { get; set; }
+        public DbSet<Resource> Resources { get; set; }
+        public DbSet<Benefit> Benefits { get; set; }
+        //public DbSet<Admin
     }
 }

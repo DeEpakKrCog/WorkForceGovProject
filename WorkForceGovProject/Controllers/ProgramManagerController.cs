@@ -1,0 +1,286 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Data;
+using WorkForceGovProject.Models;
+using System.Linq;
+
+namespace WorkForceGovProject.Controllers
+{
+    public class ProgramManagerController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public ProgramManagerController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: ProgramManager/Dashboard
+        public IActionResult Dashboard()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Get summary statistics for dashboard
+            var totalPrograms = _context.EmploymentPrograms.Count();
+            var activePrograms = _context.EmploymentPrograms.Count(p => p.Status == "Active");
+            var totalBudget = _context.EmploymentPrograms.Sum(p => (decimal?)p.Budget) ?? 0;
+            var activeTrainings = _context.Trainings.Count(t => t.Status == "Active");
+            var totalBenefits = _context.Benefits.Sum(b => (decimal?)b.Amount) ?? 0;
+
+            ViewBag.TotalPrograms = totalPrograms;
+            ViewBag.ActivePrograms = activePrograms;
+            ViewBag.TotalBudget = totalBudget;
+            ViewBag.ActiveTrainings = activeTrainings;
+            ViewBag.TotalBenefits = totalBenefits;
+
+            return View();
+        }
+
+        // GET: ProgramManager/ProgramManagement
+        public IActionResult ProgramManagement()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var programs = _context.EmploymentPrograms.ToList();
+            return View(programs);
+        }
+
+        // GET: ProgramManager/CreateProgram
+        public IActionResult CreateProgram()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            return View();
+        }
+
+        // POST: ProgramManager/CreateProgram
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateProgram(EmploymentProgram program)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.EmploymentPrograms.Add(program);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Program created successfully!";
+                return RedirectToAction("ProgramManagement");
+            }
+
+            return View(program);
+        }
+
+        // GET: ProgramManager/EditProgram/5
+        public IActionResult EditProgram(int id)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var program = _context.EmploymentPrograms.Find(id);
+            if (program == null)
+            {
+                return NotFound();
+            }
+
+            return View(program);
+        }
+
+        // POST: ProgramManager/EditProgram/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditProgram(int id, EmploymentProgram program)
+        {
+            if (id != program.ProgramID)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(program);
+                    _context.SaveChanges();
+                    TempData["SuccessMessage"] = "Program updated successfully!";
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.EmploymentPrograms.Any(e => e.ProgramID == id))
+                    {
+                        return NotFound();
+                    }
+                    throw;
+                }
+                return RedirectToAction("ProgramManagement");
+            }
+
+            return View(program);
+        }
+
+        // GET: ProgramManager/DeleteProgram/5
+        public IActionResult DeleteProgram(int id)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var program = _context.EmploymentPrograms.Find(id);
+            if (program == null)
+            {
+                return NotFound();
+            }
+
+            return View(program);
+        }
+
+        // POST: ProgramManager/DeleteProgram/5
+        [HttpPost, ActionName("DeleteProgram")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteProgramConfirmed(int id)
+        {
+            var program = _context.EmploymentPrograms.Find(id);
+            if (program != null)
+            {
+                _context.EmploymentPrograms.Remove(program);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Program deleted successfully!";
+            }
+
+            return RedirectToAction("ProgramManagement");
+        }
+
+        // GET: ProgramManager/BudgetMonitoring
+        public IActionResult BudgetMonitoring()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var programs = _context.EmploymentPrograms
+                .Include(p => p.Benefits)
+                .ToList();
+
+            return View(programs);
+        }
+
+        // GET: ProgramManager/PerformanceTracking
+        public IActionResult PerformanceTracking()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var programs = _context.EmploymentPrograms
+                .Include(p => p.Trainings)
+                .Include(p => p.Benefits)
+                .ToList();
+
+            return View(programs);
+        }
+
+        // GET: ProgramManager/TrainingManagement
+        public IActionResult TrainingManagement()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var trainings = _context.Trainings
+                .Include(t => t.EmploymentProgram)
+                .ToList();
+
+            return View(trainings);
+        }
+
+        // GET: ProgramManager/ResourceManagement
+        public IActionResult ResourceManagement()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var resources = _context.Resources
+                .Include(r => r.EmploymentProgram)
+                .ToList();
+
+            return View(resources);
+        }
+
+        // GET: ProgramManager/BenefitManagement
+        public IActionResult BenefitManagement()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var benefits = _context.Benefits
+                .Include(b => b.EmploymentProgram)
+                .Include(b => b.Citizen)
+                .ToList();
+
+            return View(benefits);
+        }
+
+        // GET: ProgramManager/Reports
+        public IActionResult Reports()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Prepare report data
+            var programReport = _context.EmploymentPrograms
+                .Include(p => p.Trainings)
+                .Include(p => p.Benefits)
+                .Include(p => p.Resources)
+                .ToList();
+
+            ViewBag.TotalPrograms = programReport.Count;
+            ViewBag.TotalTrainings = _context.Trainings.Count();
+            ViewBag.TotalBenefits = _context.Benefits.Count();
+            ViewBag.TotalBenefitAmount = _context.Benefits.Sum(b => (decimal?)b.Amount) ?? 0;
+            ViewBag.TotalBudget = programReport.Sum(p => p.Budget);
+
+            return View(programReport);
+        }
+    }
+}
