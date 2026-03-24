@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Data;
+
 namespace WorkForceGovProject
 {
     public class Program
@@ -6,8 +9,17 @@ namespace WorkForceGovProject
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // 1. Register the DbContext (ADD THIS LINE)
+            // This tells the app to use SQL Server and looks for a connection string in appsettings.json
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession();
+
 
             var app = builder.Build();
 
@@ -21,6 +33,7 @@ namespace WorkForceGovProject
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthorization();
 

@@ -1,0 +1,51 @@
+﻿@model WorkForceGovProject.Models.User
+@{
+    ViewData["Title"] = "Register";
+}
+
+<section class="container d-flex align-items-center justify-content-center py-5" style="min-height: 80vh;">
+    <div class="card shadow border-0 p-4" style="max-width: 450px; width: 100%; border-top: 5px solid #2980b9 !important;">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-dark">Join WorkForceGov</h2>
+            <p class="text-muted small">Create your account to get started.</p>
+        </div>
+
+        <form asp-action="Register" method="post">
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label fw-semibold"></label>
+                <input asp-for="FullName" class="form-control" placeholder="e.g. John Doe" required />
+                <span asp-validation-for="FullName" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label fw-semibold"></label>
+                <input asp-for="Email" class="form-control" placeholder="john@example.com" required />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label fw-semibold"></label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" required />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Role" class="form-label fw-semibold">Register As</label>
+                <select asp-for="Role" class="form-select" required>
+                    <option value="">-- Select Role --</option>
+                    <option value="Citizen">Citizen</option>
+                    <option value="Employer">Employer</option>
+                    <option value="LaborOfficer">Labor Officer</option>
+                    <option value="Admin">System Admin</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mb-3">Create Account</button>
+            
+            <div class="text-center small">
+                <span class="text-muted">Already have an account?</span>
+                <a asp-action="Login" class="text-decoration-none fw-bold">Sign In</a>
+            </div>
+        </form>
+    </div>
+</section>

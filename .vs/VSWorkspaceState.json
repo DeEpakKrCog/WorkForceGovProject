@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\WorkForceGovProject",
+    "\\WorkForceGovProject\\Controllers",
+    "\\WorkForceGovProject\\Models",
+    "\\WorkForceGovProject\\Views",
+    "\\WorkForceGovProject\\Views\\Home",
+    "\\WorkForceGovProject\\Views\\ProgramManager",
+    "\\WorkForceGovProject\\wwwroot",
+    "\\WorkForceGovProject\\wwwroot\\css",
+    "\\WorkForceGovProject\\wwwroot\\js"
+  ],
+  "SelectedNode": "\\WorkForceGovProject\\Controllers",
+  "PreviewInSolutionExplorer": false
+}

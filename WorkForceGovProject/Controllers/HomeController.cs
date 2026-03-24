@@ -1,25 +1,18 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using WorkForceGovProject.Models;
 
 namespace WorkForceGovProject.Controllers
 {
+    // The class name MUST match the file name: HomeController
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
-            return View();
+            return View(); // This renders Views/Home/Index.cshtml
         }
 
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
