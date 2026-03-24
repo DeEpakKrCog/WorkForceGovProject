@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WorkForceGovProject.Data; // Added for Database access
-using WorkForceGovProject.Models;
+using Microsoft.AspNetCore.Http;
+using WorkForceGovProject.Data;
+using WorkForceGovProject.Models; // Ensure this is included for the Citizen model
 using System.Linq;
 
 namespace WorkForceGovProject.Controllers
@@ -9,7 +10,6 @@ namespace WorkForceGovProject.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        // Constructor to inject the database context
         public CitizenController(ApplicationDbContext context)
         {
             _context = context;
@@ -17,31 +17,26 @@ namespace WorkForceGovProject.Controllers
 
         public IActionResult Dashboard()
         {
-            // 1. In a real app, we get the Logged-in User's ID from the Session
-            HttpContext.Session.SetInt32("UserId", 1); // Simulating a logged-in user with ID 1
             int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Account");
 
-            if (userId == null)
-            {
-                // If not logged in, send them back to Login
-                return RedirectToAction("Login", "Account");
-            }
-
-            // 2. Fetch the Citizen record from the database that matches this User
             var citizen = _context.Citizens.FirstOrDefault(c => c.UserId == userId);
 
-            // 3. If no citizen record exists yet, create a dummy one for the view 
-            // (Or handle as an error/profile setup page)
             if (citizen == null)
             {
                 citizen = new Citizen
                 {
-                    FullName = HttpContext.Session.GetString("UserName") ?? "Citizen",
+                    UserId = userId.Value,
+                    FullName = HttpContext.Session.GetString("UserName") ?? "Citizen User",
+                    Email = HttpContext.Session.GetString("UserEmail") ?? "", // ADD THIS LINE
                     ActiveApplications = 0,
                     AccountBalance = 0.00m,
                     DocumentStatus = "Pending",
                     NewJobMatches = 0
                 };
+
+                _context.Citizens.Add(citizen);
+                _context.SaveChanges(); // This won't crash now!
             }
 
             return View(citizen);
