@@ -1,0 +1,150 @@
+@model WorkForceGovProject.Models.Employer
+
+@{
+    ViewData["Title"] = "Company Profile";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Profile Header -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center py-5">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 100px; height: 100px;">
+                        <i class="bi bi-building" style="font-size: 3rem;"></i>
+                    </div>
+                    <h2 class="fw-bold mb-2">@Model.CompanyName</h2>
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-briefcase me-2"></i>@Model.Industry
+                    </p>
+                    <span class="badge @(Model.Status == "Verified" ? "bg-success" : Model.Status == "Pending" ? "bg-warning" : "bg-secondary") fs-6">
+                        @Model.Status
+                    </span>
+                </div>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Edit Profile Form -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-pencil-square text-primary"></i> Edit Company Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Profile" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="CompanyName" class="form-label fw-semibold">
+                                <i class="bi bi-building text-primary"></i> Company Name
+                            </label>
+                            <input asp-for="CompanyName" class="form-control form-control-lg" placeholder="Enter company name" />
+                            <span asp-validation-for="CompanyName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Industry" class="form-label fw-semibold">
+                                <i class="bi bi-briefcase text-primary"></i> Industry
+                            </label>
+                            <select asp-for="Industry" class="form-select form-select-lg">
+                                <option value="">Select Industry</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Education">Education</option>
+                                <option value="Manufacturing">Manufacturing</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Construction">Construction</option>
+                                <option value="Transportation">Transportation</option>
+                                <option value="Hospitality">Hospitality</option>
+                                <option value="Agriculture">Agriculture</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span asp-validation-for="Industry" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="ContactInfo" class="form-label fw-semibold">
+                                <i class="bi bi-telephone text-primary"></i> Contact Information
+                            </label>
+                            <input asp-for="ContactInfo" class="form-control form-control-lg" placeholder="Phone or email" />
+                            <span asp-validation-for="ContactInfo" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Address" class="form-label fw-semibold">
+                                <i class="bi bi-geo-alt text-primary"></i> Address
+                            </label>
+                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Complete address"></textarea>
+                            <span asp-validation-for="Address" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-muted">Registration Date</label>
+                                <input type="text" class="form-control" value="@Model.RegistrationDate.ToString("MMMM dd, yyyy")" readonly />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-muted">Account Status</label>
+                                <input type="text" class="form-control" value="@Model.Status" readonly />
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Dashboard" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-check-circle me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Actions -->
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <a asp-action="Documents" class="text-decoration-none">
+                                <i class="bi bi-file-earmark-arrow-up text-primary fs-1 d-block mb-2"></i>
+                                <span class="text-muted">Manage Documents</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <a asp-action="ManageJobs" class="text-decoration-none">
+                                <i class="bi bi-briefcase text-success fs-1 d-block mb-2"></i>
+                                <span class="text-muted">Manage Jobs</span>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a asp-action="Applications" class="text-decoration-none">
+                                <i class="bi bi-people text-info fs-1 d-block mb-2"></i>
+                                <span class="text-muted">View Applications</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+}

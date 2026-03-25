@@ -1,0 +1,32 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WorkForceGovProject.Models
+{
+    public class Notification
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public int? EntityId { get; set; } // ID of related entity (JobOpening, Application, etc.)
+
+        [Required]
+        public string Message { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string Category { get; set; } // Job Application, Hiring, Document Verification, etc.
+
+        [Required]
+        [StringLength(50)]
+        public string Status { get; set; } = "Unread"; // Unread / Read
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+        public int UserId { get; set; }
+
+        public int? EmployerId { get; set; }
+    }
+}

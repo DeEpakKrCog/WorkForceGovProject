@@ -1,0 +1,175 @@
+@model IEnumerable<WorkForceGovProject.Models.EmployerDocument>
+
+@{
+    ViewData["Title"] = "Documents";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold mb-2">
+                        <i class="bi bi-file-earmark-arrow-up-fill text-primary"></i> Document Management
+                    </h2>
+                    <p class="text-muted mb-0">Upload and manage verification documents</p>
+                </div>
+                <a asp-action="UploadDocument" class="btn btn-primary">
+                    <i class="bi bi-plus-circle-fill me-2"></i>Upload Document
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Document Status Summary -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 60px; height: 60px;">
+                        <i class="bi bi-check-circle-fill fs-3"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">@Model.Count(d => d.VerificationStatus == "Verified")</h3>
+                    <p class="text-muted mb-0">Verified Documents</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 60px; height: 60px;">
+                        <i class="bi bi-clock-fill fs-3"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">@Model.Count(d => d.VerificationStatus == "Pending")</h3>
+                    <p class="text-muted mb-0">Pending Verification</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 60px; height: 60px;">
+                        <i class="bi bi-files fs-3"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">@Model.Count()</h3>
+                    <p class="text-muted mb-0">Total Documents</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card shadow-sm border-0 text-center py-5">
+            <div class="card-body">
+                <i class="bi bi-file-earmark-x text-muted" style="font-size: 5rem;"></i>
+                <h3 class="mt-4 mb-3">No Documents Uploaded</h3>
+                <p class="text-muted mb-4">Upload your verification documents to complete your profile</p>
+                <a asp-action="UploadDocument" class="btn btn-primary btn-lg">
+                    <i class="bi bi-cloud-upload me-2"></i>Upload Your First Document
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-folder2-open text-primary"></i> Your Documents
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4">Document Type</th>
+                                <th>Upload Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var doc in Model)
+                            {
+                                <tr>
+                                    <td class="px-4">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-file-earmark-pdf text-danger fs-4 me-3"></i>
+                                            <div>
+                                                <div class="fw-semibold">@doc.DocType</div>
+                                                <small class="text-muted">Document ID: #@doc.Id</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small text-muted">
+                                            <i class="bi bi-calendar-event me-1"></i>
+                                            @doc.UploadedDate.ToString("MMM dd, yyyy")
+                                        </div>
+                                        <div class="small text-muted">
+                                            <i class="bi bi-clock me-1"></i>
+                                            @doc.UploadedDate.ToString("hh:mm tt")
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(doc.VerificationStatus == "Verified" ? "bg-success" : 
+                                                             doc.VerificationStatus == "Pending" ? "bg-warning" : "bg-danger") fs-6">
+                                            <i class="bi @(doc.VerificationStatus == "Verified" ? "bi-check-circle" : 
+                                                          doc.VerificationStatus == "Pending" ? "bi-clock" : "bi-x-circle") me-1"></i>
+                                            @doc.VerificationStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="@doc.FileURL" target="_blank" class="btn btn-sm btn-outline-primary" title="View Document">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="@doc.FileURL" download class="btn btn-sm btn-outline-success" title="Download">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Alert -->
+        @if (Model.Any(d => d.VerificationStatus == "Pending"))
+        {
+            <div class="alert alert-warning mt-4" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+                    <div>
+                        <h6 class="mb-1 fw-bold">Verification In Progress</h6>
+                        <p class="mb-0 small">
+                            Your documents are currently under review by our verification team. 
+                            You will be notified once the verification is complete.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+}

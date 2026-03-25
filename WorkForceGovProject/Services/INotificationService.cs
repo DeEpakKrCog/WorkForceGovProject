@@ -1,0 +1,26 @@
+using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Services
+{
+    public interface INotificationService
+    {
+        // Create Notifications
+        Task<Notification> CreateNotificationAsync(int userId, string message, string category, int? entityId = null, int? employerId = null);
+        Task CreateApplicationStatusNotificationAsync(int applicationId, string status);
+        Task CreateJobApplicationNotificationAsync(int jobId, int employerId);
+        Task CreateDocumentVerificationNotificationAsync(int employerId, string status);
+
+        // Retrieve Notifications
+        Task<IEnumerable<Notification>> GetNotificationsByUserIdAsync(int userId);
+        Task<IEnumerable<Notification>> GetUnreadNotificationsByUserIdAsync(int userId);
+        Task<IEnumerable<Notification>> GetRecentNotificationsAsync(int userId, int count);
+
+        // Notification Management
+        Task<bool> MarkAsReadAsync(int notificationId);
+        Task<bool> MarkAllAsReadAsync(int userId);
+        Task<bool> DeleteNotificationAsync(int notificationId);
+
+        // Statistics
+        Task<int> GetUnreadCountAsync(int userId);
+    }
+}

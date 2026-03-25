@@ -1,0 +1,135 @@
+@model WorkForceGovProject.Models.EmployerDocument
+
+@{
+    ViewData["Title"] = "Upload Document";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-4">
+                    <h3 class="mb-0">
+                        <i class="bi bi-cloud-upload-fill me-2"></i>Upload Verification Document
+                    </h3>
+                    <p class="mb-0 mt-2 opacity-75">Upload required documents for account verification</p>
+                </div>
+                <div class="card-body p-4">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="UploadDocument" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="DocType" class="form-label fw-semibold">
+                                <i class="bi bi-file-earmark-text text-primary"></i> Document Type <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="DocType" class="form-select form-select-lg">
+                                <option value="">Select Document Type</option>
+                                <option value="Business License">Business License</option>
+                                <option value="Company Registration">Company Registration Certificate</option>
+                                <option value="Tax Registration">Tax Registration Certificate</option>
+                                <option value="Trade License">Trade License</option>
+                                <option value="GST Certificate">GST Certificate</option>
+                                <option value="PAN Card">Company PAN Card</option>
+                                <option value="Bank Certificate">Bank Verification Letter</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span asp-validation-for="DocType" class="text-danger small"></span>
+                            <div class="form-text">Select the type of document you're uploading</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="documentFile" class="form-label fw-semibold">
+                                <i class="bi bi-paperclip text-primary"></i> Upload File <span class="text-danger">*</span>
+                            </label>
+                            <input type="file" class="form-control form-control-lg" id="documentFile" name="documentFile" 
+                                   accept=".pdf,.jpg,.jpeg,.png" required />
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Accepted formats: PDF, JPG, PNG | Max size: 5MB
+                            </div>
+                        </div>
+
+                        <!-- File Preview -->
+                        <div id="filePreview" class="d-none mb-4">
+                            <div class="alert alert-info">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-file-earmark-check-fill fs-3 me-3"></i>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">Selected File:</h6>
+                                        <p class="mb-0 small" id="fileName"></p>
+                                        <p class="mb-0 small text-muted" id="fileSize"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-shield-check me-2"></i>
+                            <strong>Note:</strong> All documents will be reviewed by our verification team. 
+                            Please ensure documents are clear and legible.
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a asp-action="Documents" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-cloud-upload-fill me-2"></i>Upload
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightbulb text-warning"></i> Document Upload Tips
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2"><strong>Quality:</strong> Ensure documents are clear and all text is readable</li>
+                        <li class="mb-2"><strong>Completeness:</strong> Upload complete documents without any pages missing</li>
+                        <li class="mb-2"><strong>Validity:</strong> Make sure documents are current and not expired</li>
+                        <li class="mb-2"><strong>Authenticity:</strong> Upload original or certified copies only</li>
+                        <li><strong>Privacy:</strong> Your documents are securely stored and encrypted</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById('documentFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const preview = document.getElementById('filePreview');
+                const fileName = document.getElementById('fileName');
+                const fileSize = document.getElementById('fileSize');
+                
+                fileName.textContent = file.name;
+                fileSize.textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                
+                preview.classList.remove('d-none');
+            }
+        });
+    </script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+}

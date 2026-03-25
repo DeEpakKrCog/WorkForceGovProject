@@ -1,0 +1,244 @@
+@model WorkForceGovProject.Models.Application
+
+@{
+    ViewData["Title"] = "Application Details";
+    var job = ViewBag.Job as WorkForceGovProject.Models.JobOpening;
+    var citizen = ViewBag.Citizen as WorkForceGovProject.Models.Citizen;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <a asp-action="Applications" class="btn btn-outline-secondary mb-3">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Applications
+                </a>
+                <h2 class="fw-bold">
+                    <i class="bi bi-file-earmark-person text-primary"></i> Application Details
+                </h2>
+            </div>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="row g-4">
+                <!-- Left Column - Candidate Info -->
+                <div class="col-lg-8">
+                    <!-- Candidate Profile -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-primary text-white py-3">
+                            <h5 class="mb-0">
+                                <i class="bi bi-person-circle me-2"></i>Candidate Information
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 80px; height: 80px; font-size: 2rem;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <div class="ms-4">
+                                    <h3 class="mb-1 fw-bold">@citizen?.FullName</h3>
+                                    <p class="text-muted mb-0">
+                                        <i class="bi bi-envelope me-2"></i>@citizen?.Email
+                                    </p>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">
+                                        <i class="bi bi-wallet2"></i> Account Balance
+                                    </div>
+                                    <div class="fw-bold fs-5">@citizen?.AccountBalance.ToString("C")</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">
+                                        <i class="bi bi-file-earmark-check"></i> Document Status
+                                    </div>
+                                    <div>
+                                        <span class="badge @(citizen?.DocumentStatus == "Verified" ? "bg-success" : "bg-warning") fs-6">
+                                            @citizen?.DocumentStatus
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">
+                                        <i class="bi bi-briefcase"></i> Active Applications
+                                    </div>
+                                    <div class="fw-bold">@citizen?.ActiveApplications</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted mb-1">
+                                        <i class="bi bi-search"></i> New Job Matches
+                                    </div>
+                                    <div class="fw-bold">@citizen?.NewJobMatches</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Job Details -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-info text-white py-3">
+                            <h5 class="mb-0">
+                                <i class="bi bi-briefcase me-2"></i>Job Details
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <h4 class="fw-bold mb-3">@job?.Title</h4>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="small text-muted">
+                                        <i class="bi bi-geo-alt"></i> Location
+                                    </div>
+                                    <div class="fw-semibold">@job?.Location</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted">
+                                        <i class="bi bi-currency-dollar"></i> Salary
+                                    </div>
+                                    <div class="fw-semibold">@job?.Salary.ToString("C")</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted">
+                                        <i class="bi bi-calendar-event"></i> Posted Date
+                                    </div>
+                                    <div class="fw-semibold">@job?.PostedDate.ToString("MMMM dd, yyyy")</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="small text-muted">
+                                        <i class="bi bi-hourglass-split"></i> Status
+                                    </div>
+                                    <div>
+                                        <span class="badge @(job?.Status == "Open" ? "bg-success" : "bg-secondary")">
+                                            @job?.Status
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-2">Description:</h6>
+                                <p class="text-muted">@job?.Description</p>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(job?.Requirements))
+                            {
+                                <div>
+                                    <h6 class="fw-bold mb-2">Requirements:</h6>
+                                    <p class="text-muted">@job?.Requirements</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Application Status & Actions -->
+                <div class="col-lg-4">
+                    <!-- Application Status -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="mb-0">Application Status</h5>
+                        </div>
+                        <div class="card-body text-center p-4">
+                            <div class="mb-3">
+                                <span class="badge @(Model.Status == "Pending" ? "bg-warning" : 
+                                                     Model.Status == "Shortlisted" ? "bg-info" : 
+                                                     Model.Status == "Approved" ? "bg-success" : "bg-secondary") 
+                                             fs-4 py-2 px-4">
+                                    @Model.Status
+                                </span>
+                            </div>
+
+                            <div class="small text-muted mb-1">Application ID</div>
+                            <div class="fw-bold mb-3">#@Model.Id</div>
+
+                            <div class="small text-muted mb-1">Submitted On</div>
+                            <div class="fw-bold">@Model.SubmittedDate.ToString("MMMM dd, yyyy")</div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-white border-0 py-3">
+                            <h5 class="mb-0">Actions</h5>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="d-grid gap-2">
+                                @if (Model.Status == "Pending")
+                                {
+                                    <form asp-action="ShortlistApplication" asp-route-id="@Model.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-info w-100">
+                                            <i class="bi bi-star-fill me-2"></i>Shortlist Candidate
+                                        </button>
+                                    </form>
+                                }
+
+                                @if (Model.Status == "Pending" || Model.Status == "Shortlisted")
+                                {
+                                    <form asp-action="ApproveApplication" asp-route-id="@Model.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-success w-100" onclick="return confirm('Are you sure you want to hire this candidate?')">
+                                            <i class="bi bi-check-circle-fill me-2"></i>Hire Candidate
+                                        </button>
+                                    </form>
+
+                                    <form asp-action="RejectApplication" asp-route-id="@Model.Id" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Are you sure you want to reject this application?')">
+                                            <i class="bi bi-x-circle-fill me-2"></i>Reject Application
+                                        </button>
+                                    </form>
+                                }
+                                
+                                @if (Model.Status == "Approved")
+                                {
+                                    <div class="alert alert-success mb-0">
+                                        <i class="bi bi-check-circle-fill me-2"></i>
+                                        Candidate Hired
+                                    </div>
+                                }
+
+                                @if (Model.Status == "Rejected")
+                                {
+                                    <div class="alert alert-secondary mb-0">
+                                        <i class="bi bi-x-circle-fill me-2"></i>
+                                        Application Rejected
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="card shadow-sm border-0 mt-4">
+                        <div class="card-body p-3">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-envelope text-primary"></i> Contact Candidate
+                            </h6>
+                            <a href="mailto:@citizen?.Email" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-envelope-fill me-2"></i>Send Email
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+}
