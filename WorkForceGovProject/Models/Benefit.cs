@@ -14,6 +14,11 @@ namespace WorkForceGovProject.Models
         public decimal Amount { get; set; }
 
         [Required]
+        [StringLength(100)]
+        [Display(Name = "Benefit Type")]
+        public string Type { get; set; } = "Cash Assistance";
+
+        [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Benefit Date")]
         public DateTime Date { get; set; }

@@ -183,6 +183,120 @@
                 </div>
             </div>
 
+            <!-- Beneficiaries Section -->
+            <div class="bg-white rounded-3 border shadow-sm mb-4">
+                <div class="p-4 border-bottom bg-light">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-people-fill text-success"></i> Beneficiaries Overview</h5>
+                </div>
+                <div class="p-4">
+                    <!-- Beneficiary Statistics Cards -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="stat-card border-success">
+                                <div class="icon text-success">👥</div>
+                                <small class="text-uppercase text-muted fw-bold">Total Beneficiaries</small>
+                                <p class="h2 mb-0 mt-2 fw-bold text-success">@ViewBag.TotalBeneficiaries</p>
+                                <small class="text-muted">Unique citizens served</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card border-primary">
+                                <div class="icon text-primary">🎁</div>
+                                <small class="text-uppercase text-muted fw-bold">Benefits Distributed</small>
+                                <p class="h2 mb-0 mt-2 fw-bold text-primary">@ViewBag.TotalBenefitsDistributed</p>
+                                <small class="text-muted">Total benefit instances</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card border-warning">
+                                <div class="icon text-warning">💰</div>
+                                <small class="text-uppercase text-muted fw-bold">Total Amount Paid</small>
+                                <p class="h2 mb-0 mt-2 fw-bold text-warning">@ViewBag.TotalAmountPaid.ToString("C0")</p>
+                                <small class="text-muted">Benefits value distributed</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Beneficiaries by Program -->
+                    <h6 class="fw-bold mb-3 mt-4"><i class="bi bi-bar-chart-fill"></i> Beneficiaries by Program</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Program</th>
+                                    <th class="text-center">Beneficiaries</th>
+                                    <th class="text-center">Benefits Count</th>
+                                    <th class="text-end">Amount Paid</th>
+                                    <th class="text-end">Avg per Beneficiary</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var program in Model.Where(p => p.Benefits != null && p.Benefits.Any()))
+                                {
+                                    var beneficiaryCount = program.Benefits.Select(b => b.CitizenID).Distinct().Count();
+                                    var benefitsCount = program.Benefits.Count;
+                                    var totalAmount = program.Benefits.Sum(b => b.Amount);
+                                    var avgPerBeneficiary = beneficiaryCount > 0 ? totalAmount / beneficiaryCount : 0;
+
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold text-dark">@program.Title</div>
+                                            <small class="text-muted">ID: #@program.ProgramID</small>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success rounded-pill">@beneficiaryCount</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info rounded-pill">@benefitsCount</span>
+                                        </td>
+                                        <td class="text-end fw-bold text-primary">@totalAmount.ToString("C")</td>
+                                        <td class="text-end fw-bold text-success">@avgPerBeneficiary.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr class="fw-bold">
+                                    <td>TOTALS</td>
+                                    <td class="text-center text-success">@ViewBag.TotalBeneficiaries</td>
+                                    <td class="text-center text-info">@ViewBag.TotalBenefitsDistributed</td>
+                                    <td class="text-end text-primary">@ViewBag.TotalAmountPaid.ToString("C")</td>
+                                    <td class="text-end text-success">@((ViewBag.TotalBeneficiaries > 0 ? ViewBag.TotalAmountPaid / ViewBag.TotalBeneficiaries : 0).ToString("C"))</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Recent Beneficiaries -->
+                    <h6 class="fw-bold mb-3 mt-4"><i class="bi bi-clock-history"></i> Recent Beneficiaries</h6>
+                    <div class="list-group">
+                        @foreach (var benefit in ViewBag.RecentBeneficiaries)
+                        {
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="text-success" style="font-size: 2rem;">
+                                            <i class="bi bi-person-circle"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1 fw-bold">@benefit.Citizen?.Name</h6>
+                                            <small class="text-muted">
+                                                <i class="bi bi-calendar3"></i> @benefit.Date.ToString("MMM dd, yyyy") |
+                                                <i class="bi bi-tag"></i> @benefit.Type |
+                                                <i class="bi bi-briefcase"></i> @benefit.EmploymentProgram?.Title
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="h5 mb-0 fw-bold text-success">@benefit.Amount.ToString("C")</div>
+                                        <small class="text-muted">Benefit Amount</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
             <!-- Program Details Grid -->
             <div class="row g-4">
                 @foreach (var program in Model)

@@ -42,6 +42,11 @@ namespace WorkForceGovProject.Migrations
                     b.Property<int>("ProgramID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("BenefitID");
 
                     b.HasIndex("CitizenID");
@@ -53,11 +58,11 @@ namespace WorkForceGovProject.Migrations
 
             modelBuilder.Entity("WorkForceGovProject.Models.Citizen", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CitizenID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CitizenID"));
 
                     b.Property<decimal>("AccountBalance")
                         .HasColumnType("decimal(18,2)");
@@ -84,7 +89,7 @@ namespace WorkForceGovProject.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("CitizenID");
 
                     b.HasIndex("UserId");
 
@@ -125,6 +130,42 @@ namespace WorkForceGovProject.Migrations
                     b.HasKey("ProgramID");
 
                     b.ToTable("EmploymentPrograms");
+                });
+
+            modelBuilder.Entity("WorkForceGovProject.Models.Notification", b =>
+                {
+                    b.Property<int>("NotificationID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationID"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("NotificationID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("WorkForceGovProject.Models.Resource", b =>
@@ -249,6 +290,17 @@ namespace WorkForceGovProject.Migrations
                     b.HasOne("WorkForceGovProject.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WorkForceGovProject.Models.Notification", b =>
+                {
+                    b.HasOne("WorkForceGovProject.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

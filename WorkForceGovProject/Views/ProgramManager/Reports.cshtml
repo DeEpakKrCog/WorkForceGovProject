@@ -140,6 +140,145 @@
                 </div>
             </div>
 
+            <!-- Benefits Distributed Report -->
+            <div class="report-section">
+                <div class="section-header">
+                    <h4 class="fw-bold mb-0"><i class="bi bi-gift-fill text-success"></i> Benefits Distributed</h4>
+                </div>
+                <div class="section-body">
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="summary-card border-success">
+                                <div class="summary-icon bg-success">
+                                    <i class="bi bi-gift"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value text-success">@ViewBag.TotalBenefits</h3>
+                                    <p class="summary-label">Total Benefits</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="summary-card border-primary">
+                                <div class="summary-icon bg-primary">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value text-primary">@ViewBag.TotalBenefitAmount.ToString("C0")</h3>
+                                    <p class="summary-label">Total Amount</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="summary-card border-info">
+                                <div class="summary-icon bg-info">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value text-info">@ViewBag.UniqueCitizensServed</h3>
+                                    <p class="summary-label">Citizens Served</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="summary-card border-warning">
+                                <div class="summary-icon bg-warning">
+                                    <i class="bi bi-calculator"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value text-warning">@((ViewBag.TotalBenefits > 0 ? ViewBag.TotalBenefitAmount / ViewBag.TotalBenefits : 0).ToString("C"))</h3>
+                                    <p class="summary-label">Avg per Benefit</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Benefits Distribution Table -->
+                    <h5 class="fw-bold mb-3 mt-4">Recent Benefit Distributions</h5>
+                    <div class="table-responsive">
+                        <table class="table table-report table-hover">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Distribution Date</th>
+                                    <th>Program</th>
+                                    <th>Citizen</th>
+                                    <th>Type</th>
+                                    <th class="text-end">Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var benefit in ViewBag.RecentBenefits)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@benefit.Date.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            <span class="badge bg-primary">@benefit.EmploymentProgram?.Title</span>
+                                        </td>
+                                        <td>
+                                            <i class="bi bi-person-circle"></i> @benefit.Citizen?.Name
+                                        </td>
+                                        <td>@benefit.Type</td>
+                                        <td class="text-end fw-bold text-success">@benefit.Amount.ToString("C")</td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> Distributed
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr class="fw-bold">
+                                    <td colspan="4" class="text-end">TOTAL DISTRIBUTED:</td>
+                                    <td class="text-end text-success">@ViewBag.TotalBenefitAmount.ToString("C")</td>
+                                    <td>@ViewBag.TotalBenefits Benefits</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Benefits by Program Breakdown -->
+                    <h5 class="fw-bold mb-3 mt-4">Benefits Distribution by Program</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Program Title</th>
+                                    <th class="text-center">Benefits Count</th>
+                                    <th class="text-end">Total Amount</th>
+                                    <th class="text-end">% of Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var program in Model.Where(p => p.Benefits != null && p.Benefits.Any()).OrderByDescending(p => p.Benefits.Sum(b => b.Amount)))
+                                {
+                                    var benefitCount = program.Benefits.Count;
+                                    var totalAmount = program.Benefits.Sum(b => b.Amount);
+                                    var percentage = ViewBag.TotalBenefitAmount > 0 ? (totalAmount / ViewBag.TotalBenefitAmount * 100) : 0;
+
+                                    <tr>
+                                        <td class="fw-bold">@program.Title</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success">@benefitCount</span>
+                                        </td>
+                                        <td class="text-end fw-bold text-success">@totalAmount.ToString("C")</td>
+                                        <td class="text-end">
+                                            <div class="d-flex align-items-center justify-content-end gap-2">
+                                                <div class="progress flex-grow-1" style="height: 20px; max-width: 100px;">
+                                                    <div class="progress-bar bg-success" style="width: @percentage%"></div>
+                                                </div>
+                                                <span class="fw-bold">@percentage.ToString("0.0")%</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- Program Performance Report -->
             <div class="report-section">
                 <div class="section-header">

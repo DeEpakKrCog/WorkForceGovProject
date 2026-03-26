@@ -1,0 +1,303 @@
+﻿@model IEnumerable<WorkForceGovProject.Models.EmploymentProgram>
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<link rel="stylesheet" href="~/css/Dashboard.css" />
+<link rel="stylesheet" href="~/css/Reports.css" />
+
+<div class="dashboard-container">
+    <div class="sidebar-nav d-none d-md-block shadow">
+        <a asp-action="Dashboard" asp-controller="ProgramManager">🏠 Dashboard</a>
+        <a asp-action="ProgramManagement" asp-controller="ProgramManager">📋 Programs</a>
+        <a asp-action="TrainingManagement" asp-controller="ProgramManager">🎓 Trainings</a>
+        <a asp-action="BudgetMonitoring" asp-controller="ProgramManager">💰 Budget</a>
+        <a asp-action="PerformanceTracking" asp-controller="ProgramManager">📊 Performance</a>
+        <a asp-action="ResourceManagement" asp-controller="ProgramManager">📦 Resources</a>
+        <a asp-action="BenefitManagement" asp-controller="ProgramManager">🎁 Benefits</a>
+        <a href="#" class="active">📈 Reports</a>
+        <a asp-action="Logout" asp-controller="Account" class="text-danger mt-5 fw-bold">🚪 Sign Out</a>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-2">Reports & Analytics</h2>
+                <p class="text-muted">Comprehensive program reports and insights</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-success shadow-sm px-4 fw-bold" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Print
+                </button>
+                <button class="btn btn-primary shadow-sm px-4 fw-bold">
+                    <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                </button>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (Model != null && Model.Any())
+        {
+            <!-- Executive Summary -->
+            <div class="report-section">
+                <div class="section-header">
+                    <h4 class="fw-bold mb-0">Executive Summary</h4>
+                    <small class="text-muted">Generated on @DateTime.Now.ToString("MMMM dd, yyyy")</small>
+                </div>
+                <div class="section-body">
+                    <div class="row g-4">
+                        <div class="col-md-3">
+                            <div class="summary-card">
+                                <div class="summary-icon bg-primary">
+                                    <i class="bi bi-clipboard-data"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value">@ViewBag.TotalPrograms</h3>
+                                    <p class="summary-label">Total Programs</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="summary-card">
+                                <div class="summary-icon bg-info">
+                                    <i class="bi bi-book"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value">@ViewBag.TotalTrainings</h3>
+                                    <p class="summary-label">Total Trainings</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="summary-card">
+                                <div class="summary-icon bg-success">
+                                    <i class="bi bi-gift"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value">@ViewBag.TotalBenefits</h3>
+                                    <p class="summary-label">Benefits Distributed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="summary-card">
+                                <div class="summary-icon bg-warning">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <h3 class="summary-value">@ViewBag.TotalBudget.ToString("C0")</h3>
+                                    <p class="summary-label">Total Budget</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Overview -->
+            <div class="report-section">
+                <div class="section-header">
+                    <h4 class="fw-bold mb-0">Financial Overview</h4>
+                </div>
+                <div class="section-body">
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-4">
+                            <div class="financial-metric">
+                                <span class="metric-label">Total Allocated Budget</span>
+                                <span class="metric-value text-primary">@ViewBag.TotalBudget.ToString("C")</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="financial-metric">
+                                <span class="metric-label">Total Benefits Paid</span>
+                                <span class="metric-value text-danger">@ViewBag.TotalBenefitAmount.ToString("C")</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="financial-metric">
+                                <span class="metric-label">Average Budget per Program</span>
+                                <span class="metric-value text-success">@((ViewBag.TotalBudget / Math.Max(ViewBag.TotalPrograms, 1))).ToString("C")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="progress" style="height: 30px;">
+                        @{
+                            var overallUtilization = ViewBag.TotalBudget > 0 ? (ViewBag.TotalBenefitAmount / ViewBag.TotalBudget * 100) : 0;
+                        }
+                        <div class="progress-bar @(overallUtilization > 80 ? "bg-danger" : overallUtilization > 50 ? "bg-warning" : "bg-success")" 
+                             style="width: @overallUtilization%">
+                            <span class="fw-bold">@overallUtilization.ToString("0.0")% Budget Utilized</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Program Performance Report -->
+            <div class="report-section">
+                <div class="section-header">
+                    <h4 class="fw-bold mb-0">Program Performance Report</h4>
+                </div>
+                <div class="section-body">
+                    <div class="table-responsive">
+                        <table class="table table-report">
+                            <thead>
+                                <tr>
+                                    <th>Program ID</th>
+                                    <th>Program Title</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Trainings</th>
+                                    <th class="text-center">Benefits</th>
+                                    <th class="text-end">Budget</th>
+                                    <th class="text-end">Spent</th>
+                                    <th class="text-center">Utilization</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var program in Model)
+                                {
+                                    var trainingCount = program.Trainings?.Count ?? 0;
+                                    var benefitCount = program.Benefits?.Count ?? 0;
+                                    var spent = program.Benefits?.Sum(b => b.Amount) ?? 0;
+                                    var utilization = program.Budget > 0 ? (spent / program.Budget * 100) : 0;
+
+                                    <tr>
+                                        <td class="fw-bold text-primary">#@program.ProgramID</td>
+                                        <td>
+                                            <div class="fw-bold">@program.Title</div>
+                                            <small class="text-muted">@program.StartDate.ToString("MMM dd, yyyy") - @program.EndDate.ToString("MMM dd, yyyy")</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@(program.Status == "Active" ? "success" : "secondary")">@program.Status</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-info">@trainingCount</span>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success">@benefitCount</span>
+                                        </td>
+                                        <td class="text-end fw-bold text-primary">@program.Budget.ToString("C")</td>
+                                        <td class="text-end fw-bold text-danger">@spent.ToString("C")</td>
+                                        <td class="text-center">
+                                            <span class="fw-bold @(utilization > 80 ? "text-danger" : utilization > 50 ? "text-warning" : "text-success")">
+                                                @utilization.ToString("0.0")%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr class="fw-bold">
+                                    <td colspan="3">TOTALS</td>
+                                    <td class="text-center">@ViewBag.TotalTrainings</td>
+                                    <td class="text-center">@ViewBag.TotalBenefits</td>
+                                    <td class="text-end text-primary">@ViewBag.TotalBudget.ToString("C")</td>
+                                    <td class="text-end text-danger">@ViewBag.TotalBenefitAmount.ToString("C")</td>
+                                    <td class="text-center text-warning">@overallUtilization.ToString("0.0")%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Insights -->
+            <div class="report-section">
+                <div class="section-header">
+                    <h4 class="fw-bold mb-0">Key Insights & Recommendations</h4>
+                </div>
+                <div class="section-body">
+                    <div class="row g-3">
+                        @{
+                            var activePrograms = Model.Count(p => p.Status == "Active");
+                            var highUtilizationPrograms = Model.Count(p => {
+                                var spent = p.Benefits?.Sum(b => b.Amount) ?? 0;
+                                var util = p.Budget > 0 ? (spent / p.Budget * 100) : 0;
+                                return util > 80;
+                            });
+                            var lowPerformance = Model.Count(p => (p.Trainings?.Count ?? 0) < 2);
+                        }
+
+                        <div class="col-md-6">
+                            <div class="insight-card insight-success">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <div>
+                                    <strong>Active Programs:</strong> @activePrograms out of @Model.Count() programs are currently active.
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (highUtilizationPrograms > 0)
+                        {
+                            <div class="col-md-6">
+                                <div class="insight-card insight-warning">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    <div>
+                                        <strong>Budget Alert:</strong> @highUtilizationPrograms programs have high budget utilization (>80%).
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (lowPerformance > 0)
+                        {
+                            <div class="col-md-6">
+                                <div class="insight-card insight-info">
+                                    <i class="bi bi-info-circle-fill"></i>
+                                    <div>
+                                        <strong>Training Opportunity:</strong> @lowPerformance programs have less than 2 trainings. Consider expanding.
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="col-md-6">
+                            <div class="insight-card insight-primary">
+                                <i class="bi bi-graph-up"></i>
+                                <div>
+                                    <strong>Overall Performance:</strong> Average of @((Model.Sum(p => p.Trainings?.Count ?? 0) / (double)Model.Count()).ToString("0.0")) trainings per program.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Footer -->
+            <div class="report-footer">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="text-muted mb-1"><strong>Report Generated:</strong> @DateTime.Now.ToString("MMMM dd, yyyy h:mm tt")</p>
+                        <p class="text-muted mb-0"><strong>Generated By:</strong> @(Context.Session.GetString("UserName") ?? "Program Manager")</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <p class="text-muted mb-1"><strong>Reporting Period:</strong> All Time</p>
+                        <p class="text-muted mb-0"><strong>Total Programs:</strong> @ViewBag.TotalPrograms</p>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="bg-white rounded-3 border shadow-sm">
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-file-earmark-text" style="font-size: 4rem; color: #cbd5e1;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No Report Data Available</h4>
+                    <p class="text-muted mb-4">Create programs to generate reports.</p>
+                    <a asp-action="CreateProgram" asp-controller="ProgramManager" class="btn btn-primary px-4">
+                        <i class="bi bi-plus-circle"></i> Create Program
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

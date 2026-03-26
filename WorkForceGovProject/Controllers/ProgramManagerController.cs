@@ -18,6 +18,10 @@ namespace WorkForceGovProject.Controllers
         // GET: ProgramManager/Dashboard
         public IActionResult Dashboard()
         {
+            // Simulate logged-in user for testing
+            HttpContext.Session.SetInt32("UserId", 1);
+            HttpContext.Session.SetString("UserName", "Program Manager");
+
             int? userId = HttpContext.Session.GetInt32("UserId");
 
             if (userId == null)
@@ -200,6 +204,21 @@ namespace WorkForceGovProject.Controllers
             var programs = _context.EmploymentPrograms
                 .Include(p => p.Trainings)
                 .Include(p => p.Benefits)
+                    .ThenInclude(b => b.Citizen)
+                .ToList();
+
+            // Calculate beneficiary statistics
+            var allBenefits = _context.Benefits
+                .Include(b => b.Citizen)
+                .Include(b => b.EmploymentProgram)
+                .ToList();
+
+            ViewBag.TotalBeneficiaries = allBenefits.Select(b => b.CitizenID).Distinct().Count();
+            ViewBag.TotalBenefitsDistributed = allBenefits.Count;
+            ViewBag.TotalAmountPaid = allBenefits.Sum(b => b.Amount);
+            ViewBag.RecentBeneficiaries = allBenefits
+                .OrderByDescending(b => b.Date)
+                .Take(5)
                 .ToList();
 
             return View(programs);
@@ -271,6 +290,7 @@ namespace WorkForceGovProject.Controllers
             var programReport = _context.EmploymentPrograms
                 .Include(p => p.Trainings)
                 .Include(p => p.Benefits)
+                    .ThenInclude(b => b.Citizen)
                 .Include(p => p.Resources)
                 .ToList();
 
@@ -280,7 +300,109 @@ namespace WorkForceGovProject.Controllers
             ViewBag.TotalBenefitAmount = _context.Benefits.Sum(b => (decimal?)b.Amount) ?? 0;
             ViewBag.TotalBudget = programReport.Sum(p => p.Budget);
 
+            // Benefits distributed data
+            var allBenefits = _context.Benefits
+                .Include(b => b.Citizen)
+                .Include(b => b.EmploymentProgram)
+                .OrderByDescending(b => b.Date)
+                .ToList();
+
+            ViewBag.RecentBenefits = allBenefits.Take(10).ToList();
+            ViewBag.UniqueCitizensServed = allBenefits.Select(b => b.CitizenID).Distinct().Count();
+
             return View(programReport);
+        }
+
+        // GET: ProgramManager/CreateTraining
+        public IActionResult CreateTraining()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            ViewBag.Programs = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.EmploymentPrograms, "ProgramID", "Title");
+            return View();
+        }
+
+        // POST: ProgramManager/CreateTraining
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateTraining(Training training)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Trainings.Add(training);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Training created successfully!";
+                return RedirectToAction("TrainingManagement");
+            }
+
+            ViewBag.Programs = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.EmploymentPrograms, "ProgramID", "Title", training.ProgramID);
+            return View(training);
+        }
+
+        // GET: ProgramManager/CreateResource
+        public IActionResult CreateResource()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            ViewBag.Programs = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.EmploymentPrograms, "ProgramID", "Title");
+            return View();
+        }
+
+        // POST: ProgramManager/CreateResource
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateResource(Resource resource)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Resources.Add(resource);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Resource created successfully!";
+                return RedirectToAction("ResourceManagement");
+            }
+
+            ViewBag.Programs = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.EmploymentPrograms, "ProgramID", "Title", resource.ProgramID);
+            return View(resource);
+        }
+
+        // GET: ProgramManager/CreateBenefit
+        public IActionResult CreateBenefit()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            ViewBag.Programs = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.EmploymentPrograms, "ProgramID", "Title");
+            ViewBag.Citizens = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Citizens, "Id", "FullName");
+            return View();
+        }
+
+        // POST: ProgramManager/CreateBenefit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateBenefit(Benefit benefit)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Benefits.Add(benefit);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Benefit distributed successfully!";
+                return RedirectToAction("BenefitManagement");
+            }
+
+            ViewBag.Programs = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.EmploymentPrograms, "ProgramID", "Title", benefit.ProgramID);
+            ViewBag.Citizens = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.Citizens, "CitizenID", "FullName", benefit.CitizenID);
+            return View(benefit);
         }
     }
 }

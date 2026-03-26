@@ -13,6 +13,7 @@ namespace WorkForceGovProject.Data
         public DbSet<Training> Trainings { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public DbSet<Benefit> Benefits { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         //public DbSet<Admin
     }
 }
