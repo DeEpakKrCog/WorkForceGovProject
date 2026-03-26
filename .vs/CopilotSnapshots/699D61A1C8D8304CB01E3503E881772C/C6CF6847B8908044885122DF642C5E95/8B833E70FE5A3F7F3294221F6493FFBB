@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorkForceGovProject.Data;
 using WorkForceGovProject.Interfaces;
@@ -55,30 +55,12 @@ namespace WorkForceGovProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(Employer model, string email, string password)
         {
-            try
+            if (ModelState.IsValid)
             {
-                // Validate email and password are provided
-                if (string.IsNullOrWhiteSpace(email))
-                {
-                    ModelState.AddModelError("email", "Email is required.");
-                }
-                if (string.IsNullOrWhiteSpace(password))
-                {
-                    ModelState.AddModelError("password", "Password is required.");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    // Show validation errors
-                    TempData["ErrorMessage"] = "Please fill all required fields correctly.";
-                    return View(model);
-                }
-
                 // Check if email already exists
                 if (await _context.Users.AnyAsync(u => u.Email == email))
                 {
-                    ModelState.AddModelError("email", "This email is already registered.");
-                    TempData["ErrorMessage"] = "This email is already registered. Please use a different email.";
+                    ModelState.AddModelError("Email", "This email is already registered.");
                     return View(model);
                 }
 
@@ -104,12 +86,8 @@ namespace WorkForceGovProject.Controllers
                 TempData["SuccessMessage"] = "Registration successful! Please wait for account verification.";
                 return RedirectToAction("Login", "Account");
             }
-            catch (Exception ex)
-            {
-                // Log the error and show user-friendly message
-                TempData["ErrorMessage"] = $"Registration failed: {ex.Message}";
-                return View(model);
-            }
+
+            return View(model);
         }
 
         #endregion
