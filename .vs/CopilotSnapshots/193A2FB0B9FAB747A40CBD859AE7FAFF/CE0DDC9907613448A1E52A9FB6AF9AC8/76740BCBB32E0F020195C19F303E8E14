@@ -1,0 +1,165 @@
+﻿@{
+    ViewData["Title"] = "Labor Officer Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Dashboard.css" />
+
+<div class="dashboard-wrapper">
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-user-tie"></i> Labor Officer</h3>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="@Url.Action("Dashboard", "LaborOfficer")" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="@Url.Action("ViewDocuments", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-file-alt"></i>
+                <span>Document Verification</span>
+            </a>
+            <a href="@Url.Action("ViewEmployers", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-building"></i>
+                <span>Employer Compliance</span>
+            </a>
+            <a href="@Url.Action("ReviewApplications", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Job Applications</span>
+            </a>
+            <a href="@Url.Action("GenerateReports", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+            </a>
+            <a href="@Url.Action("ConductAudit", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Compliance Audit</span>
+            </a>
+            <a href="@Url.Action("Notifications", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+                @if (ViewBag.Notifications != null && ViewBag.Notifications.Count > 0)
+                {
+                    <span class="badge">@ViewBag.Notifications.Count</span>
+                }
+            </a>
+            <a href="@Url.Action("Settings", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="@Url.Action("Logout", "Account")" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-content">
+        <div class="dashboard-header">
+            <h1>Labor Officer Dashboard</h1>
+            <p class="text-muted">Welcome back! Here's an overview of your tasks and activities.</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <!-- Pending Document Verifications -->
+            <div class="stat-card pending">
+                <div class="stat-icon">
+                    <i class="fas fa-file-signature"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Pending Verifications</h3>
+                    <p class="stat-number">@(ViewBag.PendingDocuments ?? 0)</p>
+                    <a href="@Url.Action("ViewDocuments", "LaborOfficer")" class="stat-link">
+                        View Documents <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Compliance Alerts -->
+            <div class="stat-card alerts">
+                <div class="stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Compliance Alerts</h3>
+                    <p class="stat-number">@(ViewBag.ComplianceAlerts ?? 0)</p>
+                    <a href="@Url.Action("ViewEmployers", "LaborOfficer")" class="stat-link">
+                        View Employers <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Applications Summary -->
+            <div class="stat-card applications">
+                <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Applications</h3>
+                    <div class="app-stats">
+                        <span><strong>Pending:</strong> @(ViewBag.PendingApplications ?? 0)</span>
+                        <span><strong>Approved:</strong> @(ViewBag.ApprovedApplications ?? 0)</span>
+                        <span><strong>Rejected:</strong> @(ViewBag.RejectedApplications ?? 0)</span>
+                    </div>
+                    <a href="@Url.Action("ReviewApplications", "LaborOfficer")" class="stat-link">
+                        Review Applications <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="stat-card notifications">
+                <div class="stat-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Notifications</h3>
+                    @if (ViewBag.Notifications != null && ViewBag.Notifications.Count > 0)
+                    {
+                        <p class="stat-number">@ViewBag.Notifications.Count</p>
+                        <div class="notification-list">
+                            @foreach (var note in ViewBag.Notifications)
+                            {
+                                <div class="notification-item">@note</div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="no-notifications">No new notifications</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-buttons">
+                <a href="@Url.Action("GenerateReports", "LaborOfficer")" class="action-btn">
+                    <i class="fas fa-chart-line"></i>
+                    Generate Reports
+                </a>
+                <a href="@Url.Action("ConductAudit", "LaborOfficer")" class="action-btn">
+                    <i class="fas fa-clipboard-check"></i>
+                    Conduct Audit
+                </a>
+                <a href="@Url.Action("ViewDocuments", "LaborOfficer")" class="action-btn">
+                    <i class="fas fa-eye"></i>
+                    Verify Documents
+                </a>
+                <a href="@Url.Action("ViewEmployers", "LaborOfficer")" class="action-btn">
+                    <i class="fas fa-users"></i>
+                    Manage Employers
+                </a>
+            </div>
+        </div>
+    </main>
+</div>

@@ -1,0 +1,343 @@
+@model List<WorkForceGovProject.Models.JobApplication>
+@{
+    ViewData["Title"] = "Job Applications Review";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WorkForceGov</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- LEFT SIDEBAR NAVIGATION -->
+        <div class="sidebar-nav">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">
+                    <span>🏛️</span>
+                    <span>WorkForceGov</span>
+                </a>
+            </div>
+
+            <div class="sidebar-menu">
+                <a asp-action="Dashboard" asp-controller="LaborOfficer">
+                    <span class="icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a asp-action="PendingDocuments" asp-controller="LaborOfficer">
+                    <span class="icon">📋</span>
+                    <span>Pending Documents</span>
+                </a>
+                <a href="#" class="active">
+                    <span class="icon">📝</span>
+                    <span>Applications</span>
+                </a>
+                <a asp-action="Compliance" asp-controller="LaborOfficer">
+                    <span class="icon">⚖️</span>
+                    <span>Compliance</span>
+                </a>
+                <a asp-action="Employers" asp-controller="LaborOfficer">
+                    <span class="icon">🏢</span>
+                    <span>Employers</span>
+                </a>
+                <a asp-action="Reports" asp-controller="LaborOfficer">
+                    <span class="icon">📊</span>
+                    <span>Reports</span>
+                </a>
+                <a asp-action="Audits" asp-controller="LaborOfficer">
+                    <span class="icon">🔍</span>
+                    <span>Audit Logs</span>
+                </a>
+                <a href="#">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <a asp-action="Logout" asp-controller="Account" style="color: #ef4444;">
+                    <span class="icon">🚪</span>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <div class="dashboard-subtitle">Job Application Management</div>
+                    <h1>Review Job Applications</h1>
+                </div>
+                <button class="btn-dashboard-primary">
+                    <span>📊</span> Export Applications
+                </button>
+            </div>
+
+            <!-- Stats Summary -->
+            <div class="stats-grid mb-4">
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-label">Pending Review</div>
+                    <div class="stat-value" style="color: #f59e0b;">@Model.Count(a => a.Status == "Pending")</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔍</div>
+                    <div class="stat-label">Under Review</div>
+                    <div class="stat-value" style="color: #3b82f6;">@Model.Count(a => a.Status == "UnderReview")</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-label">Total Applications</div>
+                    <div class="stat-value">@Model.Count</div>
+                </div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="mb-4">
+                <button class="btn btn-sm me-2" style="background: #3b82f6; color: white; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 600;" onclick="filterApplications('all')">
+                    All (@Model.Count)
+                </button>
+                <button class="btn btn-sm me-2" style="background: #f59e0b; color: white; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 600;" onclick="filterApplications('Pending')">
+                    Pending (@Model.Count(a => a.Status == "Pending"))
+                </button>
+                <button class="btn btn-sm" style="background: #8b5cf6; color: white; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 600;" onclick="filterApplications('UnderReview')">
+                    Under Review (@Model.Count(a => a.Status == "UnderReview"))
+                </button>
+            </div>
+
+            <!-- Applications Table -->
+            <div class="activity-card">
+                <h3 class="mb-4">Job Applications</h3>
+
+                @if (Model == null || !Model.Any())
+                {
+                    <div class="alert alert-info">
+                        <strong>No applications found!</strong> There are no pending job applications at this time.
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead style="background: #f1f5f9;">
+                                <tr>
+                                    <th>App ID</th>
+                                    <th>Applicant Name</th>
+                                    <th>Job Title</th>
+                                    <th>Employer</th>
+                                    <th>Application Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var app in Model)
+                                {
+                                    <tr class="app-row" data-status="@app.Status">
+                                        <td><strong>#@app.ApplicationID</strong></td>
+                                        <td>
+                                            <div>
+                                                <strong>@app.Citizen?.FullName</strong>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style="font-weight: 600; color: #1e293b;">@app.JobTitle</div>
+                                            @if (!string.IsNullOrEmpty(app.EmployerCompany))
+                                            {
+                                                <small style="color: #64748b;">@app.EmployerCompany</small>
+                                            }
+                                        </td>
+                                        <td>@app.EmployerName</td>
+                                        <td>@app.ApplicationDate.ToString("MMM dd, yyyy")</td>
+                                        <td>
+                                            @if (app.Status == "Pending")
+                                            {
+                                                <span class="badge" style="background: #f59e0b; color: white; padding: 6px 12px; border-radius: 6px;">
+                                                    ⏳ Pending
+                                                </span>
+                                            }
+                                            else if (app.Status == "UnderReview")
+                                            {
+                                                <span class="badge" style="background: #8b5cf6; color: white; padding: 6px 12px; border-radius: 6px;">
+                                                    🔍 Under Review
+                                                </span>
+                                            }
+                                            else if (app.Status == "Approved")
+                                            {
+                                                <span class="badge" style="background: #10b981; color: white; padding: 6px 12px; border-radius: 6px;">
+                                                    ✅ Approved
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge" style="background: #ef4444; color: white; padding: 6px 12px; border-radius: 6px;">
+                                                    ❌ Rejected
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                                @if (app.Status == "Pending")
+                                                {
+                                                    <form asp-action="SetUnderReview" asp-controller="LaborOfficer" method="post" style="display: inline;">
+                                                        <input type="hidden" name="applicationId" value="@app.ApplicationID" />
+                                                        <button type="submit" class="btn btn-sm" style="background: #8b5cf6; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
+                                                            🔍 Review
+                                                        </button>
+                                                    </form>
+                                                }
+                                                <form asp-action="ApproveApplication" asp-controller="LaborOfficer" method="post" style="display: inline;">
+                                                    <input type="hidden" name="applicationId" value="@app.ApplicationID" />
+                                                    <button type="submit" class="btn btn-sm" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
+                                                        ✅ Approve
+                                                    </button>
+                                                </form>
+                                                <button type="button" class="btn btn-sm" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.85rem;" 
+                                                        onclick="showRejectModal(@app.ApplicationID, '@app.Citizen?.FullName', '@app.JobTitle', '@app.EmployerName')">
+                                                    ❌ Reject
+                                                </button>
+                                                <button type="button" class="btn btn-sm" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; font-size: 0.85rem;" 
+                                                        onclick="showDetailsModal(@app.ApplicationID, '@app.Citizen?.FullName', '@app.JobTitle', '@app.EmployerName', '@app.EmployerCompany', '@app.ApplicationDate.ToString("MMM dd, yyyy")', '@app.Status', '@app.OfficerNotes')">
+                                                    👁️ Details
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div class="modal fade" id="rejectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reject Application</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form asp-action="RejectApplication" asp-controller="LaborOfficer" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="applicationId" id="rejectAppId" />
+                        <p><strong>Applicant:</strong> <span id="rejectApplicantName"></span></p>
+                        <p><strong>Job Title:</strong> <span id="rejectJobTitle"></span></p>
+                        <p><strong>Employer:</strong> <span id="rejectEmployer"></span></p>
+                        <div class="mb-3">
+                            <label class="form-label">Rejection Reason</label>
+                            <textarea name="notes" class="form-control" rows="3" placeholder="Enter reason for rejection..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Reject Application</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div class="modal fade" id="detailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Application Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Application ID:</strong>
+                            <p id="detailAppId"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Status:</strong>
+                            <p id="detailStatus"></p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Applicant Name:</strong>
+                            <p id="detailApplicantName"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Application Date:</strong>
+                            <p id="detailAppDate"></p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Job Title:</strong>
+                            <p id="detailJobTitle"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Company:</strong>
+                            <p id="detailCompany"></p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>Employer:</strong>
+                            <p id="detailEmployer"></p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <strong>Officer Notes:</strong>
+                            <p id="detailNotes" style="white-space: pre-wrap;"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showRejectModal(appId, applicantName, jobTitle, employer) {
+            document.getElementById('rejectAppId').value = appId;
+            document.getElementById('rejectApplicantName').textContent = applicantName;
+            document.getElementById('rejectJobTitle').textContent = jobTitle;
+            document.getElementById('rejectEmployer').textContent = employer;
+            new bootstrap.Modal(document.getElementById('rejectModal')).show();
+        }
+
+        function showDetailsModal(appId, applicantName, jobTitle, employer, company, appDate, status, notes) {
+            document.getElementById('detailAppId').textContent = '#' + appId;
+            document.getElementById('detailApplicantName').textContent = applicantName;
+            document.getElementById('detailJobTitle').textContent = jobTitle;
+            document.getElementById('detailEmployer').textContent = employer;
+            document.getElementById('detailCompany').textContent = company || 'N/A';
+            document.getElementById('detailAppDate').textContent = appDate;
+            document.getElementById('detailStatus').textContent = status;
+            document.getElementById('detailNotes').textContent = notes || 'No notes available';
+            new bootstrap.Modal(document.getElementById('detailsModal')).show();
+        }
+
+        function filterApplications(status) {
+            const rows = document.querySelectorAll('.app-row');
+            rows.forEach(row => {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

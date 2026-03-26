@@ -1,0 +1,132 @@
+﻿@model WorkForceGovProject.Models.Citizen
+@{
+    ViewData["Title"] = "Citizen Dashboard";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WorkForceGov</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- LEFT SIDEBAR NAVIGATION -->
+        <div class="sidebar-nav">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">
+                    <span>🏛️</span>
+                    <span>WorkForceGov</span>
+                </a>
+            </div>
+
+            <div class="sidebar-menu">
+                <a href="#" class="active">
+                    <span class="icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a asp-action="Profile" asp-controller="Citizen">
+                    <span class="icon">👤</span>
+                    <span>My Profile</span>
+                </a>
+                <a asp-action="Documents" asp-controller="Citizen">
+                    <span class="icon">📄</span>
+                    <span>Verification Docs</span>
+                </a>
+                <a asp-action="Index" asp-controller="Jobs">
+                    <span class="icon">🔍</span>
+                    <span>Job Board</span>
+                </a>
+                <a href="#">
+                    <span class="icon">💼</span>
+                    <span>Applications</span>
+                </a>
+                <a href="#">
+                    <span class="icon">💰</span>
+                    <span>Transactions</span>
+                </a>
+                <a href="#">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <a asp-action="Logout" asp-controller="Account" style="color: #ef4444;">
+                    <span class="icon">🚪</span>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="dashboard-title">
+                    <div class="dashboard-subtitle">@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</div>
+                    <h1>Welcome back, @Model.FullName!</h1>
+                </div>
+                <button class="btn-dashboard-primary">
+                    <span>📝</span> Update Profile
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-label">Active Applications</div>
+                    <div class="stat-value">@Model.ActiveApplications</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-label">Account Balance</div>
+                    <div class="stat-value">@Model.AccountBalance.ToString("C")</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-label">Document Status</div>
+                    <div class="stat-value" style="font-size: 1.5rem;">@Model.DocumentStatus</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-label">New Job Matches</div>
+                    <div class="stat-value" style="color: #3b82f6;">@Model.NewJobMatches</div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity-card">
+                <h3>Recent Activity & Alerts</h3>
+
+                @{
+                    var activities = new[] { 
+                        new { Text = "Identity Verification is currently " + Model.DocumentStatus, Type = Model.DocumentStatus == "Verified" ? "success" : "warning" },
+                        new { Text = "Check the Job Board for " + Model.NewJobMatches + " new matches", Type = "info" },
+                        new { Text = "Your profile was last updated today", Type = "success" },
+                        new { Text = Model.ActiveApplications + " job applications in progress", Type = "info" }
+                    };
+                }
+
+                @foreach (var activity in activities)
+                {
+                    <div class="activity-item">
+                        <span class="status-dot @(activity.Type == "success" ? "success" : activity.Type == "warning" ? "warning" : "")"></span>
+                        <span class="activity-text">@activity.Text</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
