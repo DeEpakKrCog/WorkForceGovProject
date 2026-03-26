@@ -1,0 +1,214 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
+using WorkForceGovProject.Data;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Models.ViewModels;
+
+namespace WorkForceGovProject.Controllers
+{
+    public class AdminController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public AdminController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Admin/Dashboard
+        public async Task<IActionResult> Dashboard()
+        {
+            try
+            {
+                var dashboardData = new AdminDashboardViewModel
+                {
+                    TotalUsers = await _context.Users.CountAsync(),
+                    // Note: If this line crashes, you MUST run 'Update-Database' in Package Manager Console
+                    ActiveUsers = await _context.Users.CountAsync(u => u.Status == "Active"),
+                    InactiveUsers = await _context.Users.CountAsync(u => u.Status == "Inactive"),
+                    TotalRoles = await _context.Roles.CountAsync(),
+
+                    RecentLogs = await _context.SystemLogs
+                        .OrderByDescending(l => l.Timestamp)
+                        .Take(10)
+                        .ToListAsync(),
+
+                    RecentUsers = await _context.Users
+                        .OrderByDescending(u => u.CreatedAt)
+                        .Take(5)
+                        .ToListAsync()
+                };
+
+                return View(dashboardData);
+            }
+            catch (Exception ex)
+            {
+                // If the database is missing columns, show a friendly error or empty dashboard
+                ViewBag.ErrorMessage = "Database Schema Mismatch: " + ex.Message;
+                return View(new AdminDashboardViewModel());
+            }
+        }
+
+        // GET: Admin/ManageUsers
+        public async Task<IActionResult> ManageUsers(string status = "", string searchTerm = "")
+        {
+            var usersQuery = _context.Users.Include(u => u.RoleNavigation).AsQueryable();
+
+            if (!string.IsNullOrEmpty(status) && status != "All")
+            {
+                usersQuery = usersQuery.Where(u => u.Status == status);
+            }
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                usersQuery = usersQuery.Where(u =>
+                    u.FullName.Contains(searchTerm) ||
+                    u.Email.Contains(searchTerm));
+            }
+
+            var users = await usersQuery.OrderByDescending(u => u.CreatedAt).ToListAsync();
+
+            var viewModel = users.Select(u => new UserManagementViewModel
+            {
+                Id = u.Id,
+                FullName = u.FullName,
+                Email = u.Email,
+                Role = u.Role,
+                Status = u.Status,
+                CreatedAt = u.CreatedAt
+            }).ToList();
+
+            return View(viewModel);
+        }
+
+        // GET: Admin/CreateUser
+        public IActionResult CreateUser()
+        {
+            return View();
+        }
+
+        // POST: Admin/CreateUser
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+            {
+                ModelState.AddModelError("Email", "This email is already registered.");
+                return View(model);
+            }
+
+            var user = new User
+            {
+                FullName = model.FullName,
+                Email = model.Email,
+                Password = HashPassword(model.Password), // Encrypting for security
+                Role = model.Role,
+                RoleId = model.RoleId ?? 0,
+                Status = "Active",
+                CreatedAt = DateTime.Now
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            await LogSystemActivity(0, "Create User", "UserTable", $"Created user: {model.FullName}");
+
+            return RedirectToAction(nameof(ManageUsers));
+        }
+
+        // GET: Admin/EditUser/5
+        public async Task<IActionResult> EditUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return NotFound();
+
+            var model = new EditUserViewModel
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Role = user.Role,
+                RoleId = user.RoleId,
+                Status = user.Status
+            };
+
+            return View(model);
+        }
+
+        // POST: Admin/EditUser/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditUser(int id, EditUserViewModel model)
+        {
+            if (id != model.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                var user = await _context.Users.FindAsync(id);
+                if (user == null) return NotFound();
+
+                user.FullName = model.FullName;
+                user.Email = model.Email;
+                user.Role = model.Role;
+                user.RoleId = model.RoleId ?? 0;
+                user.Status = model.Status;
+
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+
+                await LogSystemActivity(0, "Edit User", "UserTable", $"Updated user ID: {id}");
+                return RedirectToAction(nameof(ManageUsers));
+            }
+            return View(model);
+        }
+
+        // GET: Admin/ManageRoles
+        public async Task<IActionResult> ManageRoles()
+        {
+            var roles = await _context.Roles.ToListAsync();
+            var viewModel = new List<RoleManagementViewModel>();
+
+            foreach (var role in roles)
+            {
+                viewModel.Add(new RoleManagementViewModel
+                {
+                    RoleId = role.RoleId,
+                    RoleName = role.RoleName,
+                    Description = role.Description,
+                    UserCount = await _context.Users.CountAsync(u => u.RoleId == role.RoleId)
+                });
+            }
+
+            return View(viewModel);
+        }
+
+        // --- HELPER METHODS ---
+
+        private async Task LogSystemActivity(int userId, string action, string resource, string description)
+        {
+            var log = new SystemLog
+            {
+                UserId = userId,
+                Action = action,
+                Resource = resource,
+                Timestamp = DateTime.Now,
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1"
+            };
+
+            _context.SystemLogs.Add(log);
+            await _context.SaveChangesAsync();
+        }
+
+        private string HashPassword(string password)
+        {
+            using var sha256 = SHA256.Create();
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(hashedBytes);
+        }
+    }
+}

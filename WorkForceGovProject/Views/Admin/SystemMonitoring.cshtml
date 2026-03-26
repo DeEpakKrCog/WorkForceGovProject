@@ -1,0 +1,146 @@
+@model SystemMonitoringViewModel
+
+@{
+    ViewData["Title"] = "System Monitoring";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2><i class="fas fa-chart-line"></i> System Monitoring</h2>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card stats-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="card-title mb-1">Total Activities</p>
+                            <h3 class="mb-0">@Model.TotalActivities</h3>
+                        </div>
+                        <i class="fas fa-chart-bar fa-2x text-info"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card stats-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="card-title mb-1">Today Activities</p>
+                            <h3 class="mb-0 text-success">@Model.TodayActivities</h3>
+                        </div>
+                        <i class="fas fa-chart-pie fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-filter"></i> Filter Logs</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="fromDate" class="form-label">From Date</label>
+                    <input type="date" id="fromDate" name="fromDate" class="form-control" value="@Model.FilterFromDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-3">
+                    <label for="toDate" class="form-label">To Date</label>
+                    <input type="date" id="toDate" name="toDate" class="form-control" value="@Model.FilterToDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-3">
+                    <label for="filterAction" class="form-label">Action</label>
+                    <input type="text" id="filterAction" name="filterAction" class="form-control" placeholder="Filter by action..." value="@Model.FilterAction" />
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Activity Log Table -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> Activity Logs</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>User ID</th>
+                        <th>Action</th>
+                        <th>Resource</th>
+                        <th>Timestamp</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.RecentActivities.Any())
+                    {
+                        @foreach (var activity in Model.RecentActivities)
+                        {
+                            <tr>
+                                <td>@activity.UserId</td>
+                                <td>
+                                    <span class="badge bg-primary">@activity.Action</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@activity.Resource</span>
+                                </td>
+                                <td>
+                                    <small>@activity.Timestamp.ToString("g")</small>
+                                </td>
+                                <td>
+                                    <code>@activity.IpAddress</code>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No activities found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stats-card {
+        border-left: 4px solid #17a2b8;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-3px);
+        transition: transform 0.2s;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    code {
+        background-color: #f8f9fa;
+        padding: 4px 8px;
+        border-radius: 3px;
+    }
+</style>
