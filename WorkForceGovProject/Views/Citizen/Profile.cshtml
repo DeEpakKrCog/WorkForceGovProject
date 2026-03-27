@@ -1,0 +1,96 @@
+﻿@model WorkForceGovProject.Models.Citizen
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<style>
+    .dashboard-container { display: flex; margin-top: -20px; min-height: 100vh; }
+    .sidebar-nav { width: 260px; background: #1e293b; color: white; padding-top: 20px; }
+    .sidebar-nav a { 
+        display: block; padding: 12px 24px; color: #94a3b8; text-decoration: none; 
+        transition: 0.3s; margin: 4px 12px; border-radius: 8px;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active { background: #3b82f6; color: white; }
+    .main-content { flex: 1; padding: 40px; background: #f8fafc; }
+</style>
+
+<div class="dashboard-container">
+    <div class="sidebar-nav d-none d-md-block shadow">
+        <a asp-action="Dashboard" asp-controller="Citizen">🏠 Dashboard</a>
+        <a href="#" class="active">👤 My Profile</a>
+        <a asp-action="Documents" asp-controller="Citizen">📄 Verification Docs</a>
+        <a asp-action="JobSearch" asp-controller="Citizen">🔍 Job Board</a>
+        <a asp-action="JobApplications" asp-controller="Citizen">📋 My Applications</a>
+        <a asp-action="Benefits" asp-controller="Citizen">💰 Benefits</a>
+        <a asp-action="Notifications" asp-controller="Citizen">🔔 Notifications</a>
+        <a asp-action="Logout" asp-controller="Account" class="text-danger mt-5 fw-bold">🚪 Sign Out</a>
+    </div>
+
+    <div class="main-content">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow border-0 rounded-3">
+                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <h4 class="fw-bold mb-0 text-dark">👤 Profile Management</h4>
+                        <a asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">Back to Dashboard</a>
+                    </div>
+
+                    <div class="card-body p-4">
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                @TempData["SuccessMessage"]
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        }
+
+                        <form asp-action="UpdateProfile" method="post">
+                            <input type="hidden" asp-for="Id" />
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Full Name</label>
+                                    <input asp-for="FullName" class="form-control" required />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Email (Read-only)</label>
+                                    <input asp-for="Email" class="form-control bg-light" readonly />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Date of Birth</label>
+                                    <input asp-for="DOB" type="date" class="form-control" />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Gender</label>
+                                    <select asp-for="Gender" class="form-select">
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">Phone Number</label>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="+1 234 567 890" />
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Residential Address</label>
+                                    <textarea asp-for="Address" class="form-control" rows="3" placeholder="Enter your full home address"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 border-top pt-3 text-end">
+                                <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

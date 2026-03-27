@@ -1,0 +1,137 @@
+@model List<WorkForceGovProject.Models.CitizenDocument>
+@{
+    ViewData["Title"] = "Upload & Manage Documents";
+}
+
+<style>
+    .dashboard-container { display: flex; margin-top: -20px; min-height: 100vh; }
+    .sidebar-nav { width: 260px; background: #1e293b; color: white; padding-top: 20px; }
+    .sidebar-nav a { 
+        display: block; padding: 12px 24px; color: #94a3b8; text-decoration: none; 
+        transition: 0.3s; margin: 4px 12px; border-radius: 8px;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active { background: #3b82f6; color: white; }
+    .main-content { flex: 1; padding: 40px; background: #f8fafc; }
+    .doc-card { background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #3b82f6; margin-bottom: 15px; }
+    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-verified { background: #dcfce7; color: #166534; }
+    .status-rejected { background: #fee2e2; color: #991b1b; }
+</style>
+
+<div class="dashboard-container">
+    <div class="sidebar-nav d-none d-md-block shadow">
+        <a href="#" class="active">🏠 Dashboard</a>
+        <a asp-action="Profile" asp-controller="Citizen">👤 My Profile</a>
+        <a asp-action="Documents" asp-controller="Citizen">📄 Verification Docs</a>
+        <a asp-action="JobSearch" asp-controller="Citizen">🔍 Job Board</a>
+        <a asp-action="JobApplications" asp-controller="Citizen">📋 My Applications</a>
+        <a asp-action="Benefits" asp-controller="Citizen">💰 Benefits</a>
+        <a asp-action="Notifications" asp-controller="Citizen">🔔 Notifications</a>
+        <a asp-action="Logout" asp-controller="Account" class="text-danger mt-5 fw-bold">🚪 Sign Out</a>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-dark">📄 Verification Documents</h2>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                <i class="bi bi-cloud-upload"></i> Upload New Document
+            </button>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info">
+                No documents uploaded yet. Click "Upload New Document" to get started.
+            </div>
+        }
+        else
+        {
+            @foreach (var doc in Model)
+            {
+                <div class="doc-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="mb-2">
+                                📎 @doc.DocumentType
+                            </h5>
+                            <p class="text-muted mb-2">
+                                <strong>File:</strong> @doc.FileName<br>
+                                <strong>Uploaded:</strong> @doc.UploadedDate.ToString("MMM dd, yyyy")
+                            </p>
+                            <span class="status-badge @(doc.VerificationStatus == "Verified" ? "status-verified" : doc.VerificationStatus == "Rejected" ? "status-rejected" : "status-pending")">
+                                @doc.VerificationStatus
+                            </span>
+                            @if (!string.IsNullOrEmpty(doc.RejectionReason))
+                            {
+                                <p class="text-danger mt-2"><strong>Reason:</strong> @doc.RejectionReason</p>
+                            }
+                        </div>
+                        <div>
+                            <a href="@doc.FilePath" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
+                            @if (doc.VerificationStatus == "Pending")
+                            {
+                                <form asp-action="DeleteDocument" method="post" style="display:inline;">
+                                    <input type="hidden" name="id" value="@doc.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this document?');">Delete</button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="UploadDocument" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Document Type</label>
+                        <select name="documentType" class="form-select" required>
+                            <option value="">Select Document Type</option>
+                            <option value="Identity Proof">Identity Proof (Aadhar, Passport, DL)</option>
+                            <option value="Qualification Certificate">Qualification Certificate</option>
+                            <option value="Resume">Resume/CV</option>
+                            <option value="Experience Letter">Experience Letter</option>
+                            <option value="Other">Other Document</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Choose File</label>
+                        <input type="file" name="file" class="form-control" required accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
+                        <small class="text-muted">Accepted: PDF, DOC, DOCX, JPG, PNG (Max 5MB)</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload Document</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

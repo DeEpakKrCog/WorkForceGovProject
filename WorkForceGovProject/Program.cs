@@ -1,49 +1,70 @@
 using Microsoft.EntityFrameworkCore;
 using WorkForceGovProject.Data;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Repositories.Implementations;
+using WorkForceGovProject.Services.Implementations;
 
-namespace WorkForceGovProject
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. Database Configuration
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddControllersWithViews();
+
+// 2. Repository Layer - Dependency Injection
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICitizenRepository, CitizenRepository>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
+builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+// 3. Service Layer - Dependency Injection
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICitizenService, CitizenService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<IApplicationService, ApplicationService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IBenefitService, BenefitService>();
+
+// 4. Session Configuration
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
-            // 1. Register the DbContext (ADD THIS LINE)
-            // This tells the app to use SQL Server and looks for a connection string in appsettings.json
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// 5. HTTP Context Accessor
+builder.Services.AddHttpContextAccessor();
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
+// 6. Logging
+builder.Services.AddLogging();
 
-            builder.Services.AddDistributedMemoryCache();
-            builder.Services.AddSession();
+var app = builder.Build();
 
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseSession();
-
-            app.UseAuthorization();
-
-            app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}")
-                .WithStaticAssets();
-
-            app.Run();
-        }
-    }
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// Middleware Order is Critical
+app.UseSession();
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

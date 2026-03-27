@@ -1,0 +1,163 @@
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Interfaces;
+
+namespace WorkForceGovProject.Services.Implementations
+{
+    /// <summary>
+    /// Citizen Service Implementation
+    /// Handles citizen profile operations
+    /// </summary>
+    public class CitizenService : ICitizenService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<CitizenService> _logger;
+
+        public CitizenService(IUnitOfWork unitOfWork, ILogger<CitizenService> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+        }
+
+        public async Task<Citizen> GetCitizenByIdAsync(int id)
+        {
+            return await _unitOfWork.Citizens.GetByIdAsync(id);
+        }
+
+        public async Task<Citizen> GetCitizenByUserIdAsync(int userId)
+        {
+            return await _unitOfWork.CitizenRepository.GetCitizenByUserIdAsync(userId);
+        }
+
+        public async Task<Citizen> GetCitizenProfileAsync(int citizenId)
+        {
+            return await _unitOfWork.Citizens.GetByIdAsync(citizenId);
+        }
+
+        public async Task<(bool Success, string Message)> CreateCitizenProfileAsync(int userId, string fullName, string email)
+        {
+            try
+            {
+                var existingCitizen = await _unitOfWork.CitizenRepository.GetCitizenByUserIdAsync(userId);
+                if (existingCitizen != null)
+                    return (false, "Citizen profile already exists for this user.");
+
+                var citizen = new Citizen
+                {
+                    UserId = userId,
+                    FullName = fullName,
+                    Email = email,
+                    ActiveApplications = 0,
+                    AccountBalance = 0.00m,
+                    DocumentStatus = "Pending",
+                    NewJobMatches = 0
+                };
+
+                await _unitOfWork.Citizens.AddAsync(citizen);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                if (saved)
+                {
+                    _logger.LogInformation($"Citizen profile created for user {userId}.");
+                    return (true, "Citizen profile created successfully.");
+                }
+
+                return (false, "Failed to create citizen profile.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Create citizen profile error: {ex.Message}");
+                return (false, "An error occurred while creating citizen profile.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> UpdateCitizenProfileAsync(Citizen citizen)
+        {
+            try
+            {
+                await _unitOfWork.Citizens.UpdateAsync(citizen);
+                var saved = await _unitOfWork.SaveChangesAsync();
+                return saved ? (true, "Profile updated successfully.") : (false, "Failed to update profile.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Update citizen profile error: {ex.Message}");
+                return (false, "An error occurred while updating profile.");
+            }
+        }
+
+        public async Task<(int ActiveApplications, decimal AccountBalance, string DocumentStatus, int NewJobMatches)> GetDashboardStatsAsync(int citizenId)
+        {
+            try
+            {
+                var citizen = await _unitOfWork.Citizens.GetByIdAsync(citizenId);
+                if (citizen == null)
+                    return (0, 0, "Unknown", 0);
+
+                // Calculate active applications
+                var activeApps = await _unitOfWork.ApplicationRepository.GetApplicationCountByCitizenAsync(citizenId);
+                
+                // Get open jobs count
+                var openJobs = await _unitOfWork.JobRepository.GetOpenJobsAsync();
+                var jobMatches = openJobs.Count();
+
+                return (activeApps, citizen.AccountBalance, citizen.DocumentStatus, jobMatches);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Get dashboard stats error: {ex.Message}");
+                return (0, 0, "Error", 0);
+            }
+        }
+
+        public async Task<(bool Success, string Message)> UpdateDashboardStatsAsync(int citizenId)
+        {
+            try
+            {
+                var citizen = await _unitOfWork.Citizens.GetByIdAsync(citizenId);
+                if (citizen == null)
+                    return (false, "Citizen not found.");
+
+                var stats = await GetDashboardStatsAsync(citizenId);
+                citizen.ActiveApplications = stats.ActiveApplications;
+                citizen.NewJobMatches = stats.NewJobMatches;
+
+                await _unitOfWork.Citizens.UpdateAsync(citizen);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                return saved ? (true, "Stats updated.") : (false, "Failed to update stats.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Update dashboard stats error: {ex.Message}");
+                return (false, "An error occurred while updating stats.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> UpdatePersonalInfoAsync(int citizenId, string fullName, DateTime? dob, string gender, string address, string phone)
+        {
+            try
+            {
+                var citizen = await _unitOfWork.Citizens.GetByIdAsync(citizenId);
+                if (citizen == null)
+                    return (false, "Citizen not found.");
+
+                citizen.FullName = fullName;
+                citizen.DOB = dob;
+                citizen.Gender = gender;
+                citizen.Address = address;
+                citizen.PhoneNumber = phone;
+
+                await _unitOfWork.Citizens.UpdateAsync(citizen);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                return saved ? (true, "Personal information updated.") : (false, "Failed to update personal information.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Update personal info error: {ex.Message}");
+                return (false, "An error occurred while updating personal information.");
+            }
+        }
+    }
+}
