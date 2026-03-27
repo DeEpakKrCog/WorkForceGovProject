@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WorkForceGovProject.Data;
@@ -18,7 +18,7 @@ namespace WorkForceGovProject.Controllers
         }
 
         // GET: ProgramManager/Dashboard
-        public async Task<IActionResult> Dashboard()
+        public IActionResult Dashboard()
         {
             // Simulate logged-in user for testing
             HttpContext.Session.SetInt32("UserId", 1);
@@ -31,12 +31,12 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Get summary statistics for dashboard using repositories
-            var totalPrograms = await _unitOfWork.EmploymentPrograms.CountAsync();
-            var activePrograms = await _unitOfWork.EmploymentPrograms.CountAsync(p => p.Status == "Active");
-            var totalBudget = await _unitOfWork.EmploymentPrograms.GetTotalBudgetAsync();
-            var activeTrainings = await _unitOfWork.Trainings.CountAsync(t => t.Status == "Active");
-            var totalBenefits = await _unitOfWork.Benefits.GetTotalAmountDistributedAsync();
+            // Get summary statistics for dashboard
+            var totalPrograms = _context.EmploymentPrograms.Count();
+            var activePrograms = _context.EmploymentPrograms.Count(p => p.Status == "Active");
+            var totalBudget = _context.EmploymentPrograms.Sum(p => (decimal?)p.Budget) ?? 0;
+            var activeTrainings = _context.Trainings.Count(t => t.Status == "Active");
+            var totalBenefits = _context.Benefits.Sum(b => (decimal?)b.Amount) ?? 0;
 
             ViewBag.TotalPrograms = totalPrograms;
             ViewBag.ActivePrograms = activePrograms;
@@ -48,7 +48,7 @@ namespace WorkForceGovProject.Controllers
         }
 
         // GET: ProgramManager/ProgramManagement
-        public async Task<IActionResult> ProgramManagement()
+        public IActionResult ProgramManagement()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -57,7 +57,7 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var programs = await _unitOfWork.EmploymentPrograms.GetAllAsync();
+            var programs = _context.EmploymentPrograms.ToList();
             return View(programs);
         }
 
@@ -77,12 +77,12 @@ namespace WorkForceGovProject.Controllers
         // POST: ProgramManager/CreateProgram
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateProgram(EmploymentProgram program)
+        public IActionResult CreateProgram(EmploymentProgram program)
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWork.EmploymentPrograms.AddAsync(program);
-                await _unitOfWork.SaveChangesAsync();
+                _context.EmploymentPrograms.Add(program);
+                _context.SaveChanges();
                 TempData["SuccessMessage"] = "Program created successfully!";
                 return RedirectToAction("ProgramManagement");
             }
@@ -91,7 +91,7 @@ namespace WorkForceGovProject.Controllers
         }
 
         // GET: ProgramManager/EditProgram/5
-        public async Task<IActionResult> EditProgram(int id)
+        public IActionResult EditProgram(int id)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -100,7 +100,7 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var program = await _unitOfWork.EmploymentPrograms.GetByIdAsync(id);
+            var program = _context.EmploymentPrograms.Find(id);
             if (program == null)
             {
                 return NotFound();
@@ -112,7 +112,7 @@ namespace WorkForceGovProject.Controllers
         // POST: ProgramManager/EditProgram/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProgram(int id, EmploymentProgram program)
+        public IActionResult EditProgram(int id, EmploymentProgram program)
         {
             if (id != program.ProgramID)
             {
@@ -123,13 +123,13 @@ namespace WorkForceGovProject.Controllers
             {
                 try
                 {
-                    _unitOfWork.EmploymentPrograms.Update(program);
-                    await _unitOfWork.SaveChangesAsync();
+                    _context.Update(program);
+                    _context.SaveChanges();
                     TempData["SuccessMessage"] = "Program updated successfully!";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _unitOfWork.EmploymentPrograms.AnyAsync(e => e.ProgramID == id))
+                    if (!_context.EmploymentPrograms.Any(e => e.ProgramID == id))
                     {
                         return NotFound();
                     }
@@ -142,7 +142,7 @@ namespace WorkForceGovProject.Controllers
         }
 
         // GET: ProgramManager/DeleteProgram/5
-        public async Task<IActionResult> DeleteProgram(int id)
+        public IActionResult DeleteProgram(int id)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -151,7 +151,7 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var program = await _unitOfWork.EmploymentPrograms.GetByIdAsync(id);
+            var program = _context.EmploymentPrograms.Find(id);
             if (program == null)
             {
                 return NotFound();
@@ -163,13 +163,13 @@ namespace WorkForceGovProject.Controllers
         // POST: ProgramManager/DeleteProgram/5
         [HttpPost, ActionName("DeleteProgram")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteProgramConfirmed(int id)
+        public IActionResult DeleteProgramConfirmed(int id)
         {
-            var program = await _unitOfWork.EmploymentPrograms.GetByIdAsync(id);
+            var program = _context.EmploymentPrograms.Find(id);
             if (program != null)
             {
-                _unitOfWork.EmploymentPrograms.Remove(program);
-                await _unitOfWork.SaveChangesAsync();
+                _context.EmploymentPrograms.Remove(program);
+                _context.SaveChanges();
                 TempData["SuccessMessage"] = "Program deleted successfully!";
             }
 
@@ -177,7 +177,7 @@ namespace WorkForceGovProject.Controllers
         }
 
         // GET: ProgramManager/BudgetMonitoring
-        public async Task<IActionResult> BudgetMonitoring()
+        public IActionResult BudgetMonitoring()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -186,30 +186,15 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var programs = await _unitOfWork.EmploymentPrograms.GetProgramsWithBenefitsAsync();
-            var programsList = programs.ToList();
+            var programs = _context.EmploymentPrograms
+                .Include(p => p.Benefits)
+                .ToList();
 
-            // Calculate budget statistics for each program
-            var budgetData = programsList.Select(p => new
-            {
-                Program = p,
-                TotalSpent = p.Benefits?.Sum(b => b.Amount) ?? 0,
-                RemainingBudget = p.Budget - (p.Benefits?.Sum(b => b.Amount) ?? 0),
-                UtilizationPercentage = p.Budget > 0 ? ((p.Benefits?.Sum(b => b.Amount) ?? 0) / p.Budget * 100) : 0,
-                BenefitsCount = p.Benefits?.Count ?? 0
-            }).ToList();
-
-            ViewBag.BudgetData = budgetData;
-            ViewBag.TotalBudget = await _unitOfWork.EmploymentPrograms.GetTotalBudgetAsync();
-            ViewBag.TotalSpent = programsList.Sum(p => p.Benefits?.Sum(b => b.Amount) ?? 0);
-            ViewBag.TotalRemaining = ViewBag.TotalBudget - ViewBag.TotalSpent;
-            ViewBag.OverallUtilization = ViewBag.TotalBudget > 0 ? (ViewBag.TotalSpent / ViewBag.TotalBudget * 100) : 0;
-
-            return View(programsList);
+            return View(programs);
         }
 
         // GET: ProgramManager/PerformanceTracking
-        public async Task<IActionResult> PerformanceTracking()
+        public IActionResult PerformanceTracking()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -218,26 +203,31 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var programs = await _unitOfWork.EmploymentPrograms.GetProgramWithAllDetailsAsync(0);
-            var allPrograms = await _unitOfWork.EmploymentPrograms.GetProgramsWithBenefitsAsync();
+            var programs = _context.EmploymentPrograms
+                .Include(p => p.Trainings)
+                .Include(p => p.Benefits)
+                    .ThenInclude(b => b.Citizen)
+                .ToList();
 
             // Calculate beneficiary statistics
-            var allBenefits = await _unitOfWork.Benefits.GetBenefitsWithDetailsAsync();
-            var benefitsList = allBenefits.ToList();
+            var allBenefits = _context.Benefits
+                .Include(b => b.Citizen)
+                .Include(b => b.EmploymentProgram)
+                .ToList();
 
-            ViewBag.TotalBeneficiaries = benefitsList.Select(b => b.CitizenID).Distinct().Count();
-            ViewBag.TotalBenefitsDistributed = benefitsList.Count;
-            ViewBag.TotalAmountPaid = benefitsList.Sum(b => b.Amount);
-            ViewBag.RecentBeneficiaries = benefitsList
+            ViewBag.TotalBeneficiaries = allBenefits.Select(b => b.CitizenID).Distinct().Count();
+            ViewBag.TotalBenefitsDistributed = allBenefits.Count;
+            ViewBag.TotalAmountPaid = allBenefits.Sum(b => b.Amount);
+            ViewBag.RecentBeneficiaries = allBenefits
                 .OrderByDescending(b => b.Date)
                 .Take(5)
                 .ToList();
 
-            return View(allPrograms);
+            return View(programs);
         }
 
         // GET: ProgramManager/TrainingManagement
-        public async Task<IActionResult> TrainingManagement()
+        public IActionResult TrainingManagement()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -246,12 +236,15 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var trainings = await _unitOfWork.Trainings.GetTrainingsWithProgramAsync();
+            var trainings = _context.Trainings
+                .Include(t => t.EmploymentProgram)
+                .ToList();
+
             return View(trainings);
         }
 
         // GET: ProgramManager/ResourceManagement
-        public async Task<IActionResult> ResourceManagement()
+        public IActionResult ResourceManagement()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -260,12 +253,15 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var resources = await _unitOfWork.Resources.GetResourcesWithProgramAsync();
+            var resources = _context.Resources
+                .Include(r => r.EmploymentProgram)
+                .ToList();
+
             return View(resources);
         }
 
         // GET: ProgramManager/BenefitManagement
-        public async Task<IActionResult> BenefitManagement()
+        public IActionResult BenefitManagement()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -274,12 +270,16 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var benefits = await _unitOfWork.Benefits.GetBenefitsWithDetailsAsync();
+            var benefits = _context.Benefits
+                .Include(b => b.EmploymentProgram)
+                .Include(b => b.Citizen)
+                .ToList();
+
             return View(benefits);
         }
 
         // GET: ProgramManager/Reports
-        public async Task<IActionResult> Reports()
+        public IActionResult Reports()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
 
@@ -288,47 +288,35 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Prepare report data using repositories
-            var programReport = await _unitOfWork.EmploymentPrograms.GetProgramWithAllDetailsAsync(0);
-            var allPrograms = await _unitOfWork.EmploymentPrograms.GetProgramsWithBenefitsAsync();
-            var programList = allPrograms.ToList();
+            // Prepare report data
+            var programReport = _context.EmploymentPrograms
+                .Include(p => p.Trainings)
+                .Include(p => p.Benefits)
+                    .ThenInclude(b => b.Citizen)
+                .Include(p => p.Resources)
+                .ToList();
 
-            ViewBag.TotalPrograms = await _unitOfWork.EmploymentPrograms.CountAsync();
-            ViewBag.TotalTrainings = await _unitOfWork.Trainings.CountAsync();
-            ViewBag.TotalBenefits = await _unitOfWork.Benefits.CountAsync();
-            ViewBag.TotalBenefitAmount = await _unitOfWork.Benefits.GetTotalAmountDistributedAsync();
-            ViewBag.TotalBudget = await _unitOfWork.EmploymentPrograms.GetTotalBudgetAsync();
+            ViewBag.TotalPrograms = programReport.Count;
+            ViewBag.TotalTrainings = _context.Trainings.Count();
+            ViewBag.TotalBenefits = _context.Benefits.Count();
+            ViewBag.TotalBenefitAmount = _context.Benefits.Sum(b => (decimal?)b.Amount) ?? 0;
+            ViewBag.TotalBudget = programReport.Sum(p => p.Budget);
 
             // Benefits distributed data
-            var allBenefits = await _unitOfWork.Benefits.GetBenefitsWithDetailsAsync();
-            var benefitsList = allBenefits.ToList();
-
-            ViewBag.RecentBenefits = await _unitOfWork.Benefits.GetRecentBenefitsAsync(10);
-            ViewBag.UniqueCitizensServed = benefitsList.Select(b => b.CitizenID).Distinct().Count();
-
-            // Benefits by category
-            var benefitsByType = benefitsList
-                .GroupBy(b => b.Type)
-                .Select(g => new { Type = g.Key, Count = g.Count(), Amount = g.Sum(b => b.Amount) })
-                .OrderByDescending(x => x.Amount)
+            var allBenefits = _context.Benefits
+                .Include(b => b.Citizen)
+                .Include(b => b.EmploymentProgram)
+                .OrderByDescending(b => b.Date)
                 .ToList();
-            ViewBag.BenefitsByType = benefitsByType;
 
-            // Benefits by program
-            var benefitsByProgram = programList.Select(p => new
-            {
-                ProgramName = p.Title,
-                BenefitsCount = p.Benefits?.Count ?? 0,
-                TotalAmount = p.Benefits?.Sum(b => b.Amount) ?? 0,
-                UniqueBeneficiaries = p.Benefits?.Select(b => b.CitizenID).Distinct().Count() ?? 0
-            }).ToList();
-            ViewBag.BenefitsByProgram = benefitsByProgram;
+            ViewBag.RecentBenefits = allBenefits.Take(10).ToList();
+            ViewBag.UniqueCitizensServed = allBenefits.Select(b => b.CitizenID).Distinct().Count();
 
-            return View(programList);
+            return View(programReport);
         }
 
         // GET: ProgramManager/CreateTraining
-        public async Task<IActionResult> CreateTraining()
+        public IActionResult CreateTraining()
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
@@ -336,26 +324,24 @@ namespace WorkForceGovProject.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            var programs = await _unitOfWork.EmploymentPrograms.GetAllAsync();
-            ViewBag.Programs = new SelectList(programs, "ProgramID", "Title");
+            ViewBag.Programs = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.EmploymentPrograms, "ProgramID", "Title");
             return View();
         }
 
         // POST: ProgramManager/CreateTraining
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateTraining(Training training)
+        public IActionResult CreateTraining(Training training)
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWork.Trainings.AddAsync(training);
-                await _unitOfWork.SaveChangesAsync();
+                _context.Trainings.Add(training);
+                _context.SaveChanges();
                 TempData["SuccessMessage"] = "Training created successfully!";
                 return RedirectToAction("TrainingManagement");
             }
 
-            var programs = await _unitOfWork.EmploymentPrograms.GetAllAsync();
-            ViewBag.Programs = new SelectList(programs, "ProgramID", "Title", training.ProgramID);
+            ViewBag.Programs = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_context.EmploymentPrograms, "ProgramID", "Title", training.ProgramID);
             return View(training);
         }
 
