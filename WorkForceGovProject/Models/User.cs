@@ -20,5 +20,9 @@ namespace WorkForceGovProject.Models
 
         [Required]
         public string Role { get; set; } // Citizen, Employer, Admin, etc.
+
+        // Navigation Properties
+        public virtual ICollection<Citizen> Citizens { get; set; } = new List<Citizen>();
+        public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }

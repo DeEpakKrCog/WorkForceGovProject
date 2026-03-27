@@ -1,0 +1,46 @@
+﻿@model WorkForceGovProject.Models.Citizen
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="main-content container py-5">
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white border-bottom py-3">
+            <h4 class="fw-bold mb-0">👤 Profile Management</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="UpdateProfile" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Full Name</label>
+                        <input asp-for="FullName" class="form-control" placeholder="Enter your full name" /> [cite: 40, 122]
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Email Address</label>
+                        <input asp-for="Email" class="form-control" readonly /> [cite: 44, 111]
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Date of Birth</label>
+                        <input asp-for="DOB" type="date" class="form-control" /> [cite: 41, 124]
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Gender</label>
+                        <select asp-for="Gender" class="form-select">
+                            [cite: 42, 125]
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Residential Address</label>
+                        <textarea asp-for="Address" class="form-control" rows="3"></textarea> [cite: 43, 126]
+                    </div>
+                </div>
+                <div class="mt-4 border-top pt-3 text-end">
+                    <button type="submit" class="btn btn-primary px-5 fw-bold">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

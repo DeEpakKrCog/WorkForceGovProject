@@ -1,0 +1,47 @@
+﻿using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Data;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. Database Configuration
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddControllersWithViews();
+
+// 2. Session Configuration (RE-ADDED & ENHANCED)
+// This is the "storage" for the session data
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // User logs out after 30 mins of inactivity
+    options.Cookie.HttpOnly = true;                // Security: prevents JS access to session cookie
+    options.Cookie.IsEssential = true;             // Required for the app to function
+});
+
+// 3. IMPORTANT: This allows the _Layout.cshtml to "see" the Session
+builder.Services.AddHttpContextAccessor();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// 4. Middleware Order is Critical
+app.UseSession();       // Session must be initialized BEFORE Authorization
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

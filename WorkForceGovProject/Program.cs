@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using WorkForceGovProject.Data;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Repositories.Implementations;
+using WorkForceGovProject.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,18 +12,38 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddControllersWithViews();
 
-// 2. Session Configuration (RE-ADDED & ENHANCED)
-// This is the "storage" for the session data
-builder.Services.AddDistributedMemoryCache();
+// 2. Repository Layer - Dependency Injection
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICitizenRepository, CitizenRepository>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
+builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
-builder.Services.AddSession(options => {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // User logs out after 30 mins of inactivity
-    options.Cookie.HttpOnly = true;                // Security: prevents JS access to session cookie
-    options.Cookie.IsEssential = true;             // Required for the app to function
+// 3. Service Layer - Dependency Injection
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICitizenService, CitizenService>();
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<IApplicationService, ApplicationService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IBenefitService, BenefitService>();
+
+// 4. Session Configuration
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
-// 3. IMPORTANT: This allows the _Layout.cshtml to "see" the Session
+// 5. HTTP Context Accessor
 builder.Services.AddHttpContextAccessor();
+
+// 6. Logging
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
@@ -36,8 +59,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// 4. Middleware Order is Critical
-app.UseSession();       // Session must be initialized BEFORE Authorization
+// Middleware Order is Critical
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -1,0 +1,40 @@
+﻿using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Data;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Repositories.Interfaces;
+
+namespace WorkForceGovProject.Repositories.Implementations
+{
+    /// <summary>
+    /// User Repository Implementation
+    /// Handles user-specific data operations
+    /// </summary>
+    public class UserRepository : Repository<User>, IUserRepository
+    {
+        public UserRepository(ApplicationDbContext context) : base(context) { }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _dbSet.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<bool> UserExistsByEmailAsync(string email)
+        {
+            return await _dbSet.AnyAsync(u => u.Email == email);
+        }
+
+        public async Task<User> GetUserWithCitizenAsync(int userId)
+        {
+            return await _dbSet
+                .Include(u => u.Citizens)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        public async Task<IEnumerable<User>> GetUsersByRoleAsync(string role)
+        {
+            return await _dbSet
+                .Where(u => u.Role == role)
+                .ToListAsync();
+        }
+    }
+}

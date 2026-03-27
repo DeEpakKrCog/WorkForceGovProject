@@ -1,0 +1,148 @@
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Interfaces;
+
+namespace WorkForceGovProject.Services.Implementations
+{
+    /// <summary>
+    /// Account Service Implementation
+    /// Handles authentication and user registration
+    /// </summary>
+    public class AccountService : IAccountService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<AccountService> _logger;
+
+        public AccountService(IUnitOfWork unitOfWork, ILogger<AccountService> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+        }
+
+        public async Task<(bool Success, string Message, User User)> LoginAsync(string email, string password)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+                    return (false, "Email and password are required.", null);
+
+                var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+
+                if (user == null)
+                    return (false, "Invalid email or password.", null);
+
+                // In production, use proper password hashing (bcrypt, PBKDF2, etc.)
+                if (user.Password != password)
+                    return (false, "Invalid email or password.", null);
+
+                _logger.LogInformation($"User {email} logged in successfully.");
+                return (true, "Login successful.", user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Login error for {email}: {ex.Message}");
+                return (false, "An error occurred during login.", null);
+            }
+        }
+
+        public async Task<(bool Success, string Message)> RegisterAsync(User user)
+        {
+            try
+            {
+                if (user == null || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+                    return (false, "Invalid user information provided.");
+
+                var existingUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(user.Email);
+                if (existingUser != null)
+                    return (false, "Email is already registered.");
+
+                await _unitOfWork.Users.AddAsync(user);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                if (saved)
+                {
+                    _logger.LogInformation($"User {user.Email} registered successfully.");
+                    return (true, "Registration successful.");
+                }
+
+                return (false, "Failed to register user.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Registration error for {user?.Email}: {ex.Message}");
+                return (false, "An error occurred during registration.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> LogoutAsync()
+        {
+            try
+            {
+                _logger.LogInformation("User logged out.");
+                return await Task.FromResult((true, "Logout successful."));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Logout error: {ex.Message}");
+                return (false, "An error occurred during logout.");
+            }
+        }
+
+        public async Task<User> GetUserByIdAsync(int userId)
+        {
+            return await _unitOfWork.Users.GetByIdAsync(userId);
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+        }
+
+        public async Task<bool> UserExistsAsync(string email)
+        {
+            return await _unitOfWork.UserRepository.UserExistsByEmailAsync(email);
+        }
+
+        public async Task<(bool Success, string Message)> UpdateUserAsync(User user)
+        {
+            try
+            {
+                await _unitOfWork.Users.UpdateAsync(user);
+                var saved = await _unitOfWork.SaveChangesAsync();
+                return saved ? (true, "User updated successfully.") : (false, "Failed to update user.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Update user error: {ex.Message}");
+                return (false, "An error occurred while updating user.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
+        {
+            try
+            {
+                var user = await GetUserByIdAsync(userId);
+                if (user == null)
+                    return (false, "User not found.");
+
+                if (user.Password != oldPassword)
+                    return (false, "Current password is incorrect.");
+
+                user.Password = newPassword;
+                return await UpdateUserAsync(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Change password error: {ex.Message}");
+                return (false, "An error occurred while changing password.");
+            }
+        }
+
+        public async Task<bool> ValidateCredentialsAsync(string email, string password)
+        {
+            var result = await LoginAsync(email, password);
+            return result.Success;
+        }
+    }
+}

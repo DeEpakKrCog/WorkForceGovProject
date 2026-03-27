@@ -1,0 +1,104 @@
+@model List<WorkForceGovProject.Models.Application>
+@{
+    ViewData["Title"] = "My Job Applications";
+}
+
+<style>
+    .dashboard-container { display: flex; margin-top: -20px; min-height: 100vh; }
+    .sidebar-nav { width: 260px; background: #1e293b; color: white; padding-top: 20px; }
+    .sidebar-nav a { 
+        display: block; padding: 12px 24px; color: #94a3b8; text-decoration: none; 
+        transition: 0.3s; margin: 4px 12px; border-radius: 8px;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active { background: #3b82f6; color: white; }
+    .main-content { flex: 1; padding: 40px; background: #f8fafc; }
+    .app-card { background: white; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-approved { background: #dcfce7; color: #166534; }
+    .status-rejected { background: #fee2e2; color: #991b1b; }
+    .status-withdrawn { background: #f3f4f6; color: #374151; }
+</style>
+
+<div class="dashboard-container">
+    <div class="sidebar-nav d-none d-md-block shadow">
+        <a href="#" class="active">🏠 Dashboard</a>
+        <a asp-action="Profile" asp-controller="Citizen">👤 My Profile</a>
+        <a asp-action="Documents" asp-controller="Citizen">📄 Verification Docs</a>
+        <a asp-action="JobSearch" asp-controller="Citizen">🔍 Job Board</a>
+        <a asp-action="JobApplications" asp-controller="Citizen">📋 My Applications</a>
+        <a asp-action="Benefits" asp-controller="Citizen">💰 Benefits</a>
+        <a asp-action="Notifications" asp-controller="Citizen">🔔 Notifications</a>
+        <a asp-action="Logout" asp-controller="Account" class="text-danger mt-5 fw-bold">🚪 Sign Out</a>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-dark">📋 My Job Applications</h2>
+            <a asp-action="JobSearch" class="btn btn-primary">Browse More Jobs</a>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info">
+                <p class="mb-0">You haven't applied for any jobs yet. <a asp-action="JobSearch">Start exploring available positions</a></p>
+            </div>
+        }
+        else
+        {
+            @foreach (var app in Model)
+            {
+                <div class="app-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h4 class="mb-1 fw-bold">@app.JobOpening.JobTitle</h4>
+                            <p class="text-muted mb-0">
+                                📍 @app.JobOpening.Location | 📂 @app.JobOpening.JobCategory
+                            </p>
+                        </div>
+                        <span class="status-badge 
+                            @(app.Status == "Pending" ? "status-pending" : 
+                              app.Status == "Approved" ? "status-approved" : 
+                              app.Status == "Rejected" ? "status-rejected" : "status-withdrawn")">
+                            @app.Status
+                        </span>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-0"><strong>Submitted:</strong> @app.SubmittedDate.ToString("MMM dd, yyyy")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-0"><strong>Salary Range:</strong> ₹@app.JobOpening.SalaryMin - ₹@app.JobOpening.SalaryMax</p>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(app.ReviewNotes))
+                    {
+                        <div class="alert alert-info mb-3">
+                            <strong>Review Notes:</strong> @app.ReviewNotes
+                        </div>
+                    }
+
+                    <div>
+                        @if (app.Status == "Pending")
+                        {
+                            <form asp-action="WithdrawApplication" method="post" style="display:inline;">
+                                <input type="hidden" name="applicationId" value="@app.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to withdraw this application?');">Withdraw Application</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

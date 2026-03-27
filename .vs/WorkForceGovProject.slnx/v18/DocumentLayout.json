@@ -7,56 +7,16 @@
       "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\controllers\\citizencontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\interfaces\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\interfaces\\irepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\interfaces\\inotificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\interfaces\\inotificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\views\\citizen\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\views\\citizen\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\models\\citizen.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\models\\citizen.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\views\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\views\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\wwwroot\\css\\dashboard.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\wwwroot\\css\\dashboard.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\migrations\\20260324083319_citizentable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\migrations\\20260324083319_citizentable.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\migrations\\20260324080145_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\migrations\\20260324080145_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\services\\implementations\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\services\\implementations\\notificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -66,19 +26,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Dashboard.cshtml",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Citizen\\Dashboard.cshtml",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Views\\Citizen\\Dashboard.cshtml",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Citizen\\Dashboard.cshtml",
-              "RelativeToolTip": "WorkForceGovProject\\Views\\Citizen\\Dashboard.cshtml",
-              "ViewState": "AgIAADMAAAAAAAAAAAAiwEgAAAA7AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-24T08:16:52.794Z",
+              "DocumentIndex": 3,
+              "Title": "NotificationService.cs",
+              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Services\\Implementations\\NotificationService.cs",
+              "RelativeDocumentMoniker": "WorkForceGovProject\\Services\\Implementations\\NotificationService.cs",
+              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Services\\Implementations\\NotificationService.cs",
+              "RelativeToolTip": "WorkForceGovProject\\Services\\Implementations\\NotificationService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-27T09:00:28.546Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "INotificationService.cs",
+              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Interfaces\\INotificationService.cs",
+              "RelativeDocumentMoniker": "WorkForceGovProject\\Interfaces\\INotificationService.cs",
+              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Interfaces\\INotificationService.cs",
+              "RelativeToolTip": "WorkForceGovProject\\Interfaces\\INotificationService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-27T09:00:23.698Z",
               "EditorCaption": ""
             },
             {
@@ -89,158 +62,23 @@
               "RelativeDocumentMoniker": "WorkForceGovProject\\Controllers\\CitizenController.cs",
               "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Controllers\\CitizenController.cs",
               "RelativeToolTip": "WorkForceGovProject\\Controllers\\CitizenController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACwAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAABYAAAAAAAAAAAAgwA0AAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T08:20:35.417Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "AccountController.cs",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Controllers\\AccountController.cs",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Controllers\\AccountController.cs",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Controllers\\AccountController.cs",
-              "RelativeToolTip": "WorkForceGovProject\\Controllers\\AccountController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T07:45:22.847Z",
+              "WhenOpened": "2026-03-27T08:58:26.943Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "WorkForceGovProject\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAmwF0AAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-24T06:51:35.821Z",
+              "Title": "IRepository.cs",
+              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Interfaces\\IRepository.cs",
+              "RelativeDocumentMoniker": "WorkForceGovProject\\Interfaces\\IRepository.cs",
+              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Interfaces\\IRepository.cs",
+              "RelativeToolTip": "WorkForceGovProject\\Interfaces\\IRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-27T08:51:36.705Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Program.cs",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Program.cs",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Program.cs",
-              "RelativeToolTip": "WorkForceGovProject\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC4AAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T07:48:17.661Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "Citizen.cs",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\Citizen.cs",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Models\\Citizen.cs",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\Citizen.cs",
-              "RelativeToolTip": "WorkForceGovProject\\Models\\Citizen.cs",
-              "ViewState": "AgIAABMAAAAAAAAAAAAkwAoAAAASAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T08:18:06.852Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "ApplicationDbContext.cs",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Data\\ApplicationDbContext.cs",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Data\\ApplicationDbContext.cs",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Data\\ApplicationDbContext.cs",
-              "RelativeToolTip": "WorkForceGovProject\\Data\\ApplicationDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T08:28:22.226Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Home\\Index.cshtml",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Views\\Home\\Index.cshtml",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Home\\Index.cshtml",
-              "RelativeToolTip": "WorkForceGovProject\\Views\\Home\\Index.cshtml",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAAADgAAAAGAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-19T09:08:51.945Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "20260324083319_CitizenTable.cs",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Migrations\\20260324083319_CitizenTable.cs",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Migrations\\20260324083319_CitizenTable.cs",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Migrations\\20260324083319_CitizenTable.cs",
-              "RelativeToolTip": "WorkForceGovProject\\Migrations\\20260324083319_CitizenTable.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T08:33:19.558Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "20260324080145_initialcreate.cs",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Migrations\\20260324080145_initialcreate.cs",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Migrations\\20260324080145_initialcreate.cs",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Migrations\\20260324080145_initialcreate.cs",
-              "RelativeToolTip": "WorkForceGovProject\\Migrations\\20260324080145_initialcreate.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T08:01:45.736Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Login.cshtml",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Account\\Login.cshtml",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Views\\Account\\Login.cshtml",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Account\\Login.cshtml",
-              "RelativeToolTip": "WorkForceGovProject\\Views\\Account\\Login.cshtml",
-              "ViewState": "AgIAABEAAAAAAAAAAAAowCMAAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T12:44:01.508Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Register.cshtml",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Account\\Register.cshtml",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Views\\Account\\Register.cshtml",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Views\\Account\\Register.cshtml",
-              "RelativeToolTip": "WorkForceGovProject\\Views\\Account\\Register.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADIAAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-23T12:41:27.165Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "Dashboard.css",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\wwwroot\\css\\Dashboard.css",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\wwwroot\\css\\Dashboard.css",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\wwwroot\\css\\Dashboard.css",
-              "RelativeToolTip": "WorkForceGovProject\\wwwroot\\css\\Dashboard.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-03-19T09:08:36.991Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "site.css",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\wwwroot\\css\\site.css",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\wwwroot\\css\\site.css",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\wwwroot\\css\\site.css",
-              "RelativeToolTip": "WorkForceGovProject\\wwwroot\\css\\site.css",
-              "ViewState": "AgIAABUBAAAAAAAAAIBJwCwBAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-03-23T12:27:11.51Z"
             }
           ]
         }

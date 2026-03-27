@@ -1,0 +1,318 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Data;
+using WorkForceGovProject.Models;
+using System.Linq;
+
+namespace WorkForceGovProject.Controllers
+{
+    public class CitizenController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public CitizenController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // Helper method to get logged-in citizen
+        private Citizen GetLoggedInCitizen()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return null;
+            return _context.Citizens.FirstOrDefault(c => c.UserId == userId);
+        }
+
+        // 1. DASHBOARD ACTION
+        public IActionResult Dashboard()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            var citizen = _context.Citizens.FirstOrDefault(c => c.UserId == userId);
+
+            if (citizen == null)
+            {
+                citizen = new Citizen
+                {
+                    UserId = userId.Value,
+                    FullName = HttpContext.Session.GetString("UserName") ?? "Citizen User",
+                    Email = HttpContext.Session.GetString("UserEmail") ?? "",
+                    ActiveApplications = 0,
+                    AccountBalance = 0.00m,
+                    DocumentStatus = "Pending",
+                    NewJobMatches = 0
+                };
+
+                _context.Citizens.Add(citizen);
+                _context.SaveChanges();
+            }
+
+            // Update counts dynamically
+            citizen.ActiveApplications = _context.Applications.Count(a => a.CitizenId == citizen.Id && a.Status == "Pending");
+            citizen.NewJobMatches = _context.JobOpenings.Count(j => j.Status == "Open");
+
+            return View(citizen);
+        }
+
+        // 2. PROFILE ACTION
+        public IActionResult Profile()
+        {
+            var citizen = GetLoggedInCitizen();
+            if (citizen == null) return RedirectToAction("Login", "Account");
+
+            return View(citizen);
+        }
+
+        // 3. UPDATE PROFILE ACTION
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateProfile(Citizen model)
+        {
+            var citizenInDb = _context.Citizens.FirstOrDefault(c => c.Id == model.Id);
+
+            if (citizenInDb != null)
+            {
+                citizenInDb.FullName = model.FullName;
+                citizenInDb.Address = model.Address;
+                citizenInDb.Gender = model.Gender;
+                citizenInDb.DOB = model.DOB;
+                citizenInDb.PhoneNumber = model.PhoneNumber;
+
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Profile updated successfully!";
+            }
+
+            return RedirectToAction("Profile");
+        }
+
+        // 4. DOCUMENT UPLOAD PAGE
+        public IActionResult Documents()
+        {
+            var citizen = GetLoggedInCitizen();
+            if (citizen == null) return RedirectToAction("Login", "Account");
+
+            var documents = _context.CitizenDocuments
+                .Where(d => d.CitizenId == citizen.Id)
+                .ToList();
+
+            return View(documents);
+        }
+
+        // 5. UPLOAD DOCUMENT POST ACTION
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadDocument(IFormFile file, string documentType)
+        {
+            var citizen = GetLoggedInCitizen();
+            if (citizen == null) return RedirectToAction("Login", "Account");
+
+            if (file == null || file.Length == 0)
+            {
+                TempData["ErrorMessage"] = "Please select a file to upload.";
+                return RedirectToAction("Documents");
+            }
+
+            try
+            {
+                // Save file to wwwroot/documents folder
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "documents");
+                Directory.CreateDirectory(uploadsFolder);
+
+                string fileName = $"{citizen.Id}_{documentType}_{DateTime.Now.Ticks}{Path.GetExtension(file.FileName)}";
+                string filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                var document = new CitizenDocument
+                {
+                    CitizenId = citizen.Id,
+                    DocumentType = documentType,
+                    FileName = file.FileName,
+                    FilePath = $"/documents/{fileName}",
+                    UploadedDate = DateTime.Now,
+                    VerificationStatus = "Pending"
+                };
+
+                _context.CitizenDocuments.Add(document);
+                _context.SaveChanges();
+
+                TempData["SuccessMessage"] = "Document uploaded successfully! Pending verification.";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error uploading document: {ex.Message}";
+            }
+
+            return RedirectToAction("Documents");
+        }
+
+        // 6. DELETE DOCUMENT
+        [HttpPost]
+        public IActionResult DeleteDocument(int id)
+        {
+            var document = _context.CitizenDocuments.FirstOrDefault(d => d.Id == id);
+            if (document != null && document.VerificationStatus == "Pending")
+            {
+                _context.CitizenDocuments.Remove(document);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Document deleted successfully.";
+            }
+
+            return RedirectToAction("Documents");
+        }
+
+        // 7. JOB SEARCH PAGE
+        public IActionResult JobSearch(string location = "", string category = "")
+        {
+            var citizen = GetLoggedInCitizen();
+            if (citizen == null) return RedirectToAction("Login", "Account");
+
+            var jobs = _context.JobOpenings
+                .Where(j => j.Status == "Open")
+                .ToList();
+
+            if (!string.IsNullOrEmpty(location))
+            {
+                jobs = jobs.Where(j => j.Location.Contains(location, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(category))
+            {
+                jobs = jobs.Where(j => j.JobCategory == category).ToList();
+            }
+
+            return View(jobs);
+        }
+
+        // 8. JOB APPLICATION PAGE
+        public IActionResult JobApplications()
+        {
+            var citizen = GetLoggedInCitizen();
+            if (citizen == null) return RedirectToAction("Login", "Account");
+
+            var applications = _context.Applications
+                .Include(a => a.JobOpening)
+                .Where(a => a.CitizenId == citizen.Id)
+                .OrderByDescending(a => a.SubmittedDate)
+                .ToList();
+
+            return View(applications);
+        }
+
+        // 9. APPLY FOR JOB
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ApplyForJob(int jobId, string coverLetter = "")
+        {
+            var citizen = GetLoggedInCitizen();
+            if (citizen == null) return RedirectToAction("Login", "Account");
+
+            // Check if already applied
+            var existingApplication = _context.Applications
+                .FirstOrDefault(a => a.CitizenId == citizen.Id && a.JobOpeningId == jobId);
+
+            if (existingApplication != null)
+            {
+                TempData["ErrorMessage"] = "You have already applied for this job.";
+                return RedirectToAction("JobSearch");
+            }
+
+            var application = new Application
+            {
+                CitizenId = citizen.Id,
+                JobOpeningId = jobId,
+                SubmittedDate = DateTime.Now,
+                Status = "Pending",
+                CoverLetter = coverLetter
+            };
+
+            _context.Applications.Add(application);
+
+            // Update job total applications count
+            var job = _context.JobOpenings.FirstOrDefault(j => j.Id == jobId);
+            if (job != null) job.TotalApplications++;
+
+            // Create notification
+            var notification = new Notification
+            {
+                UserId = citizen.UserId,
+                Message = $"Your application for '{job?.JobTitle}' has been submitted successfully.",
+                Category = "JobApplication",
+                EntityId = application.Id,
+                EntityType = "Application",
+                CreatedDate = DateTime.Now,
+                IsRead = false
+            };
+
+            _context.Notifications.Add(notification);
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Application submitted successfully!";
+            return RedirectToAction("JobApplications");
+        }
+
+        // 10. WITHDRAW APPLICATION
+        [HttpPost]
+        public IActionResult WithdrawApplication(int applicationId)
+        {
+            var application = _context.Applications.FirstOrDefault(a => a.Id == applicationId);
+            var citizen = GetLoggedInCitizen();
+
+            if (application != null && application.CitizenId == citizen.Id && application.Status == "Pending")
+            {
+                application.Status = "Withdrawn";
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Application withdrawn successfully.";
+            }
+
+            return RedirectToAction("JobApplications");
+        }
+
+        // 11. BENEFITS PAGE
+        public IActionResult Benefits()
+        {
+            var citizen = GetLoggedInCitizen();
+            if (citizen == null) return RedirectToAction("Login", "Account");
+
+            var benefits = _context.Benefits
+                .Include(b => b.Program)
+                .Where(b => b.CitizenId == citizen.Id)
+                .ToList();
+
+            return View(benefits);
+        }
+
+        // 12. NOTIFICATIONS PAGE
+        public IActionResult Notifications()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            var notifications = _context.Notifications
+                .Where(n => n.UserId == userId)
+                .OrderByDescending(n => n.CreatedDate)
+                .ToList();
+
+            return View(notifications);
+        }
+
+        // 13. MARK NOTIFICATION AS READ
+        [HttpPost]
+        public IActionResult MarkNotificationAsRead(int notificationId)
+        {
+            var notification = _context.Notifications.FirstOrDefault(n => n.Id == notificationId);
+            if (notification != null)
+            {
+                notification.IsRead = true;
+                _context.SaveChanges();
+            }
+
+            return Json(new { success = true });
+        }
+    }
+}
