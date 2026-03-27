@@ -1,0 +1,18 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Document Service Interface
+    /// Defines operations for citizen document management
+    /// </summary>
+    public interface IDocumentService
+    {
+        Task<CitizenDocument> GetDocumentByIdAsync(int id);
+        Task<IEnumerable<CitizenDocument>> GetCitizenDocumentsAsync(int citizenId);
+        Task<(bool Success, string Message, CitizenDocument Document)> UploadDocumentAsync(int citizenId, string documentType, IFormFile file);
+        Task<(bool Success, string Message)> DeleteDocumentAsync(int documentId);
+        Task<(bool Success, string Message)> VerifyDocumentAsync(int documentId);
+        Task<(bool Success, string Message)> RejectDocumentAsync(int documentId, string reason);
+    }
+}

@@ -1,0 +1,17 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Notification Repository Interface
+    /// Defines specific operations for Notification entity
+    /// </summary>
+    public interface INotificationRepository : IRepository<Notification>
+    {
+        Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId);
+        Task<IEnumerable<Notification>> GetUnreadNotificationsAsync(int userId);
+        Task<int> GetUnreadCountAsync(int userId);
+        Task<IEnumerable<Notification>> GetNotificationsByCategoryAsync(int userId, string category);
+        Task<bool> MarkAsReadAsync(int notificationId);
+    }
+}

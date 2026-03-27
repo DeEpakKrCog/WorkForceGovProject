@@ -1,0 +1,16 @@
+﻿namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Account Service Interface
+    /// Defines operations for account management
+    /// </summary>
+    public interface IAccountService
+    {
+        Task<(bool Success, string Message)> RegisterAsync(string email, string password, string fullName);
+        Task<(bool Success, string Message, int UserId)> LoginAsync(string email, string password);
+        Task<bool> VerifyPasswordAsync(string email, string password);
+        Task<(bool Success, string Message)> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
+        Task<(bool Success, string Message)> ForgotPasswordAsync(string email);
+        Task<(bool Success, string Message)> ResetPasswordAsync(string email, string token, string newPassword);
+    }
+}

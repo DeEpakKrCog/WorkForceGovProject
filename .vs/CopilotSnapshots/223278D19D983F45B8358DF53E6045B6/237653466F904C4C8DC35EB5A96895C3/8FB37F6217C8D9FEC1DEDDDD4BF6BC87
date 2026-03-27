@@ -1,0 +1,15 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Job Repository Interface
+    /// Defines specific operations for JobOpening entity
+    /// </summary>
+    public interface IJobRepository : IRepository<JobOpening>
+    {
+        Task<IEnumerable<JobOpening>> GetOpenJobsAsync();
+        Task<IEnumerable<JobOpening>> GetJobsByTitleAsync(string title);
+        Task<int> GetOpenJobsCountAsync();
+    }
+}

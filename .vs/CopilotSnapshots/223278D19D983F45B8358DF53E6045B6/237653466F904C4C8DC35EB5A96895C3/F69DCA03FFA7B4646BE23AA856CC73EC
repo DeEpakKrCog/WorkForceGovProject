@@ -1,0 +1,17 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Account Service Interface
+    /// Defines operations for account management
+    /// </summary>
+    public interface IAccountService
+    {
+        Task<(bool Success, string Message, User User)> LoginAsync(string email, string password);
+        Task<(bool Success, string Message)> RegisterAsync(User user);
+        Task<(bool Success, string Message)> LogoutAsync();
+        Task<User> GetUserByIdAsync(int userId);
+        Task<User> GetUserByEmailAsync(string email);
+    }
+}

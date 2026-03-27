@@ -1,0 +1,18 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Notification Service Interface
+    /// Defines operations for notification management
+    /// </summary>
+    public interface INotificationService
+    {
+        Task<Notification> GetNotificationByIdAsync(int notificationId);
+        Task<IEnumerable<Notification>> GetNotificationsByCitizenAsync(int citizenId);
+        Task<int> GetUnreadNotificationCountAsync(int citizenId);
+        Task<(bool Success, string Message)> CreateNotificationAsync(int citizenId, string title, string message);
+        Task<(bool Success, string Message)> MarkAsReadAsync(int notificationId);
+        Task<(bool Success, string Message)> DeleteNotificationAsync(int notificationId);
+    }
+}

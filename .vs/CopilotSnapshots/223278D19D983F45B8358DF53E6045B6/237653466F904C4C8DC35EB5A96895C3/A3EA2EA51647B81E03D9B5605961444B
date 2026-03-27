@@ -1,0 +1,19 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Job Service Interface
+    /// Defines operations for job board management
+    /// </summary>
+    public interface IJobService
+    {
+        Task<JobOpening> GetJobByIdAsync(int jobId);
+        Task<IEnumerable<JobOpening>> GetAllJobsAsync();
+        Task<IEnumerable<JobOpening>> SearchJobsAsync(string keyword, string location);
+        Task<int> GetOpenJobsCountAsync();
+        Task<(bool Success, string Message)> PostJobAsync(JobOpening job);
+        Task<(bool Success, string Message)> UpdateJobAsync(JobOpening job);
+        Task<(bool Success, string Message)> CloseJobAsync(int jobId);
+    }
+}

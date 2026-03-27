@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WorkForceGovProject.Data;
-using WorkForceGovProject.Interfaces;
-using WorkForceGovProject.Repositories.Implementations;
-using WorkForceGovProject.Services.Implementations;
+using WorkForceGovProject.Repositories;
+using WorkForceGovProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

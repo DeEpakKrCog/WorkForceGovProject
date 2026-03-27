@@ -1,0 +1,26 @@
+﻿using System.Linq.Expressions;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Generic Repository Interface
+    /// Defines common CRUD operations for all entities
+    /// </summary>
+    public interface IRepository<T> where T : class
+    {
+        // Read Operations
+        Task<T> GetByIdAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+        Task<int> CountAsync();
+
+        // Write Operations
+        Task<T> AddAsync(T entity);
+        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
+        Task<T> UpdateAsync(T entity);
+        Task<bool> DeleteAsync(T entity);
+        Task<bool> DeleteRangeAsync(IEnumerable<T> entities);
+    }
+}
