@@ -1,0 +1,15 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Application Repository Interface
+    /// Defines specific operations for Application entity
+    /// </summary>
+    public interface IApplicationRepository : IRepository<Application>
+    {
+        Task<IEnumerable<Application>> GetApplicationsByCitizenAsync(int citizenId);
+        Task<int> GetApplicationCountByCitizenAsync(int citizenId);
+        Task<Application> GetApplicationByIdWithDetailsAsync(int applicationId);
+    }
+}

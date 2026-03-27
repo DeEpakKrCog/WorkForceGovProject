@@ -1,0 +1,14 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// User Repository Interface
+    /// Defines specific operations for User entity
+    /// </summary>
+    public interface IUserRepository : IRepository<User>
+    {
+        Task<User> GetUserByEmailAsync(string email);
+        Task<User> GetUserWithCitizenAsync(int userId);
+    }
+}

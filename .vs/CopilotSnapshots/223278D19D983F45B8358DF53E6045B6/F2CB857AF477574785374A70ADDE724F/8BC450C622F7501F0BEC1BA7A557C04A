@@ -1,0 +1,81 @@
+﻿using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Data;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Interfaces;
+
+namespace WorkForceGovProject.Repositories.Implementations
+{
+    /// <summary>
+    /// Notification Repository Implementation
+    /// Handles notification data operations
+    /// </summary>
+    public class NotificationRepository : Repository<Notification>, INotificationRepository
+    {
+        public NotificationRepository(ApplicationDbContext context) : base(context) { }
+
+        public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId)
+        {
+            return await _dbSet
+                .Where(n => n.UserId == userId)
+                .OrderByDescending(n => n.CreatedDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Notification>> GetUnreadNotificationsAsync(int userId)
+        {
+            return await _dbSet
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .OrderByDescending(n => n.CreatedDate)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetUnreadCountAsync(int userId)
+        {
+            return await _dbSet.CountAsync(n => n.UserId == userId && !n.IsRead);
+        }
+
+        public async Task<IEnumerable<Notification>> GetNotificationsByCategoryAsync(int userId, string category)
+        {
+            return await _dbSet
+                .Where(n => n.UserId == userId && n.Category == category)
+                .OrderByDescending(n => n.CreatedDate)
+                .ToListAsync();
+        }
+
+        public async Task<bool> MarkAsReadAsync(int notificationId)
+        {
+            var notification = await _dbSet.FindAsync(notificationId);
+            if (notification == null) return false;
+
+            notification.IsRead = true;
+            return true;
+        }
+
+        public async Task<bool> MarkAllAsReadAsync(int userId)
+        {
+            var notifications = await _dbSet
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .ToListAsync();
+
+            if (!notifications.Any()) return false;
+
+            foreach (var notification in notifications)
+                notification.IsRead = true;
+
+            return true;
+        }
+
+        public async Task<bool> DeleteOldNotificationsAsync(int daysOld)
+        {
+            var cutoffDate = DateTime.Now.AddDays(-daysOld);
+            var oldNotifications = await _dbSet
+                .Where(n => n.CreatedDate < cutoffDate)
+                .ToListAsync();
+
+            if (!oldNotifications.Any()) return false;
+
+            _dbSet.RemoveRange(oldNotifications);
+            return true;
+        }
+    }
+}

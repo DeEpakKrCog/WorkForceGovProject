@@ -1,0 +1,18 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Application Service Interface
+    /// Defines operations for job applications
+    /// </summary>
+    public interface IApplicationService
+    {
+        Task<Application> GetApplicationByIdAsync(int applicationId);
+        Task<IEnumerable<Application>> GetApplicationsByCitizenAsync(int citizenId);
+        Task<int> GetApplicationCountByCitizenAsync(int citizenId);
+        Task<(bool Success, string Message)> SubmitApplicationAsync(int citizenId, int jobId);
+        Task<(bool Success, string Message)> UpdateApplicationStatusAsync(int applicationId, string status);
+        Task<(bool Success, string Message)> WithdrawApplicationAsync(int applicationId);
+    }
+}

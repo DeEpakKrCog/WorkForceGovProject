@@ -1,0 +1,261 @@
+﻿using WorkForceGovProject.Models;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Interfaces;
+
+namespace WorkForceGovProject.Services.Implementations
+{
+    /// <summary>
+    /// Document Service Implementation
+    /// Handles document operations
+    /// </summary>
+    public class DocumentService : IDocumentService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<DocumentService> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private const string UploadFolder = "documents";
+        private const long MaxFileSize = 5242880; // 5 MB
+        private readonly string[] AllowedExtensions = { ".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png" };
+
+        public DocumentService(IUnitOfWork unitOfWork, ILogger<DocumentService> logger, IWebHostEnvironment webHostEnvironment)
+        {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
+        }
+
+        public async Task<CitizenDocument> GetDocumentByIdAsync(int id)
+        {
+            return await _unitOfWork.CitizenDocuments.GetByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<CitizenDocument>> GetCitizenDocumentsAsync(int citizenId)
+        {
+            return await _unitOfWork.CitizenDocuments.FindAsync(d => d.CitizenId == citizenId);
+        }
+
+        public async Task<(bool Success, string Message, CitizenDocument Document)> UploadDocumentAsync(int citizenId, string documentType, IFormFile file)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                    return (false, "No file provided.", null);
+
+                if (file.Length > MaxFileSize)
+                    return (false, "File size exceeds maximum limit of 5 MB.", null);
+
+                var extension = Path.GetExtension(file.FileName).ToLower();
+                if (!AllowedExtensions.Contains(extension))
+                    return (false, $"File type {extension} is not allowed.", null);
+
+                var citizen = await _unitOfWork.Citizens.GetByIdAsync(citizenId);
+                if (citizen == null)
+                    return (false, "Citizen not found.", null);
+
+                var filePath = await SaveFileAsync(file, citizenId, documentType);
+
+                var document = new CitizenDocument
+                {
+                    CitizenId = citizenId,
+                    DocumentType = documentType,
+                    FileName = file.FileName,
+                    FilePath = filePath,
+                    UploadedDate = DateTime.Now,
+                    VerificationStatus = "Pending"
+                };
+
+                await _unitOfWork.CitizenDocuments.AddAsync(document);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                if (saved)
+                {
+                    _logger.LogInformation($"Document uploaded for citizen {citizenId}: {documentType}");
+                    return (true, "Document uploaded successfully.", document);
+                }
+
+                return (false, "Failed to save document information.", null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Upload document error: {ex.Message}");
+                return (false, "An error occurred while uploading document.", null);
+            }
+        }
+
+        public async Task<(bool Success, string Message)> DeleteDocumentAsync(int documentId)
+        {
+            try
+            {
+                var document = await GetDocumentByIdAsync(documentId);
+                if (document == null)
+                    return (false, "Document not found.");
+
+                if (document.VerificationStatus != "Pending")
+                    return (false, "Can only delete pending documents.");
+
+                await DeleteFileAsync(document.FilePath);
+                await _unitOfWork.CitizenDocuments.DeleteAsync(document);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                return saved ? (true, "Document deleted successfully.") : (false, "Failed to delete document.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Delete document error: {ex.Message}");
+                return (false, "An error occurred while deleting document.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> VerifyDocumentAsync(int documentId)
+        {
+            try
+            {
+                var document = await GetDocumentByIdAsync(documentId);
+                if (document == null)
+                    return (false, "Document not found.");
+
+                document.VerificationStatus = "Verified";
+                document.VerificationDate = DateTime.Now;
+
+                await _unitOfWork.CitizenDocuments.UpdateAsync(document);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                return saved ? (true, "Document verified successfully.") : (false, "Failed to verify document.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Verify document error: {ex.Message}");
+                return (false, "An error occurred while verifying document.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> RejectDocumentAsync(int documentId, string reason)
+        {
+            try
+            {
+                var document = await GetDocumentByIdAsync(documentId);
+                if (document == null)
+                    return (false, "Document not found.");
+
+                document.VerificationStatus = "Rejected";
+                document.RejectionReason = reason;
+                document.VerificationDate = DateTime.Now;
+
+                await _unitOfWork.CitizenDocuments.UpdateAsync(document);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                return saved ? (true, "Document rejected successfully.") : (false, "Failed to reject document.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Reject document error: {ex.Message}");
+                return (false, "An error occurred while rejecting document.");
+            }
+        }
+
+        public async Task<IEnumerable<CitizenDocument>> GetPendingVerificationAsync()
+        {
+            return await _unitOfWork.CitizenDocuments.FindAsync(d => d.VerificationStatus == "Pending");
+        }
+
+        public async Task<string> GetDocumentVerificationStatusAsync(int citizenId)
+        {
+            var documents = await GetCitizenDocumentsAsync(citizenId);
+            if (!documents.Any())
+                return "No documents";
+
+            var pendingCount = documents.Count(d => d.VerificationStatus == "Pending");
+            var verifiedCount = documents.Count(d => d.VerificationStatus == "Verified");
+            var rejectedCount = documents.Count(d => d.VerificationStatus == "Rejected");
+
+            if (verifiedCount == documents.Count())
+                return "All Verified";
+            if (rejectedCount > 0)
+                return "Partial - Some Rejected";
+            if (pendingCount > 0)
+                return "Pending Review";
+
+            return "Unknown";
+        }
+
+        public async Task<int> GetDocumentCountAsync(int citizenId)
+        {
+            return await _unitOfWork.CitizenDocuments.CountAsync(d => d.CitizenId == citizenId);
+        }
+
+        public async Task<int> GetVerifiedDocumentCountAsync(int citizenId)
+        {
+            return await _unitOfWork.CitizenDocuments.CountAsync(d => d.CitizenId == citizenId && d.VerificationStatus == "Verified");
+        }
+
+        public async Task<string> SaveFileAsync(IFormFile file, int citizenId, string documentType)
+        {
+            try
+            {
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, UploadFolder);
+                
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{citizenId}_{documentType}_{DateTime.Now.Ticks}{Path.GetExtension(file.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                return $"/{UploadFolder}/{fileName}";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Save file error: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteFileAsync(string filePath)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(filePath))
+                    return false;
+
+                var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, filePath.TrimStart('/'));
+                
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                    return await Task.FromResult(true);
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Delete file error: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<byte[]> GetFileAsync(string filePath)
+        {
+            try
+            {
+                var fullPath = Path.Combine(_webHostEnvironment.WebRootPath, filePath.TrimStart('/'));
+                
+                if (File.Exists(fullPath))
+                {
+                    return await File.ReadAllBytesAsync(fullPath);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Get file error: {ex.Message}");
+                return null;
+            }
+        }
+    }
+}

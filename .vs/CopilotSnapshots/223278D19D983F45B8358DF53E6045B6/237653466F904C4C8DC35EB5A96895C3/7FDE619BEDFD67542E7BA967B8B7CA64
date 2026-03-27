@@ -1,0 +1,17 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    /// <summary>
+    /// Benefit Service Interface
+    /// Defines operations for benefit management
+    /// </summary>
+    public interface IBenefitService
+    {
+        Task<Benefit> GetBenefitByIdAsync(int benefitId);
+        Task<IEnumerable<Benefit>> GetBenefitsByCitizenAsync(int citizenId);
+        Task<(bool Success, string Message)> ApplyForBenefitAsync(int citizenId, int benefitId);
+        Task<(bool Success, string Message)> UpdateBenefitStatusAsync(int benefitId, string status);
+        Task<decimal> CalculateBenefitAmountAsync(int citizenId, int benefitId);
+    }
+}
