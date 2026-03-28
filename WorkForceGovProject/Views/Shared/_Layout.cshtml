@@ -5,67 +5,181 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WorkForceGov</title>
+    
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <style>
+            /* Modern Sidebar Styling */
+            .sidebar {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                z-index: 100;
+                padding: 48px 0 0;
+                box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            }
+
+                .sidebar .nav-link {
+                    font-weight: 500;
+                    color: #333;
+                    padding: 10px 20px;
+                    border-radius: 0 25px 25px 0;
+                    margin-right: 10px;
+                }
+
+                    .sidebar .nav-link:hover {
+                        background-color: #f0f2f5;
+                        color: #00274d;
+                    }
+
+                    .sidebar .nav-link.active {
+                        color: #fff;
+                        background-color: #0d6efd;
+                    }
+
+            .navbar-brand {
+                font-size: 1.25rem;
+                letter-spacing: 1px;
+            }
+
+            main {
+                padding-top: 20px;
+            }
+
+            /* Adjust main content when sidebar is present */
+            @@media (min-width: 768px) {
+                .main-content-shifted {
+                    margin-left: 16.666667%; /* Matches col-md-2 */
+                }
+            }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top border-bottom shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">WorkForceGov</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-bold text-warning" asp-area="" asp-controller="Home" asp-action="Index">
+                    🏛️ WORKFORCE GOV
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Public Home</a>
                         </li>
                     </ul>
-                    <ul class="navbar-nav">
-                        @{
-                            // These methods require 'using Microsoft.AspNetCore.Http'
-                            var userId = Context.Session.GetInt32("UserId");
-                            var userName = Context.Session.GetString("UserName");
-                        }
 
-                        @if (userId != null)
+                    <div class="d-flex align-items-center">
+                        @if (Context.Session.GetInt32("UserId") != null)
                         {
-                            <li class="nav-item ms-lg-3 d-flex align-items-center">
-                                <span class="text-muted me-2">Welcome, <strong>@userName</strong></span>
-                                <a class="btn btn-outline-danger btn-sm" asp-controller="Account" asp-action="Logout">Logout</a>
-                            </li>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-warning dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle me-1"></i> @Context.Session.GetString("UserName")
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow">
+                                    <li><a class="dropdown-item" asp-controller="Citizen" asp-action="Profile">My Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" asp-controller="Account" asp-action="Logout">Logout</a></li>
+                                </ul>
+                            </div>
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary btn-sm ms-2" asp-controller="Account" asp-action="Register">Register</a>
-                            </li>
+                            <a class="btn btn-outline-light btn-sm me-2" asp-controller="Account" asp-action="Login">Login</a>
+                            <a class="btn btn-warning btn-sm fw-bold" asp-controller="Account" asp-action="Register">Join Now</a>
                         }
-                    </ul>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    <div class="container-fluid">
+        <div class="row">
+            @if (Context.Session.GetInt32("UserId") != null)
+            {
+                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse">
+                    <div class="position-sticky pt-4">
+                        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase small">
+                            <span>Main Menu</span>
+                        </h6>
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Citizen" asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Citizen" asp-action="JobSearch">
+                                    <i class="bi bi-search me-2"></i> Job Board
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Citizen" asp-action="Documents">
+                                    <i class="bi bi-file-earmark-text me-2"></i> Verification
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Citizen" asp-action="Benefits">
+                                    <i class="bi bi-cash-stack me-2"></i> Benefits
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - WorkForceGov - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show mt-3 shadow-sm" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mt-3 shadow-sm" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @RenderBody()
+                </main>
+            }
+            else
+            {
+                <main class="col-12 px-md-4">
+                    @if (TempData["SuccessMessage"] != null || TempData["ErrorMessage"] != null)
+                    {
+                        <div class="container mt-3" style="max-width: 800px;">
+                            @if (TempData["SuccessMessage"] != null)
+                            {
+                                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                                    @TempData["SuccessMessage"]
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            }
+                            @if (TempData["ErrorMessage"] != null)
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                                    @TempData["ErrorMessage"]
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            }
+                        </div>
+                    }
+                    @RenderBody()
+                </main>
+            }
         </div>
-    </footer>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,57 +1,138 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "National Workforce Portal";
 }
 
-<section class="py-5 text-center bg-primary text-white" style="background: linear-gradient(135deg, #2c3e50, #2980b9) !important;">
-    <div class="container py-5">
-        <h1 class="display-4 fw-bold">Empowering the Workforce</h1>
-        <p class="lead mb-4 opacity-75">A unified governance platform for job seekers, employers, and government ministries.</p>
-        <a asp-controller="Account" asp-action="Register" class="btn btn-success btn-lg px-5 fw-bold shadow">Register as Citizen</a>
+<style>
+    :root {
+        --gov-navy: #00274d;
+        --gov-gold: #ffc107;
+        --gov-blue: #0056b3;
+    }
+
+    .hero-section {
+        background: linear-gradient(rgba(0, 39, 77, 0.85), rgba(0, 39, 77, 0.85)), url('https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a?auto=format&fit=crop&q=80&w=1920');
+        background-size: cover;
+        background-position: center;
+        padding: 100px 0;
+        color: white;
+    }
+
+    .stat-box {
+        margin-top: -50px;
+        z-index: 10;
+    }
+
+    .portal-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-top: 4px solid var(--gov-navy) !important;
+    }
+
+        .portal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 1.5rem;
+        color: var(--gov-navy);
+    }
+</style>
+
+<section class="hero-section text-center">
+    <div class="container">
+        <div class="badge bg-warning text-dark mb-3 px-3 py-2 fw-bold text-uppercase">Official Government Resource</div>
+        <h1 class="display-3 fw-bold mb-3">Empowering the National Workforce</h1>
+        <p class="lead mb-5 mx-auto opacity-90" style="max-width: 800px;">
+            A unified governance platform connecting citizens, employers, and ministries to build a sustainable economic future.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-warning btn-lg px-5 fw-bold shadow">
+                <i class="bi bi-person-plus-fill me-2"></i>Register as Citizen
+            </a>
+            <a href="#actors" class="btn btn-outline-light btn-lg px-5 fw-bold">
+                Explore Portals
+            </a>
+        </div>
     </div>
 </section>
 
-<div class="container bg-white shadow-sm rounded-3 py-4 mt-n4 position-relative">
-    <div class="row text-center">
-        <div class="col-md-4">
-            <h2 class="text-primary fw-bold">250k+</h2>
-            <p class="text-muted mb-0">Users</p>
+<div class="container stat-box mb-5">
+    <div class="row text-center bg-white shadow rounded-3 py-4 g-0">
+        <div class="col-md-4 border-end">
+            <h2 class="text-primary fw-bold mb-0">250,482</h2>
+            <p class="text-muted small text-uppercase fw-bold">Active Users</p>
         </div>
-        <div class="col-md-4 border-start border-end">
-            <h2 class="text-primary fw-bold">15k+</h2>
-            <p class="text-muted mb-0">Jobs</p>
+        <div class="col-md-4 border-end">
+            <h2 class="text-primary fw-bold mb-0">15,290</h2>
+            <p class="text-muted small text-uppercase fw-bold">Live Vacancies</p>
         </div>
         <div class="col-md-4">
-            <h2 class="text-primary fw-bold">99.9%</h2>
-            <p class="text-muted mb-0">Uptime</p>
+            <h2 class="text-primary fw-bold mb-0">@DateTime.Now.Year</h2>
+            <p class="text-muted small text-uppercase fw-bold">Fiscal Year</p>
         </div>
     </div>
 </div>
 
-<div class="container my-5">
-    <h2 class="text-center mb-5 fw-bold" id="actors">Access Your Portal</h2>
-    <div class="row g-4 justify-content-center">
-        @foreach (var portal in new[] {
-            new { Role = "Citizen", Desc = "Apply for jobs and track your benefits.", Action = "Dashboard", Controller = "Citizen" },
-            new { Role = "Employer", Desc = "Post vacancies and manage your hires.", Action = "Dashboard", Controller = "Employer" },
-            new { Role = "Labor Officer", Desc = "Monitor compliance and validate applications.", Action = "Dashboard", Controller = "LaborOfficer" },
-            new { Role = "System Admin", Desc = "Manage users and system workflows.", Action = "Dashboard", Controller = "Admin" },
-            new { Role = "Program Manager", Desc = "Oversees programs and monitors budgets.", Action = "Dashboard", Controller = "ProgramManager" }
-        })
-        {
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm text-center p-4">
-                    <div class="card-body">
-                        <h3 class="card-title h4 text-dark fw-bold">@portal.Role</h3>
-                        <p class="card-text text-muted mb-4">@portal.Desc</p>
+<div class="container my-5 pb-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark" id="actors">Secure Portal Access</h2>
+        <div class="mx-auto bg-warning" style="height: 4px; width: 60px;"></div>
+        <p class="text-muted mt-3">Select your designated role to access specialized tools and services.</p>
+    </div>
 
-                        <a asp-controller="@portal.Controller"
-                               asp-action="@portal.Action"
-                               class="btn btn-outline-primary fw-bold px-4">
-                            Enter @portal.Role Portal
+    <div class="row g-4 justify-content-center">
+        @{
+            var portals = new[] {
+                new { Role = "Citizen", Icon = "bi-person-badge", Desc = "Apply for jobs, track benefits, and update your professional profile.", Action = "Dashboard", Controller = "Citizen" },
+                new { Role = "Employer", Icon = "bi-building", Desc = "Post vacancies, review applications, and manage your workforce hiring.", Action = "Dashboard", Controller = "Employer" },
+                new { Role = "Labor Officer", Icon = "bi-shield-check", Desc = "Monitor compliance, validate labor applications, and enforce regulations.", Action = "Dashboard", Controller = "LaborOfficer" },
+                new { Role = "Program Manager", Icon = "bi-briefcase", Desc = "Oversee employment programs, monitor budgets, and track performance.", Action = "Dashboard", Controller = "ProgramManager" },
+                new { Role = "System Admin", Icon = "bi-gear-fill", Desc = "Maintain system integrity, manage user roles, and audit system logs.", Action = "Dashboard", Controller = "Admin" }
+            };
+        }
+
+        @foreach (var portal in portals)
+        {
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm text-center p-4 portal-card">
+                    <div class="card-body">
+                        <div class="icon-circle shadow-sm">
+                            <i class="bi @portal.Icon"></i>
+                        </div>
+                        <h3 class="card-title h4 text-dark fw-bold mb-3">@portal.Role</h3>
+                        <p class="card-text text-muted mb-4 small">@portal.Desc</p>
+                        <a asp-controller="@portal.Controller" asp-action="@portal.Action"
+                               class="btn btn-primary w-100 fw-bold py-2">
+                            Enter @portal.Role Portal <i class="bi bi-arrow-right ms-2"></i>
                         </a>
                     </div>
                 </div>
             </div>
         }
+    </div>
+</div>
+
+<div class="bg-light py-5 border-top">
+    <div class="container text-center">
+        <h5 class="fw-bold mb-4">Need Assistance?</h5>
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <i class="bi bi-telephone text-primary me-2"></i> 1-800-GOV-HELP
+            </div>
+            <div class="col-md-3">
+                <i class="bi bi-envelope text-primary me-2"></i> support@workforce.gov
+            </div>
+            <div class="col-md-3">
+                <i class="bi bi-geo-alt text-primary me-2"></i> Ministry of Labor HQ
+            </div>
+        </div>
     </div>
 </div>

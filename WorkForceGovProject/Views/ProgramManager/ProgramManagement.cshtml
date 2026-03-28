@@ -47,8 +47,6 @@
                             <tr>
                                 <th class="px-4 py-3">Program ID</th>
                                 <th class="py-3">Title</th>
-                                <th class="py-3">Start Date</th>
-                                <th class="py-3">End Date</th>
                                 <th class="py-3">Budget</th>
                                 <th class="py-3">Status</th>
                                 <th class="py-3 text-center">Actions</th>
@@ -61,37 +59,18 @@
                                     <td class="px-4 py-3 fw-bold text-primary">#@program.ProgramID</td>
                                     <td class="py-3">
                                         <div class="fw-bold text-dark">@program.Title</div>
-                                        <small class="text-muted">@(program.Description.Length > 50 ? program.Description.Substring(0, 50) + "..." : program.Description)</small>
+                                        <small class="text-muted">
+                                            @(program.Description?.Length > 50 ? program.Description.Substring(0, 50) + "..." : program.Description ?? "No description")
+                                        </small>
                                     </td>
-                                    <td class="py-3">@program.StartDate.ToString("MMM dd, yyyy")</td>
-                                    <td class="py-3">@program.EndDate.ToString("MMM dd, yyyy")</td>
                                     <td class="py-3 fw-bold">@program.Budget.ToString("C")</td>
                                     <td class="py-3">
-                                        @if (program.Status == "Active")
-                                        {
-                                            <span class="badge bg-success">Active</span>
-                                        }
-                                        else if (program.Status == "Inactive")
-                                        {
-                                            <span class="badge bg-secondary">Inactive</span>
-                                        }
-                                        else if (program.Status == "Completed")
-                                        {
-                                            <span class="badge bg-info">Completed</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-warning">@program.Status</span>
-                                        }
+                                        <span class="badge @(program.Status == "Active" ? "bg-success" : "bg-secondary")">@program.Status</span>
                                     </td>
                                     <td class="py-3 text-center">
-                                        <div class="btn-group" role="group">
-                                            <a asp-action="EditProgram" asp-controller="ProgramManager" asp-route-id="@program.ProgramID" 
-                                               class="btn btn-sm btn-outline-primary" title="Edit">
-                                                <i class="bi bi-pencil"></i> Edit
-                                            </a>
-                                            <a asp-action="DeleteProgram" asp-controller="ProgramManager" asp-route-id="@program.ProgramID" 
-                                               class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <div class="btn-group">
+                                            <a asp-action="EditProgram" asp-controller="ProgramManager" asp-route-id="@program.ProgramID" class="btn btn-sm btn-outline-primary">Edit</a>
+                                            <a asp-action="DeleteProgram" asp-controller="ProgramManager" asp-route-id="@program.ProgramID" class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i> Delete
                                             </a>
                                         </div>
@@ -102,51 +81,6 @@
                     </table>
                 </div>
             }
-            else
-            {
-                <div class="text-center py-5">
-                    <div class="mb-4">
-                        <i class="bi bi-folder-x" style="font-size: 4rem; color: #cbd5e1;"></i>
-                    </div>
-                    <h4 class="text-muted mb-3">No Programs Found</h4>
-                    <p class="text-muted mb-4">You haven't created any employment programs yet.</p>
-                    <a asp-action="CreateProgram" asp-controller="ProgramManager" class="btn btn-primary px-4">
-                        <i class="bi bi-plus-circle"></i> Create Your First Program
-                    </a>
-                </div>
-            }
         </div>
-
-        @if (Model != null && Model.Any())
-        {
-            <div class="mt-4">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <small class="text-uppercase text-muted fw-bold">Total Programs</small>
-                            <p class="h4 mb-0 mt-2 fw-bold text-dark">@Model.Count()</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <small class="text-uppercase text-muted fw-bold">Active Programs</small>
-                            <p class="h4 mb-0 mt-2 fw-bold text-success">@Model.Count(p => p.Status == "Active")</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <small class="text-uppercase text-muted fw-bold">Total Budget</small>
-                            <p class="h4 mb-0 mt-2 fw-bold text-primary">@Model.Sum(p => p.Budget).ToString("C")</p>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <small class="text-uppercase text-muted fw-bold">Avg. Budget</small>
-                            <p class="h4 mb-0 mt-2 fw-bold text-info">@Model.Average(p => p.Budget).ToString("C")</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
 </div>

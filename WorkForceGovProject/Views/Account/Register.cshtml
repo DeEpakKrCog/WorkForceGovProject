@@ -4,47 +4,47 @@
 }
 
 <section class="container d-flex align-items-center justify-content-center py-5" style="min-height: 80vh;">
-    <div class="card shadow border-0 p-4" style="max-width: 450px; width: 100%; border-top: 5px solid #2980b9 !important;">
+    <div class="card shadow border-0 p-4" style="max-width: 450px; width: 100%; border-top: 5px solid #00274d !important;">
         <div class="text-center mb-4">
-            <h2 class="fw-bold text-dark">Join WorkForceGov</h2>
-            <p class="text-muted small">Create your account to get started.</p>
+            <h2 class="fw-bold text-dark">Create Account</h2>
+            <p class="text-muted small">Join the National Workforce Platform</p>
         </div>
 
         <form asp-action="Register" method="post">
             <div class="mb-3">
-                <label asp-for="FullName" class="form-label fw-semibold"></label>
-                <input asp-for="FullName" class="form-control" placeholder="e.g. John Doe" required />
+                <label asp-for="FullName" class="form-label fw-semibold">Full Name</label>
+                <input asp-for="FullName" class="form-control" placeholder="John Doe" required />
                 <span asp-validation-for="FullName" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Email" class="form-label fw-semibold"></label>
-                <input asp-for="Email" class="form-control" placeholder="john@example.com" required />
+                <label asp-for="Email" class="form-label fw-semibold">Email</label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="john@gov.com" required />
                 <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Password" class="form-label fw-semibold"></label>
+                <label asp-for="Password" class="form-label fw-semibold">Password</label>
                 <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" required />
                 <span asp-validation-for="Password" class="text-danger small"></span>
             </div>
 
             <div class="mb-4">
-                <label asp-for="Role" class="form-label fw-semibold">Register As</label>
+                <label asp-for="Role" class="form-label fw-semibold">Account Type</label>
                 <select asp-for="Role" class="form-select" required>
-                    <option value="">-- Select Role --</option>
-                    <option value="Citizen">Citizen</option>
-                    <option value="Employer">Employer</option>
+                    <option value="">-- Choose Role --</option>
+                    <option value="Citizen">Citizen (Job Seeker)</option>
+                    <option value="Employer">Employer (Hiring)</option>
                     <option value="LaborOfficer">Labor Officer</option>
-                    <option value="Admin">System Admin</option>
                 </select>
+                <span asp-validation-for="Role" class="text-danger small"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mb-3">Create Account</button>
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mb-3 shadow-sm">Register Now</button>
             
             <div class="text-center small">
                 <span class="text-muted">Already have an account?</span>
-                <a asp-action="Login" class="text-decoration-none fw-bold">Sign In</a>
+                <a asp-action="Login" class="text-decoration-none fw-bold text-primary">Sign In</a>
             </div>
         </form>
     </div>

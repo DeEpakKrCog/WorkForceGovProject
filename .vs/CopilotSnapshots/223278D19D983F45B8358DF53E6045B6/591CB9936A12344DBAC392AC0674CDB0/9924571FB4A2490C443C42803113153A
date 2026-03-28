@@ -1,19 +1,41 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using WorkForceGovProject.Data;
 using WorkForceGovProject.Repositories;
 using WorkForceGovProject.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+// Find the project root by searching for Views folder
+static string FindProjectRoot()
+{
+    var currentDir = AppContext.BaseDirectory;
+
+    // Search up from bin\Debug\net10.0 to find the project root
+    while (!Directory.Exists(Path.Combine(currentDir, "Views")))
+    {
+        var parent = Directory.GetParent(currentDir);
+        if (parent == null)
+            throw new InvalidOperationException("Could not find project root directory with Views folder");
+        currentDir = parent.FullName;
+    }
+
+    return currentDir;
+}
+
+var projectRoot = FindProjectRoot();
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    ContentRootPath = projectRoot,
+    Args = args
+});
 
 // 1. Database Configuration
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. MVC + Runtime Compilation (Requires NuGet: Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation)
+// 2. MVC and Razor Runtime Compilation
 builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation();
 
-// 3. Dependency Injection - Repositories
+// 3. Repository Layer - Dependency Injection
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -22,7 +44,7 @@ builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
-// 4. Dependency Injection - Services
+// 4. Service Layer - Dependency Injection
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICitizenService, CitizenService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
@@ -41,11 +63,16 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
-// 6. Pipeline
-if (!app.Environment.IsDevelopment())
+// 6. HTTP Pipeline Configuration
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
@@ -55,7 +82,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseSession(); // MUST be before UseAuthorization
+// Order is critical: Session must come before Authorization
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(

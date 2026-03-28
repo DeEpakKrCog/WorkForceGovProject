@@ -25,18 +25,17 @@ namespace WorkForceGovProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password)
         {
-            // Use the Service Layer (HEAD branch pattern)
             var (success, message, user) = await _accountService.LoginAsync(email, password);
 
             if (success && user != null)
             {
-                // Store standardized data in session
                 HttpContext.Session.SetInt32("UserId", user.Id);
                 HttpContext.Session.SetString("UserName", user.FullName ?? "User");
                 HttpContext.Session.SetString("UserRole", user.Role);
                 HttpContext.Session.SetString("UserEmail", user.Email);
 
-                // Role-Based Redirect Logic (Merged from Employer branch)
+                TempData["SuccessMessage"] = $"Welcome back, {user.FullName}!";
+
                 switch (user.Role)
                 {
                     case "Citizen":
@@ -50,24 +49,13 @@ namespace WorkForceGovProject.Controllers
                     case "Employer":
                         return RedirectToAction("Dashboard", "Employer");
 
-                    case "Admin":
-                        // Redirect to Home or Admin Panel if it exists
-                        return RedirectToAction("Index", "Home");
-
                     default:
                         return RedirectToAction("Index", "Home");
                 }
             }
 
-            // If login fails, use the descriptive message from the service
-            ViewBag.Error = message;
+            TempData["ErrorMessage"] = message;
             return View();
-        }
-
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Login");
         }
 
         [HttpGet]
@@ -83,14 +71,25 @@ namespace WorkForceGovProject.Controllers
 
                 if (success)
                 {
-                    _logger.LogInformation($"New user registered: {model.Email}");
+                    TempData["SuccessMessage"] = "Registration successful! You can now login.";
                     return RedirectToAction("Login");
                 }
 
-                ViewBag.Error = message;
+                TempData["ErrorMessage"] = message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Please fill in all required fields correctly.";
             }
 
             return View(model);
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            TempData["SuccessMessage"] = "You have been logged out.";
+            return RedirectToAction("Login");
         }
     }
 }

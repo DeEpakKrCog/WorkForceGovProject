@@ -31,7 +31,6 @@
         </div>
 
         <div class="bg-white rounded-3 border shadow-sm p-4">
-            <!-- Danger Alert -->
             <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 2rem;"></i>
                 <div>
@@ -40,179 +39,62 @@
                 </div>
             </div>
 
-            <!-- Program Details -->
             <div class="bg-light rounded-3 border p-4 mb-4">
-                <h5 class="fw-bold mb-3 text-danger">
-                    <i class="bi bi-trash"></i> Program to be Deleted
-                </h5>
-                
+                <h5 class="fw-bold mb-3 text-danger"><i class="bi bi-trash"></i> Program Details</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="text-muted small fw-bold">Program ID</label>
-                            <p class="mb-0 h5 text-primary">#@Model.ProgramID</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="text-muted small fw-bold">Program Title</label>
-                            <p class="mb-0 h5">@Model.Title</p>
-                        </div>
-                        <div class="mb-3">
-                            <label class="text-muted small fw-bold">Status</label>
-                            <p class="mb-0">
-                                <span class="badge bg-@(Model.Status == "Active" ? "success" : "secondary")">
-                                    @Model.Status
-                                </span>
-                            </p>
-                        </div>
+                        <label class="text-muted small fw-bold">Program Title</label>
+                        <p class="h5">@Model.Title</p>
+                        <label class="text-muted small fw-bold">Status</label>
+                        <p><span class="badge bg-primary">@Model.Status</span></p>
                     </div>
-
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="text-muted small fw-bold">Budget</label>
-                            <p class="mb-0 h5 text-success">@Model.Budget.ToString("C")</p>
+                        <label class="text-muted small fw-bold">Budget</label>
+                        <p class="h5 text-success">@Model.Budget.ToString("C")</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-light rounded-3 border p-3 mb-4">
+                <h6 class="fw-bold mb-3">📊 Associated Data (Counts)</h6>
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 bg-white shadow-sm">
+                            <i class="bi bi-mortarboard text-info" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2 mb-0">@(Model.Trainings?.Count ?? 0)</h4>
+                            <small class="text-muted">Trainings</small>
                         </div>
-                        <div class="mb-3">
-                            <label class="text-muted small fw-bold">Duration</label>
-                            <p class="mb-0">@Model.StartDate.ToString("MMM dd, yyyy") - @Model.EndDate.ToString("MMM dd, yyyy")</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 bg-white shadow-sm">
+                            <i class="bi bi-box-seam text-warning" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2 mb-0">@(Model.Resources?.Count ?? 0)</h4>
+                            <small class="text-muted">Resources</small>
                         </div>
-                        <div class="mb-3">
-                            <label class="text-muted small fw-bold">Description</label>
-                            <p class="mb-0">@Model.Description</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 bg-white shadow-sm">
+                            <i class="bi bi-gift text-success" style="font-size: 2rem;"></i>
+                            <h4 class="mt-2 mb-0">@(Model.Benefits?.Count ?? 0)</h4>
+                            <small class="text-muted">Benefits</small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Impact Warning -->
-            <div class="alert alert-warning d-flex align-items-start mb-4" role="alert">
-                <i class="bi bi-info-circle-fill me-3" style="font-size: 1.5rem;"></i>
-                <div>
-                    <h6 class="fw-bold mb-2">⚠️ Deletion Impact:</h6>
-                    <ul class="mb-0 small">
-                        <li><strong>All associated trainings</strong> will be affected</li>
-                        <li><strong>All allocated resources</strong> will be affected</li>
-                        <li><strong>All distributed benefits</strong> records may be affected</li>
-                        <li><strong>Budget tracking</strong> data will be permanently removed</li>
-                        <li><strong>Performance reports</strong> will no longer include this program</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Current Associations -->
-            @if (Model.Trainings != null || Model.Resources != null || Model.Benefits != null)
-            {
-                <div class="bg-light rounded-3 border p-3 mb-4">
-                    <h6 class="fw-bold mb-3">📊 Associated Data</h6>
-                    <div class="row text-center">
-                        <div class="col-md-4">
-                            <div class="border rounded p-3 bg-white">
-                                <i class="bi bi-mortarboard text-info" style="font-size: 2rem;"></i>
-                                <h4 class="mt-2 mb-0">@(Model.Trainings?.Count ?? 0)</h4>
-                                <small class="text-muted">Trainings</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="border rounded p-3 bg-white">
-                                <i class="bi bi-box-seam text-warning" style="font-size: 2rem;"></i>
-                                <h4 class="mt-2 mb-0">@(Model.Resources?.Count ?? 0)</h4>
-                                <small class="text-muted">Resources</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="border rounded p-3 bg-white">
-                                <i class="bi bi-gift text-success" style="font-size: 2rem;"></i>
-                                <h4 class="mt-2 mb-0">@(Model.Benefits?.Count ?? 0)</h4>
-                                <small class="text-muted">Benefits</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            <!-- Confirmation Form -->
             <form asp-action="DeleteProgram" asp-controller="ProgramManager" method="post">
                 <input type="hidden" asp-for="ProgramID" />
-
-                <div class="border-top pt-4 mt-4">
-                    <div class="form-check mb-4">
-                        <input class="form-check-input" type="checkbox" id="confirmDelete" required>
-                        <label class="form-check-label fw-bold" for="confirmDelete">
-                            I understand this action is permanent and cannot be undone
-                        </label>
-                    </div>
-
-                    <div class="d-flex justify-content-end gap-3">
-                        <a asp-action="ProgramManagement" asp-controller="ProgramManager" class="btn btn-lg btn-secondary px-5">
-                            <i class="bi bi-x-circle"></i> Cancel
-                        </a>
-                        <button type="submit" class="btn btn-lg btn-danger px-5 shadow-sm">
-                            <i class="bi bi-trash"></i> Yes, Delete Program
-                        </button>
-                    </div>
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                    <label class="form-check-label fw-bold" for="confirmDelete">
+                        I understand this action is permanent.
+                    </label>
+                </div>
+                <div class="d-flex justify-content-end gap-3">
+                    <a asp-action="ProgramManagement" class="btn btn-secondary px-5">Cancel</a>
+                    <button type="submit" class="btn btn-danger px-5">Confirm Delete</button>
                 </div>
             </form>
         </div>
-
-        <!-- Alternative Actions -->
-        <div class="bg-light rounded-3 border p-4 mt-4">
-            <h5 class="fw-bold mb-3">
-                <i class="bi bi-lightbulb text-warning"></i> Consider These Alternatives
-            </h5>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-start mb-3">
-                        <i class="bi bi-pause-circle text-primary me-3" style="font-size: 1.5rem;"></i>
-                        <div>
-                            <strong>Set to Inactive</strong>
-                            <p class="mb-0 small text-muted">Temporarily disable the program without losing data</p>
-                            <a asp-action="EditProgram" asp-controller="ProgramManager" asp-route-id="@Model.ProgramID" class="btn btn-sm btn-outline-primary mt-2">
-                                Edit Instead
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex align-items-start mb-3">
-                        <i class="bi bi-check-circle text-success me-3" style="font-size: 1.5rem;"></i>
-                        <div>
-                            <strong>Mark as Completed</strong>
-                            <p class="mb-0 small text-muted">Archive the program for historical records</p>
-                            <a asp-action="EditProgram" asp-controller="ProgramManager" asp-route-id="@Model.ProgramID" class="btn btn-sm btn-outline-success mt-2">
-                                Archive Instead
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
-
-<style>
-    .alert-danger {
-        border-left: 4px solid #dc3545;
-    }
-
-    .alert-warning {
-        border-left: 4px solid #ffc107;
-    }
-
-    .form-check-input:checked {
-        background-color: #dc3545;
-        border-color: #dc3545;
-    }
-
-    .btn-danger:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-    }
-
-    .border.rounded.p-3 {
-        transition: all 0.2s ease;
-    }
-
-    .border.rounded.p-3:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-</style>

@@ -1,91 +1,83 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Data;
 using WorkForceGovProject.Models;
-using WorkForceGovProject.Repositories;
 
 namespace WorkForceGovProject.Controllers
 {
+    [Route("ProgramManager")]
     public class ProgramManagerController : Controller
     {
-        private readonly IJobRepository _jobRepo;
-        private readonly ICitizenRepository _citizenRepo;
-        private readonly INotificationRepository _notificationRepo;
-        // Since Labor branch adds these, ensure these Repositories exist in your project
-        private readonly IRepository<EmploymentProgram> _programRepo;
-        private readonly IRepository<Benefit> _benefitRepo;
+        private readonly ApplicationDbContext _context;
 
-        public ProgramManagerController(
-            IJobRepository jobRepo,
-            ICitizenRepository citizenRepo,
-            INotificationRepository notificationRepo,
-            IRepository<EmploymentProgram> programRepo,
-            IRepository<Benefit> benefitRepo)
+        public ProgramManagerController(ApplicationDbContext context)
         {
-            _jobRepo = jobRepo;
-            _citizenRepo = citizenRepo;
-            _notificationRepo = notificationRepo;
-            _programRepo = programRepo;
-            _benefitRepo = benefitRepo;
+            _context = context;
         }
 
-        // GET: ProgramManager/Dashboard
-        public async Task<IActionResult> Dashboard()
-        {
-            int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null) return RedirectToAction("Login", "Account");
-
-            // Using the Generic Repository methods
-            var allPrograms = await _programRepo.GetAllAsync();
-            var allBenefits = await _benefitRepo.GetAllAsync();
-
-            ViewBag.TotalPrograms = allPrograms.Count();
-            ViewBag.ActivePrograms = allPrograms.Count(p => p.Status == "Active");
-            ViewBag.TotalBudget = allPrograms.Sum(p => p.Budget);
-            ViewBag.TotalBenefits = allBenefits.Sum(b => b.Amount);
-
-            return View();
-        }
-
+        // 1. Program Management (The List View)
+        [HttpGet("ProgramManagement")]
         public async Task<IActionResult> ProgramManagement()
         {
-            var programs = await _programRepo.GetAllAsync();
+            var programs = await _context.EmploymentPrograms.ToListAsync();
             return View(programs);
         }
 
-        [HttpGet]
-        public IActionResult CreateProgram() => View();
+        // 2. Performance Tracking (The Dashboard View)
+        [HttpGet("PerformanceTracking")]
+        public async Task<IActionResult> PerformanceTracking()
+        {
+            var programs = await _context.EmploymentPrograms
+                .Include(p => p.Trainings)
+                .Include(p => p.Benefits)
+                    .ThenInclude(b => b.Citizen)
+                .ToListAsync();
 
-        [HttpPost]
+            // Populate ViewBags for summary cards
+            ViewBag.TotalBeneficiaries = programs.SelectMany(p => p.Benefits ?? new List<Benefit>())
+                                                 .Select(b => b.CitizenID).Distinct().Count();
+            ViewBag.TotalBenefitsDistributed = programs.Sum(p => p.Benefits?.Count ?? 0);
+            ViewBag.TotalAmountPaid = programs.Sum(p => p.Benefits?.Sum(b => b.Amount) ?? 0);
+
+            // Recent Beneficiaries for Line 109
+            ViewBag.RecentBeneficiaries = await _context.Benefits
+                .Include(b => b.Citizen)
+                .Include(b => b.EmploymentProgram)
+                .OrderByDescending(b => b.Date)
+                .Take(5)
+                .ToListAsync();
+
+            return View(programs);
+        }
+
+        // 3. Delete Program - GET (Shows confirmation page)
+        // This matches Line 67 in your ProgramManagement View
+        [HttpGet("DeleteProgram/{id}")]
+        public async Task<IActionResult> DeleteProgram(int id)
+        {
+            var program = await _context.EmploymentPrograms
+                .Include(p => p.Trainings)
+                .Include(p => p.Benefits)
+                .FirstOrDefaultAsync(m => m.ProgramID == id);
+
+            if (program == null) return NotFound();
+
+            return View("Delete", program);
+        }
+
+        // 4. Delete Program - POST (Actual Deletion)
+        [HttpPost("ConfirmDelete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateProgram(EmploymentProgram program)
+        public async Task<IActionResult> ConfirmDelete(int ProgramID)
         {
-            if (ModelState.IsValid)
+            var program = await _context.EmploymentPrograms.FindAsync(ProgramID);
+            if (program != null)
             {
-                await _programRepo.AddAsync(program);
-                // Note: If you don't have UnitOfWork, your Repository needs a SaveChanges method 
-                // or you need to inject ApplicationDbContext to save.
-                return RedirectToAction("ProgramManagement");
+                _context.EmploymentPrograms.Remove(program);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Program deleted successfully.";
             }
-            return View(program);
-        }
-
-        // GET: Benefit Management
-        public async Task<IActionResult> BenefitManagement()
-        {
-            var benefits = await _benefitRepo.GetAllAsync();
-            return View(benefits);
-        }
-
-        // GET: Create Benefit
-        public async Task<IActionResult> CreateBenefit()
-        {
-            var programs = await _programRepo.GetAllAsync();
-            var citizens = await _citizenRepo.GetAllAsync();
-
-            ViewBag.Programs = new SelectList(programs, "ProgramID", "Title");
-            ViewBag.Citizens = new SelectList(citizens, "Id", "FullName");
-            return View();
+            return RedirectToAction(nameof(ProgramManagement));
         }
     }
 }
