@@ -1,0 +1,21 @@
+﻿using WorkForceGovProject.Models;
+using WorkForceGovProject.Models.ViewModels;
+
+namespace WorkForceGovProject.Services
+{
+    public interface ISystemLogService
+    {
+        // Log Queries
+        Task<IEnumerable<SystemActivityViewModel>> GetAllLogsAsync();
+        Task<IEnumerable<SystemActivityViewModel>> GetLogsByUserAsync(int userId);
+        Task<IEnumerable<SystemActivityViewModel>> GetLogsByActionAsync(string action);
+        Task<IEnumerable<SystemActivityViewModel>> GetLogsByDateRangeAsync(DateTime fromDate, DateTime toDate);
+        Task<IEnumerable<SystemActivityViewModel>> GetLogsByActionAndDateAsync(string action, DateTime fromDate, DateTime toDate);
+        Task<IEnumerable<SystemActivityViewModel>> GetRecentLogsAsync(int count = 100);
+        Task<int> GetTotalLogsCountAsync();
+        Task<int> GetTodayLogsCountAsync();
+
+        // Log Commands
+        Task<bool> LogActivityAsync(int userId, string action, string resource, string ipAddress = "127.0.0.1");
+    }
+}

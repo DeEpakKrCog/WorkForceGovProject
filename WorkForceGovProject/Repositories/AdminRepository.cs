@@ -1,0 +1,350 @@
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Data;
+
+namespace WorkForceGovProject.Repositories
+{
+    /// <summary>
+    /// Admin Repository - Coordinates all admin-related data operations
+    /// Acts as a facade that brings together User, Role, Report, and SystemLog repositories
+    /// </summary>
+    public class AdminRepository : IAdminRepository
+    {
+        private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly IReportRepository _reportRepository;
+        private readonly ISystemLogRepository _logRepository;
+
+        public AdminRepository(
+            IUserRepository userRepository,
+            IRoleRepository roleRepository,
+            IReportRepository reportRepository,
+            ISystemLogRepository logRepository)
+        {
+            _userRepository = userRepository;
+            _roleRepository = roleRepository;
+            _reportRepository = reportRepository;
+            _logRepository = logRepository;
+        }
+
+        // ===== USER OPERATIONS =====
+
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _userRepository.GetAllAsync();
+        }
+
+        public async Task<User> GetUserByIdAsync(int userId)
+        {
+            return await _userRepository.GetByIdAsync(userId);
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _userRepository.GetUserByEmailAsync(email);
+        }
+
+        public async Task<IEnumerable<User>> GetUsersByStatusAsync(string status)
+        {
+            return await _userRepository.GetUsersByStatusAsync(status);
+        }
+
+        public async Task<IEnumerable<User>> SearchUsersAsync(string searchTerm)
+        {
+            return await _userRepository.SearchUsersAsync(searchTerm);
+        }
+
+        public async Task<int> GetTotalUsersCountAsync()
+        {
+            return await _userRepository.CountAsync();
+        }
+
+        public async Task<int> GetActiveUsersCountAsync()
+        {
+            return await _userRepository.GetActiveUsersCountAsync();
+        }
+
+        public async Task<int> GetInactiveUsersCountAsync()
+        {
+            return await _userRepository.GetInactiveUsersCountAsync();
+        }
+
+        public async Task<bool> CreateUserAsync(User user)
+        {
+            try
+            {
+                user.CreatedAt = DateTime.Now;
+                await _userRepository.AddAsync(user);
+                await _userRepository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+            try
+            {
+                _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteUserAsync(int userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                    return false;
+
+                _userRepository.Delete(user);
+                await _userRepository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> IsEmailUniqueAsync(string email, int? excludeUserId = null)
+        {
+            var existingUser = await _userRepository.GetUserByEmailAsync(email);
+
+            if (existingUser == null)
+                return true;
+
+            if (excludeUserId.HasValue && existingUser.Id == excludeUserId.Value)
+                return true;
+
+            return false;
+        }
+
+        // ===== ROLE OPERATIONS =====
+
+        public async Task<IEnumerable<Role>> GetAllRolesAsync()
+        {
+            return await _roleRepository.GetAllAsync();
+        }
+
+        public async Task<Role> GetRoleByIdAsync(int roleId)
+        {
+            return await _roleRepository.GetByIdAsync(roleId);
+        }
+
+        public async Task<Role> GetRoleByNameAsync(string roleName)
+        {
+            return await _roleRepository.GetRoleByNameAsync(roleName);
+        }
+
+        public async Task<int> GetTotalRolesCountAsync()
+        {
+            return await _roleRepository.CountAsync();
+        }
+
+        public async Task<int> GetUsersCountByRoleAsync(int roleId)
+        {
+            return await _roleRepository.GetUsersCountByRoleAsync(roleId);
+        }
+
+        public async Task<bool> CreateRoleAsync(Role role)
+        {
+            try
+            {
+                await _roleRepository.AddAsync(role);
+                await _roleRepository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateRoleAsync(Role role)
+        {
+            try
+            {
+                _roleRepository.Update(role);
+                await _roleRepository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteRoleAsync(int roleId)
+        {
+            try
+            {
+                var role = await _roleRepository.GetByIdAsync(roleId);
+                if (role == null)
+                    return false;
+
+                _roleRepository.Delete(role);
+                await _roleRepository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> IsRoleNameUniqueAsync(string roleName, int? excludeRoleId = null)
+        {
+            return await _roleRepository.IsRoleNameUniqueAsync(roleName, excludeRoleId);
+        }
+
+        // ===== REPORT OPERATIONS =====
+
+        public async Task<IEnumerable<Report>> GetAllReportsAsync()
+        {
+            return await _reportRepository.GetAllAsync();
+        }
+
+        public async Task<Report> GetReportByIdAsync(int reportId)
+        {
+            return await _reportRepository.GetByIdAsync(reportId);
+        }
+
+        public async Task<IEnumerable<Report>> GetReportsByTypeAsync(string reportType)
+        {
+            return await _reportRepository.GetReportsByTypeAsync(reportType);
+        }
+
+        public async Task<IEnumerable<Report>> GetReportsByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        {
+            return await _reportRepository.GetReportsByDateRangeAsync(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<Report>> GetRecentReportsAsync(int count = 50)
+        {
+            return await _reportRepository.GetRecentReportsAsync(count);
+        }
+
+        public async Task<int> GetTotalReportsCountAsync()
+        {
+            return await _reportRepository.CountAsync();
+        }
+
+        public async Task<bool> CreateReportAsync(Report report)
+        {
+            try
+            {
+                report.GeneratedDate = DateTime.Now;
+                await _reportRepository.AddAsync(report);
+                await _reportRepository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteReportAsync(int reportId)
+        {
+            try
+            {
+                var report = await _reportRepository.GetByIdAsync(reportId);
+                if (report == null)
+                    return false;
+
+                _reportRepository.Delete(report);
+                await _reportRepository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ===== SYSTEM LOG OPERATIONS =====
+
+        public async Task<IEnumerable<SystemLog>> GetAllLogsAsync()
+        {
+            return await _logRepository.GetAllAsync();
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetLogsByUserAsync(int userId)
+        {
+            return await _logRepository.GetLogsByUserAsync(userId);
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetLogsByActionAsync(string action)
+        {
+            return await _logRepository.GetLogsByActionAsync(action);
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetLogsByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        {
+            return await _logRepository.GetLogsByDateRangeAsync(fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetLogsByActionAndDateAsync(string action, DateTime fromDate, DateTime toDate)
+        {
+            return await _logRepository.GetLogsByActionAndDateAsync(action, fromDate, toDate);
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetRecentLogsAsync(int count = 100)
+        {
+            return await _logRepository.GetRecentLogsAsync(count);
+        }
+
+        public async Task<int> GetTotalLogsCountAsync()
+        {
+            return await _logRepository.CountAsync();
+        }
+
+        public async Task<int> GetTodayLogsCountAsync()
+        {
+            return await _logRepository.GetTodayLogsCountAsync();
+        }
+
+        public async Task<bool> LogActivityAsync(SystemLog log)
+        {
+            try
+            {
+                log.Timestamp = DateTime.Now;
+                await _logRepository.AddAsync(log);
+                await _logRepository.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ===== ADMIN DASHBOARD STATISTICS =====
+
+        public async Task<AdminStatistics> GetAdminStatisticsAsync()
+        {
+            return new AdminStatistics
+            {
+                TotalUsers = await GetTotalUsersCountAsync(),
+                ActiveUsers = await GetActiveUsersCountAsync(),
+                InactiveUsers = await GetInactiveUsersCountAsync(),
+                TotalRoles = await GetTotalRolesCountAsync(),
+                TotalReports = await GetTotalReportsCountAsync(),
+                TodayLogs = await GetTodayLogsCountAsync(),
+                TotalLogs = await GetTotalLogsCountAsync(),
+                RecentUsers = (await _userRepository.GetRecentUsersAsync(5)).ToList(),
+                RecentLogs = (await _logRepository.GetRecentLogsAsync(10)).ToList()
+            };
+        }
+    }
+}

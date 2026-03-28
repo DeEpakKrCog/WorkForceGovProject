@@ -1,0 +1,28 @@
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Models.ViewModels;
+
+namespace WorkForceGovProject.Interfaces
+{
+    public interface IUserService
+    {
+        // User Queries
+        Task<IEnumerable<UserManagementViewModel>> GetAllUsersAsync();
+        Task<UserManagementViewModel> GetUserByIdAsync(int userId);
+        Task<IEnumerable<UserManagementViewModel>> GetUsersByStatusAsync(string status);
+        Task<IEnumerable<UserManagementViewModel>> SearchUsersAsync(string searchTerm);
+        Task<int> GetTotalUsersCountAsync();
+        Task<int> GetActiveUsersCountAsync();
+        Task<int> GetInactiveUsersCountAsync();
+        Task<bool> IsEmailUniqueAsync(string email, int? excludeUserId = null);
+
+        // User Commands
+        Task<bool> CreateUserAsync(CreateUserViewModel model);
+        Task<bool> UpdateUserAsync(int userId, EditUserViewModel model);
+        Task<bool> DeactivateUserAsync(int userId);
+        Task<bool> ActivateUserAsync(int userId);
+        Task<bool> DeleteUserAsync(int userId);
+
+        // Pagination
+        Task<(IEnumerable<UserManagementViewModel> users, int totalCount)> GetPagedUsersAsync(int pageNumber, int pageSize);
+    }
+}

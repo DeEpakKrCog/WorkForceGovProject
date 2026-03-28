@@ -1,0 +1,245 @@
+﻿using System.Security.Cryptography;
+using System.Text;
+using WorkForceGovProject.Data.Repositories;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Models.ViewModels;
+
+namespace WorkForceGovProject.Services
+{
+    public class UserService : IUserService
+    {
+        private readonly IUserRepository _userRepository;
+        private readonly ISystemLogRepository _logRepository;
+
+        public UserService(IUserRepository userRepository, ISystemLogRepository logRepository)
+        {
+            _userRepository = userRepository;
+            _logRepository = logRepository;
+        }
+
+        // User Queries
+        public async Task<IEnumerable<UserManagementViewModel>> GetAllUsersAsync()
+        {
+            var users = await _userRepository.GetAllAsync();
+            return users.Select(MapToViewModel);
+        }
+
+        public async Task<UserManagementViewModel> GetUserByIdAsync(int userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            return user == null ? null : MapToViewModel(user);
+        }
+
+        public async Task<IEnumerable<UserManagementViewModel>> GetUsersByStatusAsync(string status)
+        {
+            var users = await _userRepository.GetUsersByStatusAsync(status);
+            return users.Select(MapToViewModel);
+        }
+
+        public async Task<IEnumerable<UserManagementViewModel>> SearchUsersAsync(string searchTerm)
+        {
+            var users = await _userRepository.SearchUsersAsync(searchTerm);
+            return users.Select(MapToViewModel);
+        }
+
+        public async Task<int> GetTotalUsersCountAsync()
+        {
+            return await _userRepository.CountAsync();
+        }
+
+        public async Task<int> GetActiveUsersCountAsync()
+        {
+            return await _userRepository.GetActiveUsersCountAsync();
+        }
+
+        public async Task<int> GetInactiveUsersCountAsync()
+        {
+            return await _userRepository.GetInactiveUsersCountAsync();
+        }
+
+        public async Task<bool> IsEmailUniqueAsync(string email, int? excludeUserId = null)
+        {
+            var existingUser = await _userRepository.GetUserByEmailAsync(email);
+            
+            if (existingUser == null)
+                return true;
+
+            if (excludeUserId.HasValue && existingUser.Id == excludeUserId.Value)
+                return true;
+
+            return false;
+        }
+
+        // User Commands
+        public async Task<bool> CreateUserAsync(CreateUserViewModel model)
+        {
+            try
+            {
+                // Validate email uniqueness
+                if (!await IsEmailUniqueAsync(model.Email))
+                    throw new InvalidOperationException("Email already exists");
+
+                var user = new User
+                {
+                    FullName = model.FullName,
+                    Email = model.Email,
+                    Password = HashPassword(model.Password),
+                    Role = model.Role,
+                    RoleId = model.RoleId ?? 0,
+                    Status = "Active",
+                    CreatedAt = DateTime.Now
+                };
+
+                await _userRepository.AddAsync(user);
+                await _userRepository.SaveChangesAsync();
+
+                // Log activity
+                await LogActivityAsync(0, "Create User", "User", $"Created user: {model.FullName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateUserAsync(int userId, EditUserViewModel model)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                    return false;
+
+                // Check email uniqueness if changed
+                if (user.Email != model.Email && !await IsEmailUniqueAsync(model.Email, userId))
+                    throw new InvalidOperationException("Email already exists");
+
+                user.FullName = model.FullName;
+                user.Email = model.Email;
+                user.Role = model.Role;
+                user.RoleId = model.RoleId ?? 0;
+                user.Status = model.Status;
+
+                _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
+
+                await LogActivityAsync(0, "Edit User", "User", $"Updated user: {model.FullName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeactivateUserAsync(int userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                    return false;
+
+                user.Status = "Inactive";
+                _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
+
+                await LogActivityAsync(0, "Deactivate User", "User", $"Deactivated user: {user.FullName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ActivateUserAsync(int userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                    return false;
+
+                user.Status = "Active";
+                _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
+
+                await LogActivityAsync(0, "Activate User", "User", $"Activated user: {user.FullName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteUserAsync(int userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null)
+                    return false;
+
+                _userRepository.Delete(user);
+                await _userRepository.SaveChangesAsync();
+
+                await LogActivityAsync(0, "Delete User", "User", $"Deleted user: {user.FullName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<(IEnumerable<UserManagementViewModel> users, int totalCount)> GetPagedUsersAsync(int pageNumber, int pageSize)
+        {
+            var (users, totalCount) = await _userRepository.GetPagedAsync(pageNumber, pageSize);
+            return (users.Select(MapToViewModel), totalCount);
+        }
+
+        // Helper Methods
+        private UserManagementViewModel MapToViewModel(User user)
+        {
+            return new UserManagementViewModel
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Role = user.Role,
+                Status = user.Status,
+                CreatedAt = user.CreatedAt
+            };
+        }
+
+        private string HashPassword(string password)
+        {
+            using var sha256 = SHA256.Create();
+            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(hashedBytes);
+        }
+
+        private async Task LogActivityAsync(int userId, string action, string resource, string description)
+        {
+            var log = new SystemLog
+            {
+                UserId = userId,
+                Action = action,
+                Resource = resource,
+                Timestamp = DateTime.Now,
+                IpAddress = "127.0.0.1"
+            };
+
+            await _logRepository.AddAsync(log);
+            await _logRepository.SaveChangesAsync();
+        }
+    }
+}

@@ -1,0 +1,37 @@
+using System.Linq.Expressions;
+
+namespace WorkForceGovProject.Interfaces
+{
+    public interface IRepository<T> where T : class
+    {
+        // Read Operations
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T> GetByIdAsync(int id);
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+        Task<int> CountAsync();
+        Task<int> CountAsync(Expression<Func<T, bool>> predicate);
+
+        // Create Operations
+        Task AddAsync(T entity);
+        Task AddRangeAsync(IEnumerable<T> entities);
+
+        // Update Operations
+        void Update(T entity);
+        void UpdateRange(IEnumerable<T> entities);
+
+        // Delete Operations
+        void Delete(T entity);
+        void DeleteRange(IEnumerable<T> entities);
+
+        // Save Changes
+        Task<int> SaveChangesAsync();
+
+        // Pagination
+        Task<(IEnumerable<T> items, int totalCount)> GetPagedAsync(
+            int pageNumber, 
+            int pageSize, 
+            Expression<Func<T, bool>> predicate = null);
+    }
+}

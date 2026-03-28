@@ -1,0 +1,20 @@
+using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Interfaces
+{
+    public interface IRoleService
+    {
+        // Role Queries
+        Task<IEnumerable<Role>> GetAllRolesAsync();
+        Task<Role> GetRoleByIdAsync(int roleId);
+        Task<Role> GetRoleByNameAsync(string roleName);
+        Task<int> GetTotalRolesCountAsync();
+        Task<int> GetUsersCountByRoleAsync(int roleId);
+        Task<bool> IsRoleNameUniqueAsync(string roleName, int? excludeRoleId = null);
+
+        // Role Commands
+        Task<bool> CreateRoleAsync(Role role);
+        Task<bool> UpdateRoleAsync(int roleId, Role role);
+        Task<bool> DeleteRoleAsync(int roleId);
+    }
+}

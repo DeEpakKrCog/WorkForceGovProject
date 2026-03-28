@@ -1,0 +1,73 @@
+using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Data;
+
+namespace WorkForceGovProject.Repositories
+{
+    /// <summary>
+    /// System Log Repository - Handles all system logging database operations
+    /// </summary>
+    public class SystemLogRepository : Repository<SystemLog>, ISystemLogRepository
+    {
+        public SystemLogRepository(ApplicationDbContext context) : base(context)
+        {
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetLogsByUserAsync(int userId)
+        {
+            return await _dbSet
+                .Where(l => l.UserId == userId)
+                .OrderByDescending(l => l.Timestamp)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetLogsByActionAsync(string action)
+        {
+            return await _dbSet
+                .Where(l => l.Action == action)
+                .OrderByDescending(l => l.Timestamp)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetLogsByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        {
+            return await _dbSet
+                .Where(l => l.Timestamp >= fromDate && l.Timestamp <= toDate)
+                .OrderByDescending(l => l.Timestamp)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetLogsByActionAndDateAsync(string action, DateTime fromDate, DateTime toDate)
+        {
+            return await _dbSet
+                .Where(l => l.Action == action && l.Timestamp >= fromDate && l.Timestamp <= toDate)
+                .OrderByDescending(l => l.Timestamp)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<SystemLog>> GetRecentLogsAsync(int count = 100)
+        {
+            return await _dbSet
+                .OrderByDescending(l => l.Timestamp)
+                .Take(count)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetTodayLogsCountAsync()
+        {
+            var today = DateTime.Now.Date;
+            return await _dbSet
+                .CountAsync(l => l.Timestamp.Date == today);
+        }
+
+        public async Task<IEnumerable<SystemLog>> SearchLogsAsync(string searchTerm)
+        {
+            return await _dbSet
+                .Where(l => l.Action.Contains(searchTerm) || 
+                           l.Resource.Contains(searchTerm))
+                .OrderByDescending(l => l.Timestamp)
+                .ToListAsync();
+        }
+    }
+}

@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using WorkForceGovProject.Data;
+using WorkForceGovProject.Repositories;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Services;
 
 namespace WorkForceGovProject
 {
@@ -9,32 +12,42 @@ namespace WorkForceGovProject
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // 1. Register the DbContext (ADD THIS LINE)
-            // This tells the app to use SQL Server and looks for a connection string in appsettings.json
+            // Register the DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            // Register Repositories
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            builder.Services.AddScoped<ISystemLogRepository, SystemLogRepository>();
+            builder.Services.AddScoped<IReportRepository, ReportRepository>();
+            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
+            // Register Services
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IReportService, ReportService>();
+            builder.Services.AddScoped<ISystemLogService, SystemLogService>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
+
+            // Add services to the container
+            builder.Services.AddControllersWithViews();
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
 
-
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseSession();
-
             app.UseAuthorization();
 
             app.MapStaticAssets();

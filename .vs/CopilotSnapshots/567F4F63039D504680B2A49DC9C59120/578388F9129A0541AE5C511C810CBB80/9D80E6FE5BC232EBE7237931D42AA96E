@@ -1,0 +1,322 @@
+﻿@model AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<!-- Page Header -->
+<div class="page-header mb-5">
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            <h1 class="page-title">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </h1>
+            <p class="page-subtitle">Welcome back! Here's an overview of your system.</p>
+        </div>
+        <div>
+            <small class="text-white-50">Last updated: @DateTime.Now.ToString("g")</small>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stats-card border-left-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1">Total Users</p>
+                        <h3 class="mb-0 text-primary fw-bold">@Model.TotalUsers</h3>
+                    </div>
+                    <div class="text-primary" style="font-size: 2.5rem; opacity: 0.2;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light py-2">
+                <a href="@Url.Action("ManageUsers", "Admin")" class="small text-primary fw-bold text-decoration-none">
+                    View Details <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stats-card border-left-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1">Active Users</p>
+                        <h3 class="mb-0 text-success fw-bold">@Model.ActiveUsers</h3>
+                    </div>
+                    <div class="text-success" style="font-size: 2.5rem; opacity: 0.2;">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light py-2">
+                <span class="small text-muted">
+                    @{
+                        var percentage = Model.TotalUsers > 0 ? (Model.ActiveUsers * 100 / Model.TotalUsers) : 0;
+                    }
+                    @percentage% of total users
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stats-card border-left-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1">Inactive Users</p>
+                        <h3 class="mb-0 text-warning fw-bold">@Model.InactiveUsers</h3>
+                    </div>
+                    <div class="text-warning" style="font-size: 2.5rem; opacity: 0.2;">
+                        <i class="fas fa-user-slash"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light py-2">
+                <a href="@Url.Action("ManageUsers", "Admin")" class="small text-warning fw-bold text-decoration-none">
+                    Reactivate <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card stats-card border-left-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="text-muted mb-1">Total Roles</p>
+                        <h3 class="mb-0 text-info fw-bold">@Model.TotalRoles</h3>
+                    </div>
+                    <div class="text-info" style="font-size: 2.5rem; opacity: 0.2;">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-light py-2">
+                <a href="@Url.Action("ManageRoles", "Admin")" class="small text-info fw-bold text-decoration-none">
+                    Manage <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightning-bolt me-2"></i> Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-auto">
+                        <a href="@Url.Action("CreateUser", "Admin")" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i> Create User
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="@Url.Action("ManageUsers", "Admin")" class="btn btn-info">
+                            <i class="fas fa-users me-2"></i> Manage Users
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="@Url.Action("CreateRole", "Admin")" class="btn btn-secondary">
+                            <i class="fas fa-user-tag me-2"></i> Create Role
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="@Url.Action("SystemMonitoring", "Admin")" class="btn btn-warning">
+                            <i class="fas fa-chart-bar me-2"></i> System Monitoring
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <a href="@Url.Action("Reports", "Admin")" class="btn btn-success">
+                            <i class="fas fa-file-pdf me-2"></i> Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="row mb-4">
+    <!-- Recent System Activity -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i> Recent System Activity
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentLogs != null && Model.RecentLogs.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Resource</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var log in Model.RecentLogs.Take(8))
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-primary">@log.Action</span>
+                                        </td>
+                                        <td>
+                                            <small>@log.Resource</small>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">@log.Timestamp.ToString("HH:mm")</small>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="p-4 text-center text-muted">
+                        <i class="fas fa-inbox me-2" style="font-size: 2rem; opacity: 0.5;"></i>
+                        <p>No recent activity</p>
+                    </div>
+                }
+            </div>
+            <div class="card-footer bg-light">
+                <a href="@Url.Action("SystemMonitoring", "Admin")" class="btn btn-sm btn-outline-primary w-100">
+                    View Full Activity Log <i class="fas fa-external-link-alt ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recently Added Users -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-plus me-2"></i> Recently Added Users
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                @if (Model.RecentUsers != null && Model.RecentUsers.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Role</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model.RecentUsers.Take(8))
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@user.FullName</strong>
+                                            <br />
+                                            <small class="text-muted">@user.Email</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">@user.Role</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">@user.CreatedAt.ToString("dd/MM")</small>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="p-4 text-center text-muted">
+                        <i class="fas fa-user-slash me-2" style="font-size: 2rem; opacity: 0.5;"></i>
+                        <p>No users added yet</p>
+                    </div>
+                }
+            </div>
+            <div class="card-footer bg-light">
+                <a href="@Url.Action("ManageUsers", "Admin")" class="btn btn-sm btn-outline-success w-100">
+                    View All Users <i class="fas fa-external-link-alt ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 4px solid #0d6efd !important;
+    }
+
+    .border-left-success {
+        border-left: 4px solid #198754 !important;
+    }
+
+    .border-left-warning {
+        border-left: 4px solid #ffc107 !important;
+    }
+
+    .border-left-info {
+        border-left: 4px solid #0dcaf0 !important;
+    }
+
+    .stats-card {
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+    }
+
+    .card-footer {
+        border-top: 1px solid #e0e0e0;
+    }
+</style>
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .stats-card {
+        border-left: 4px solid #007bff;
+        transition: transform 0.2s;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+</style>

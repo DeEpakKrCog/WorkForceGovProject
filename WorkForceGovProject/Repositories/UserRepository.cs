@@ -1,0 +1,73 @@
+using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Data;
+
+namespace WorkForceGovProject.Repositories
+{
+    /// <summary>
+    /// User Repository - Handles all user-related database operations
+    /// </summary>
+    public class UserRepository : Repository<User>, IUserRepository
+    {
+        public UserRepository(ApplicationDbContext context) : base(context)
+        {
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            return await _dbSet
+                .FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User> GetUserWithRoleAsync(int userId)
+        {
+            return await _dbSet
+                .Include(u => u.RoleNavigation)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+
+        public async Task<IEnumerable<User>> GetUsersByStatusAsync(string status)
+        {
+            return await _dbSet
+                .Where(u => u.Status == status)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetUsersByRoleAsync(int roleId)
+        {
+            return await _dbSet
+                .Where(u => u.RoleId == roleId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<User>> SearchUsersAsync(string searchTerm)
+        {
+            return await _dbSet
+                .Where(u => u.FullName.Contains(searchTerm) || 
+                           u.Email.Contains(searchTerm) ||
+                           u.Role.Contains(searchTerm))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetRecentUsersAsync(int count = 10)
+        {
+            return await _dbSet
+                .OrderByDescending(u => u.CreatedAt)
+                .Take(count)
+                .ToListAsync();
+        }
+
+        public async Task<int> GetActiveUsersCountAsync()
+        {
+            return await _dbSet
+                .CountAsync(u => u.Status == "Active");
+        }
+
+        public async Task<int> GetInactiveUsersCountAsync()
+        {
+            return await _dbSet
+                .CountAsync(u => u.Status == "Inactive");
+        }
+    }
+}

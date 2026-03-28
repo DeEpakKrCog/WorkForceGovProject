@@ -1,0 +1,55 @@
+using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Data;
+
+namespace WorkForceGovProject.Repositories
+{
+    /// <summary>
+    /// Report Repository - Handles all report-related database operations
+    /// </summary>
+    public class ReportRepository : Repository<Report>, IReportRepository
+    {
+        public ReportRepository(ApplicationDbContext context) : base(context)
+        {
+        }
+
+        public async Task<IEnumerable<Report>> GetReportsByTypeAsync(string reportType)
+        {
+            return await _dbSet
+                .Where(r => r.ReportType == reportType)
+                .OrderByDescending(r => r.GeneratedDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Report>> GetReportsByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        {
+            return await _dbSet
+                .Where(r => r.GeneratedDate >= fromDate && r.GeneratedDate <= toDate)
+                .OrderByDescending(r => r.GeneratedDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Report>> GetReportsByGeneratedByAsync(int generatedBy)
+        {
+            return await _dbSet
+                .Where(r => r.GeneratedBy == generatedBy)
+                .OrderByDescending(r => r.GeneratedDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Report>> GetRecentReportsAsync(int count = 50)
+        {
+            return await _dbSet
+                .OrderByDescending(r => r.GeneratedDate)
+                .Take(count)
+                .ToListAsync();
+        }
+
+        public async Task<Report> GetReportWithDetailsAsync(int reportId)
+        {
+            return await _dbSet
+                .FirstOrDefaultAsync(r => r.ReportId == reportId);
+        }
+    }
+}

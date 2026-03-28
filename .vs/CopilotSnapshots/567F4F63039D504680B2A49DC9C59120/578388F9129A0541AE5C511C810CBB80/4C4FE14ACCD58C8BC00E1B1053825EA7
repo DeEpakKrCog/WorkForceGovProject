@@ -1,0 +1,166 @@
+﻿@model CreateUserViewModel
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div>
+        <h1 class="page-title">
+            <i class="fas fa-user-plus"></i> Create New User
+        </h1>
+        <p class="page-subtitle">Add a new user to the system</p>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="row justify-content-center mb-4">
+    <div class="col-lg-7">
+        <div class="card">
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show m-4" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    @ViewBag.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <form method="post" asp-action="CreateUser" novalidate>
+                <div class="card-body">
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show d-none" id="validationAlert" role="alert">
+                        <i class="fas fa-times-circle me-2"></i>
+                        <strong>Please fix the following errors:</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <!-- Full Name -->
+                    <div class="mb-4">
+                        <label asp-for="FullName" class="form-label">
+                            <i class="fas fa-user me-1"></i> Full Name
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="FullName" class="form-control form-control-lg" 
+                               placeholder="Enter full name" />
+                        <span asp-validation-for="FullName" class="invalid-feedback d-block"></span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label asp-for="Email" class="form-label">
+                            <i class="fas fa-envelope me-1"></i> Email Address
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Email" type="email" class="form-control form-control-lg" 
+                               placeholder="user@example.com" />
+                        <span asp-validation-for="Email" class="invalid-feedback d-block"></span>
+                        <small class="text-muted">Must be a unique email address</small>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-4">
+                        <label asp-for="Password" class="form-label">
+                            <i class="fas fa-lock me-1"></i> Password
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Password" type="password" class="form-control form-control-lg" 
+                               placeholder="Enter a strong password" />
+                        <span asp-validation-for="Password" class="invalid-feedback d-block"></span>
+                        <small class="text-muted">At least 8 characters recommended</small>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label">
+                            <i class="fas fa-key me-1"></i> Confirm Password
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control form-control-lg" 
+                               placeholder="Re-enter password" />
+                        <span asp-validation-for="ConfirmPassword" class="invalid-feedback d-block"></span>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="mb-4">
+                        <label asp-for="Role" class="form-label">
+                            <i class="fas fa-briefcase me-1"></i> Role
+                            <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="Role" class="form-select form-select-lg">
+                            <option value="">-- Select Role --</option>
+                            <option value="Citizen">Citizen</option>
+                            <option value="Employer">Employer</option>
+                            <option value="Labor Officer">Labor Officer</option>
+                            <option value="Admin">Administrator</option>
+                        </select>
+                        <span asp-validation-for="Role" class="invalid-feedback d-block"></span>
+                        <small class="text-muted">Choose the appropriate role for this user</small>
+                    </div>
+
+                    <!-- Additional Options -->
+                    <div class="mb-4 p-3 bg-light rounded-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="requiresVerification" name="requiresVerification" />
+                            <label class="form-check-label" for="requiresVerification">
+                                <i class="fas fa-envelope-circle-check me-2"></i>
+                                Send verification email to user
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <hr class="my-4" />
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-3 d-md-flex justify-content-md-end">
+                        <a href="@Url.Action("ManageUsers", "Admin")" class="btn btn-lg btn-outline-secondary">
+                            <i class="fas fa-chevron-left me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-lg btn-success">
+                            <i class="fas fa-save me-1"></i> Create User
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Help Card -->
+        <div class="card mt-4 border-info">
+            <div class="card-header bg-info bg-opacity-10 text-info">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i> User Creation Guidelines
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>Email address must be unique in the system</li>
+                    <li>Password should contain at least 8 characters</li>
+                    <li>Role assignment is mandatory</li>
+                    <li>Users can change their password after first login</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add Bootstrap validation styles
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        document.getElementById('validationAlert').classList.remove('d-none');
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        });
+    </script>
+}

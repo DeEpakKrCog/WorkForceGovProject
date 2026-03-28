@@ -1,0 +1,23 @@
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Models.ViewModels;
+
+namespace WorkForceGovProject.Interfaces
+{
+    public interface IReportService
+    {
+        // Report Queries
+        Task<IEnumerable<ReportListViewModel>> GetAllReportsAsync();
+        Task<Report> GetReportByIdAsync(int reportId);
+        Task<IEnumerable<ReportListViewModel>> GetReportsByTypeAsync(string reportType);
+        Task<IEnumerable<ReportListViewModel>> GetReportsByDateRangeAsync(DateTime fromDate, DateTime toDate);
+        Task<IEnumerable<ReportListViewModel>> GetRecentReportsAsync(int count = 50);
+        Task<int> GetTotalReportsCountAsync();
+
+        // Report Commands
+        Task<bool> CreateReportAsync(ReportGenerationViewModel model, int generatedBy);
+        Task<bool> DeleteReportAsync(int reportId);
+
+        // Report Content
+        string GenerateReportContent(string reportType, DateTime? startDate, DateTime? endDate);
+    }
+}

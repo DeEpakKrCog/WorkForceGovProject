@@ -1,0 +1,147 @@
+﻿using WorkForceGovProject.Data.Repositories;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Models.ViewModels;
+
+namespace WorkForceGovProject.Services
+{
+    public class ReportService : IReportService
+    {
+        private readonly IReportRepository _reportRepository;
+        private readonly ISystemLogRepository _logRepository;
+
+        public ReportService(IReportRepository reportRepository, ISystemLogRepository logRepository)
+        {
+            _reportRepository = reportRepository;
+            _logRepository = logRepository;
+        }
+
+        // Report Queries
+        public async Task<IEnumerable<ReportListViewModel>> GetAllReportsAsync()
+        {
+            var reports = await _reportRepository.GetAllAsync();
+            return reports.Select(MapToViewModel);
+        }
+
+        public async Task<Report> GetReportByIdAsync(int reportId)
+        {
+            return await _reportRepository.GetByIdAsync(reportId);
+        }
+
+        public async Task<IEnumerable<ReportListViewModel>> GetReportsByTypeAsync(string reportType)
+        {
+            var reports = await _reportRepository.GetReportsByTypeAsync(reportType);
+            return reports.Select(MapToViewModel);
+        }
+
+        public async Task<IEnumerable<ReportListViewModel>> GetReportsByDateRangeAsync(DateTime fromDate, DateTime toDate)
+        {
+            var reports = await _reportRepository.GetReportsByDateRangeAsync(fromDate, toDate);
+            return reports.Select(MapToViewModel);
+        }
+
+        public async Task<IEnumerable<ReportListViewModel>> GetRecentReportsAsync(int count = 50)
+        {
+            var reports = await _reportRepository.GetRecentReportsAsync(count);
+            return reports.Select(MapToViewModel);
+        }
+
+        public async Task<int> GetTotalReportsCountAsync()
+        {
+            return await _reportRepository.CountAsync();
+        }
+
+        // Report Commands
+        public async Task<bool> CreateReportAsync(ReportGenerationViewModel model, int generatedBy)
+        {
+            try
+            {
+                var reportContent = GenerateReportContent(model.ReportType, model.StartDate, model.EndDate);
+
+                var report = new Report
+                {
+                    ReportName = model.ReportName,
+                    ReportType = model.ReportType,
+                    GeneratedBy = generatedBy,
+                    GeneratedDate = DateTime.Now,
+                    ReportContent = reportContent,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate
+                };
+
+                await _reportRepository.AddAsync(report);
+                await _reportRepository.SaveChangesAsync();
+
+                await LogActivityAsync(generatedBy, "Create Report", "Report", $"Generated report: {model.ReportName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteReportAsync(int reportId)
+        {
+            try
+            {
+                var report = await _reportRepository.GetByIdAsync(reportId);
+                if (report == null)
+                    return false;
+
+                _reportRepository.Delete(report);
+                await _reportRepository.SaveChangesAsync();
+
+                await LogActivityAsync(report.GeneratedBy, "Delete Report", "Report", $"Deleted report: {report.ReportName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Report Content
+        public string GenerateReportContent(string reportType, DateTime? startDate, DateTime? endDate)
+        {
+            return reportType switch
+            {
+                "Employment" => $"Employment Report - Period: {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
+                "Compliance" => $"Compliance Report - Period: {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
+                "Participation" => $"Participation Report - Period: {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
+                _ => "System Report"
+            };
+        }
+
+        // Helper Methods
+        private ReportListViewModel MapToViewModel(Report report)
+        {
+            return new ReportListViewModel
+            {
+                ReportId = report.ReportId,
+                ReportName = report.ReportName,
+                ReportType = report.ReportType,
+                GeneratedDate = report.GeneratedDate,
+                GeneratedByName = "Admin",
+                StartDate = report.StartDate,
+                EndDate = report.EndDate
+            };
+        }
+
+        private async Task LogActivityAsync(int userId, string action, string resource, string description)
+        {
+            var log = new SystemLog
+            {
+                UserId = userId,
+                Action = action,
+                Resource = resource,
+                Timestamp = DateTime.Now,
+                IpAddress = "127.0.0.1"
+            };
+
+            await _logRepository.AddAsync(log);
+            await _logRepository.SaveChangesAsync();
+        }
+    }
+}

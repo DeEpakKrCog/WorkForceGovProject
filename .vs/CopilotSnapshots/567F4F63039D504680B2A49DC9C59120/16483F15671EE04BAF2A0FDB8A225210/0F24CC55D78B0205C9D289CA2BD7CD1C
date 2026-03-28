@@ -1,0 +1,134 @@
+﻿using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Services
+{
+    public class RoleService : IRoleService
+    {
+        private readonly IRoleRepository _roleRepository;
+        private readonly ISystemLogRepository _logRepository;
+
+        public RoleService(IRoleRepository roleRepository, ISystemLogRepository logRepository)
+        {
+            _roleRepository = roleRepository;
+            _logRepository = logRepository;
+        }
+
+        // Role Queries
+        public async Task<IEnumerable<Role>> GetAllRolesAsync()
+        {
+            return await _roleRepository.GetAllAsync();
+        }
+
+        public async Task<Role> GetRoleByIdAsync(int roleId)
+        {
+            return await _roleRepository.GetByIdAsync(roleId);
+        }
+
+        public async Task<Role> GetRoleByNameAsync(string roleName)
+        {
+            return await _roleRepository.GetRoleByNameAsync(roleName);
+        }
+
+        public async Task<int> GetTotalRolesCountAsync()
+        {
+            return await _roleRepository.CountAsync();
+        }
+
+        public async Task<int> GetUsersCountByRoleAsync(int roleId)
+        {
+            return await _roleRepository.GetUsersCountByRoleAsync(roleId);
+        }
+
+        public async Task<bool> IsRoleNameUniqueAsync(string roleName, int? excludeRoleId = null)
+        {
+            return await _roleRepository.IsRoleNameUniqueAsync(roleName, excludeRoleId);
+        }
+
+        // Role Commands
+        public async Task<bool> CreateRoleAsync(Role role)
+        {
+            try
+            {
+                if (!await IsRoleNameUniqueAsync(role.RoleName))
+                    throw new InvalidOperationException("Role name already exists");
+
+                await _roleRepository.AddAsync(role);
+                await _roleRepository.SaveChangesAsync();
+
+                await LogActivityAsync(0, "Create Role", "Role", $"Created role: {role.RoleName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateRoleAsync(int roleId, Role role)
+        {
+            try
+            {
+                var existingRole = await _roleRepository.GetByIdAsync(roleId);
+                if (existingRole == null)
+                    return false;
+
+                if (existingRole.RoleName != role.RoleName && 
+                    !await IsRoleNameUniqueAsync(role.RoleName, roleId))
+                    throw new InvalidOperationException("Role name already exists");
+
+                existingRole.RoleName = role.RoleName;
+                existingRole.Description = role.Description;
+
+                _roleRepository.Update(existingRole);
+                await _roleRepository.SaveChangesAsync();
+
+                await LogActivityAsync(0, "Update Role", "Role", $"Updated role: {role.RoleName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteRoleAsync(int roleId)
+        {
+            try
+            {
+                var role = await _roleRepository.GetByIdAsync(roleId);
+                if (role == null)
+                    return false;
+
+                _roleRepository.Delete(role);
+                await _roleRepository.SaveChangesAsync();
+
+                await LogActivityAsync(0, "Delete Role", "Role", $"Deleted role: {role.RoleName}");
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Helper Methods
+        private async Task LogActivityAsync(int userId, string action, string resource, string description)
+        {
+            var log = new SystemLog
+            {
+                UserId = userId,
+                Action = action,
+                Resource = resource,
+                Timestamp = DateTime.Now,
+                IpAddress = "127.0.0.1"
+            };
+
+            await _logRepository.AddAsync(log);
+            await _logRepository.SaveChangesAsync();
+        }
+    }
+}

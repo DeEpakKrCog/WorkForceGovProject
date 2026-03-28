@@ -1,94 +1,77 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
-using WorkForceGovProject.Data;
-using WorkForceGovProject.Models;
+using WorkForceGovProject.Interfaces;
 using WorkForceGovProject.Models.ViewModels;
 
 namespace WorkForceGovProject.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
+        private readonly IRoleService _roleService;
+        private readonly IReportService _reportService;
+        private readonly ISystemLogService _logService;
 
-        public AdminController(ApplicationDbContext context)
+        public AdminController(
+            IUserService userService,
+            IRoleService roleService,
+            IReportService reportService,
+            ISystemLogService logService)
         {
-            _context = context;
+            _userService = userService;
+            _roleService = roleService;
+            _reportService = reportService;
+            _logService = logService;
         }
 
-        // GET: Admin/Dashboard
+        // ===== DASHBOARD =====
         public async Task<IActionResult> Dashboard()
         {
             try
             {
                 var dashboardData = new AdminDashboardViewModel
                 {
-                    TotalUsers = await _context.Users.CountAsync(),
-                    // Note: If this line crashes, you MUST run 'Update-Database' in Package Manager Console
-                    ActiveUsers = await _context.Users.CountAsync(u => u.Status == "Active"),
-                    InactiveUsers = await _context.Users.CountAsync(u => u.Status == "Inactive"),
-                    TotalRoles = await _context.Roles.CountAsync(),
-
-                    RecentLogs = await _context.SystemLogs
-                        .OrderByDescending(l => l.Timestamp)
-                        .Take(10)
-                        .ToListAsync(),
-
-                    RecentUsers = await _context.Users
-                        .OrderByDescending(u => u.CreatedAt)
-                        .Take(5)
-                        .ToListAsync()
+                    TotalUsers = await _userService.GetTotalUsersCountAsync(),
+                    ActiveUsers = await _userService.GetActiveUsersCountAsync(),
+                    InactiveUsers = await _userService.GetInactiveUsersCountAsync(),
+                    TotalRoles = await _roleService.GetTotalRolesCountAsync(),
                 };
 
                 return View(dashboardData);
             }
             catch (Exception ex)
             {
-                // If the database is missing columns, show a friendly error or empty dashboard
-                ViewBag.ErrorMessage = "Database Schema Mismatch: " + ex.Message;
+                ViewBag.ErrorMessage = "Error loading dashboard: " + ex.Message;
                 return View(new AdminDashboardViewModel());
             }
         }
+
+        // ===== USER MANAGEMENT =====
 
         // GET: Admin/ManageUsers
         public async Task<IActionResult> ManageUsers(string status = "", string searchTerm = "")
         {
             try
             {
-                var usersQuery = _context.Users.Include(u => u.RoleNavigation).AsQueryable();
-
-                if (!string.IsNullOrEmpty(status) && status != "All")
-                {
-                    usersQuery = usersQuery.Where(u => u.Status == status);
-                }
+                IEnumerable<UserManagementViewModel> users;
 
                 if (!string.IsNullOrEmpty(searchTerm))
                 {
-                    usersQuery = usersQuery.Where(u =>
-                        u.FullName.Contains(searchTerm) ||
-                        u.Email.Contains(searchTerm));
+                    users = await _userService.SearchUsersAsync(searchTerm);
+                }
+                else if (!string.IsNullOrEmpty(status) && status != "All")
+                {
+                    users = await _userService.GetUsersByStatusAsync(status);
+                }
+                else
+                {
+                    users = await _userService.GetAllUsersAsync();
                 }
 
-                var users = await usersQuery.OrderByDescending(u => u.CreatedAt).ToListAsync();
-
-                var viewModel = users.Select(u => new UserManagementViewModel
-                {
-                    Id = u.Id,
-                    FullName = u.FullName,
-                    Email = u.Email,
-                    Role = u.Role,
-                    Status = u.Status,
-                    CreatedAt = u.CreatedAt
-                }).ToList();
-
-                return View(viewModel);
+                return View(users.ToList());
             }
             catch (Exception ex)
             {
-                // This error typically means the database schema is missing columns
-                TempData["ErrorMessage"] = "Database Schema Error: " + ex.Message + 
-                    "\n\nPlease run: Update-Database in Package Manager Console";
+                TempData["ErrorMessage"] = "Error loading users: " + ex.Message;
                 return RedirectToAction("Dashboard");
             }
         }
@@ -104,38 +87,33 @@ namespace WorkForceGovProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUser(CreateUserViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
-            if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+            if (!await _userService.IsEmailUniqueAsync(model.Email))
             {
-                ModelState.AddModelError("Email", "This email is already registered.");
+                ModelState.AddModelError("Email", "Email already exists");
                 return View(model);
             }
 
-            var user = new User
+            var success = await _userService.CreateUserAsync(model);
+
+            if (!success)
             {
-                FullName = model.FullName,
-                Email = model.Email,
-                Password = HashPassword(model.Password), // Encrypting for security
-                Role = model.Role,
-                RoleId = model.RoleId ?? 0,
-                Status = "Active",
-                CreatedAt = DateTime.Now
-            };
+                ModelState.AddModelError("", "Error creating user");
+                return View(model);
+            }
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            await LogSystemActivity(0, "Create User", "UserTable", $"Created user: {model.FullName}");
-
+            TempData["SuccessMessage"] = "User created successfully";
             return RedirectToAction(nameof(ManageUsers));
         }
 
-        // GET: Admin/EditUser/5
+        // GET: Admin/EditUser/{id}
         public async Task<IActionResult> EditUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) return NotFound();
+            var user = await _userService.GetUserByIdAsync(id);
+            if (user == null)
+                return NotFound();
 
             var model = new EditUserViewModel
             {
@@ -143,75 +121,78 @@ namespace WorkForceGovProject.Controllers
                 FullName = user.FullName,
                 Email = user.Email,
                 Role = user.Role,
-                RoleId = user.RoleId,
                 Status = user.Status
             };
 
             return View(model);
         }
 
-        // POST: Admin/EditUser/5
+        // POST: Admin/EditUser/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditUser(int id, EditUserViewModel model)
         {
-            if (id != model.Id) return NotFound();
+            if (id != model.Id)
+                return NotFound();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var success = await _userService.UpdateUserAsync(id, model);
+
+            if (!success)
             {
-                var user = await _context.Users.FindAsync(id);
-                if (user == null) return NotFound();
-
-                user.FullName = model.FullName;
-                user.Email = model.Email;
-                user.Role = model.Role;
-                user.RoleId = model.RoleId ?? 0;
-                user.Status = model.Status;
-
-                _context.Update(user);
-                await _context.SaveChangesAsync();
-
-                await LogSystemActivity(0, "Edit User", "UserTable", $"Updated user ID: {id}");
-                return RedirectToAction(nameof(ManageUsers));
+                ModelState.AddModelError("", "Error updating user");
+                return View(model);
             }
-            return View(model);
+
+            TempData["SuccessMessage"] = "User updated successfully";
+            return RedirectToAction(nameof(ManageUsers));
         }
 
-        // Deactivate User
+        // POST: Admin/DeactivateUser/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeactivateUser(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null) return NotFound();
+            var success = await _userService.DeactivateUserAsync(id);
 
-            user.Status = "Inactive";
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
+            if (!success)
+                return NotFound();
 
-            await LogSystemActivity(0, "Deactivate User", "UserTable", $"Deactivated user: {user.FullName}");
-
+            TempData["SuccessMessage"] = "User deactivated successfully";
             return RedirectToAction(nameof(ManageUsers));
         }
+
+        // ===== ROLE MANAGEMENT =====
 
         // GET: Admin/ManageRoles
         public async Task<IActionResult> ManageRoles()
         {
-            var roles = await _context.Roles.ToListAsync();
-            var viewModel = new List<RoleManagementViewModel>();
-
-            foreach (var role in roles)
+            try
             {
-                viewModel.Add(new RoleManagementViewModel
-                {
-                    RoleId = role.RoleId,
-                    RoleName = role.RoleName,
-                    Description = role.Description,
-                    UserCount = await _context.Users.CountAsync(u => u.RoleId == role.RoleId)
-                });
-            }
+                var roles = await _roleService.GetAllRolesAsync();
 
-            return View(viewModel);
+                var viewModel = new List<RoleManagementViewModel>();
+                foreach (var role in roles)
+                {
+                    var userCount = await _roleService.GetUsersCountByRoleAsync(role.RoleId);
+                    viewModel.Add(new RoleManagementViewModel
+                    {
+                        RoleId = role.RoleId,
+                        RoleName = role.RoleName,
+                        Description = role.Description,
+                        UserCount = userCount
+                    });
+                }
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error loading roles: " + ex.Message;
+                return RedirectToAction("Dashboard");
+            }
         }
 
         // GET: Admin/CreateRole
@@ -223,149 +204,146 @@ namespace WorkForceGovProject.Controllers
         // POST: Admin/CreateRole
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateRole(Role model)
+        public async Task<IActionResult> CreateRole(Models.Role model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
-            if (await _context.Roles.AnyAsync(r => r.RoleName == model.RoleName))
+            if (!await _roleService.IsRoleNameUniqueAsync(model.RoleName))
             {
                 ModelState.AddModelError("RoleName", "Role name already exists");
                 return View(model);
             }
 
-            _context.Roles.Add(model);
-            await _context.SaveChangesAsync();
+            var success = await _roleService.CreateRoleAsync(model);
 
-            await LogSystemActivity(0, "Create Role", "RoleTable", $"Created role: {model.RoleName}");
+            if (!success)
+            {
+                ModelState.AddModelError("", "Error creating role");
+                return View(model);
+            }
 
+            TempData["SuccessMessage"] = "Role created successfully";
             return RedirectToAction(nameof(ManageRoles));
         }
 
-        // GET: Admin/EditRole/5
+        // GET: Admin/EditRole/{id}
         public async Task<IActionResult> EditRole(int id)
         {
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null) return NotFound();
+            var role = await _roleService.GetRoleByIdAsync(id);
+            if (role == null)
+                return NotFound();
 
             return View(role);
         }
 
-        // POST: Admin/EditRole/5
+        // POST: Admin/EditRole/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditRole(int id, Role model)
+        public async Task<IActionResult> EditRole(int id, Models.Role model)
         {
-            if (id != model.RoleId) return NotFound();
+            if (id != model.RoleId)
+                return NotFound();
 
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null) return NotFound();
+            var success = await _roleService.UpdateRoleAsync(id, model);
 
-            role.RoleName = model.RoleName;
-            role.Description = model.Description;
+            if (!success)
+            {
+                ModelState.AddModelError("", "Error updating role");
+                return View(model);
+            }
 
-            _context.Roles.Update(role);
-            await _context.SaveChangesAsync();
-
-            await LogSystemActivity(0, "Edit Role", "RoleTable", $"Updated role: {model.RoleName}");
-
+            TempData["SuccessMessage"] = "Role updated successfully";
             return RedirectToAction(nameof(ManageRoles));
         }
 
-        // DELETE: Admin/DeleteRole/5
+        // POST: Admin/DeleteRole/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteRole(int id)
         {
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null) return NotFound();
+            var success = await _roleService.DeleteRoleAsync(id);
 
-            _context.Roles.Remove(role);
-            await _context.SaveChangesAsync();
+            if (!success)
+                return NotFound();
 
-            await LogSystemActivity(0, "Delete Role", "RoleTable", $"Deleted role: {role.RoleName}");
-
+            TempData["SuccessMessage"] = "Role deleted successfully";
             return RedirectToAction(nameof(ManageRoles));
         }
+
+        // ===== SYSTEM MONITORING =====
 
         // GET: Admin/SystemMonitoring
         public async Task<IActionResult> SystemMonitoring(DateTime? fromDate, DateTime? toDate, string filterAction = "")
         {
-            var logsQuery = _context.SystemLogs.AsQueryable();
-
-            if (fromDate.HasValue)
+            try
             {
-                logsQuery = logsQuery.Where(l => l.Timestamp >= fromDate);
+                IEnumerable<SystemActivityViewModel> activities;
+
+                if (!string.IsNullOrEmpty(filterAction) && fromDate.HasValue && toDate.HasValue)
+                {
+                    activities = await _logService.GetLogsByActionAndDateAsync(filterAction, fromDate.Value, toDate.Value.AddDays(1));
+                }
+                else if (fromDate.HasValue && toDate.HasValue)
+                {
+                    activities = await _logService.GetLogsByDateRangeAsync(fromDate.Value, toDate.Value.AddDays(1));
+                }
+                else if (!string.IsNullOrEmpty(filterAction))
+                {
+                    activities = await _logService.GetLogsByActionAsync(filterAction);
+                }
+                else
+                {
+                    activities = await _logService.GetRecentLogsAsync();
+                }
+
+                var model = new SystemMonitoringViewModel
+                {
+                    TotalActivities = await _logService.GetTotalLogsCountAsync(),
+                    TodayActivities = await _logService.GetTodayLogsCountAsync(),
+                    RecentActivities = activities.OrderByDescending(a => a.Timestamp).Take(100).ToList(),
+                    FilterFromDate = fromDate,
+                    FilterToDate = toDate,
+                    FilterAction = filterAction
+                };
+
+                return View(model);
             }
-
-            if (toDate.HasValue)
+            catch (Exception ex)
             {
-                toDate = toDate.Value.AddDays(1);
-                logsQuery = logsQuery.Where(l => l.Timestamp <= toDate);
+                TempData["ErrorMessage"] = "Error loading system monitoring: " + ex.Message;
+                return RedirectToAction("Dashboard");
             }
-
-            if (!string.IsNullOrEmpty(filterAction))
-            {
-                logsQuery = logsQuery.Where(l => l.Action.Contains(filterAction));
-            }
-
-            var logs = await logsQuery
-                .OrderByDescending(l => l.Timestamp)
-                .Take(100)
-                .ToListAsync();
-
-            var activityList = logs.Select(l => new SystemActivityViewModel
-            {
-                LogId = l.LogId,
-                UserId = l.UserId,
-                Action = l.Action,
-                Resource = l.Resource,
-                Timestamp = l.Timestamp,
-                IpAddress = l.IpAddress
-            }).ToList();
-
-            var model = new SystemMonitoringViewModel
-            {
-                TotalActivities = await _context.SystemLogs.CountAsync(),
-                TodayActivities = await _context.SystemLogs
-                    .Where(l => l.Timestamp.Date == DateTime.Now.Date)
-                    .CountAsync(),
-                RecentActivities = activityList,
-                FilterFromDate = fromDate,
-                FilterToDate = toDate,
-                FilterAction = filterAction
-            };
-
-            return View(model);
         }
+
+        // ===== REPORTING =====
 
         // GET: Admin/Reports
         public async Task<IActionResult> Reports(string reportType = "")
         {
-            var reportsQuery = _context.Reports.AsQueryable();
-
-            if (!string.IsNullOrEmpty(reportType) && reportType != "All")
+            try
             {
-                reportsQuery = reportsQuery.Where(r => r.ReportType == reportType);
+                IEnumerable<ReportListViewModel> reports;
+
+                if (!string.IsNullOrEmpty(reportType) && reportType != "All")
+                {
+                    reports = await _reportService.GetReportsByTypeAsync(reportType);
+                }
+                else
+                {
+                    reports = await _reportService.GetAllReportsAsync();
+                }
+
+                return View(reports.ToList());
             }
-
-            var reports = await reportsQuery
-                .OrderByDescending(r => r.GeneratedDate)
-                .ToListAsync();
-
-            var viewModel = reports.Select(r => new ReportListViewModel
+            catch (Exception ex)
             {
-                ReportId = r.ReportId,
-                ReportName = r.ReportName,
-                ReportType = r.ReportType,
-                GeneratedDate = r.GeneratedDate,
-                GeneratedByName = "Admin",
-                StartDate = r.StartDate,
-                EndDate = r.EndDate
-            }).ToList();
-
-            return View(viewModel);
+                TempData["ErrorMessage"] = "Error loading reports: " + ex.Message;
+                return RedirectToAction("Dashboard");
+            }
         }
 
         // GET: Admin/GenerateReport
@@ -379,71 +357,29 @@ namespace WorkForceGovProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GenerateReport(ReportGenerationViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+                return View(model);
 
-            string reportContent = GenerateReportContent(model.ReportType, model.StartDate, model.EndDate);
+            var success = await _reportService.CreateReportAsync(model, generatedBy: 0);
 
-            var report = new Report
+            if (!success)
             {
-                ReportName = model.ReportName,
-                ReportType = model.ReportType,
-                GeneratedBy = 0,
-                GeneratedDate = DateTime.Now,
-                ReportContent = reportContent,
-                StartDate = model.StartDate,
-                EndDate = model.EndDate
-            };
+                ModelState.AddModelError("", "Error generating report");
+                return View(model);
+            }
 
-            _context.Reports.Add(report);
-            await _context.SaveChangesAsync();
-
-            await LogSystemActivity(0, "Generate Report", "ReportTable", $"Generated report: {model.ReportName}");
-
+            TempData["SuccessMessage"] = "Report generated successfully";
             return RedirectToAction(nameof(Reports));
         }
 
-        // GET: Admin/ViewReport/5
+        // GET: Admin/ViewReport/{id}
         public async Task<IActionResult> ViewReport(int id)
         {
-            var report = await _context.Reports.FindAsync(id);
-            if (report == null) return NotFound();
+            var report = await _reportService.GetReportByIdAsync(id);
+            if (report == null)
+                return NotFound();
 
             return View(report);
-        }
-
-        // --- HELPER METHODS ---
-
-        private async Task LogSystemActivity(int userId, string action, string resource, string description)
-        {
-            var log = new SystemLog
-            {
-                UserId = userId,
-                Action = action,
-                Resource = resource,
-                Timestamp = DateTime.Now,
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1"
-            };
-
-            _context.SystemLogs.Add(log);
-            await _context.SaveChangesAsync();
-        }
-
-        private string HashPassword(string password)
-        {
-            using var sha256 = SHA256.Create();
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
-        }
-
-        private string GenerateReportContent(string reportType, DateTime? startDate, DateTime? endDate)
-        {
-            return reportType switch
-            {
-                "Employment" => $"Employment Report - Period: {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
-                "Compliance" => $"Compliance Report - Period: {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
-                "Participation" => $"Participation Report - Period: {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
-                _ => "System Report"
-            };
         }
     }
 }
