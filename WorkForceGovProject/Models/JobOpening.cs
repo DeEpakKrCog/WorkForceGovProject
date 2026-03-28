@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WorkForceGovProject.Models
@@ -10,6 +10,27 @@ namespace WorkForceGovProject.Models
 
         [Required]
         public string JobTitle { get; set; }
+
+        // Backwards-compatible properties expected by employer branch
+        [NotMapped]
+        public string Title
+        {
+            get => JobTitle;
+            set => JobTitle = value;
+        }
+
+        [NotMapped]
+        public decimal Salary
+        {
+            get => SalaryMax; 
+            set { SalaryMin = value; SalaryMax = value; }
+        }
+
+        [NotMapped]
+        public string Requirements { get; set; }
+
+        [NotMapped]
+        public DateTime? ApplicationDeadline { get; set; }
 
         [Required]
         public string Description { get; set; }
@@ -31,7 +52,6 @@ namespace WorkForceGovProject.Models
         [DataType(DataType.Date)]
         public DateTime PostedDate { get; set; } = DateTime.Now;
 
-        [DataType(DataType.Date)]
         public DateTime? ClosingDate { get; set; }
 
         public string Status { get; set; } = "Open"; // Open, Closed, On Hold

@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using WorkForceGovProject.Data;
-using WorkForceGovProject.Models;
 using WorkForceGovProject.Models;
 using WorkForceGovProject.Services;
-using WorkForceGovProject.Repositories;
-using System.Linq;
 
 namespace WorkForceGovProject.Controllers
 {
@@ -29,30 +25,41 @@ namespace WorkForceGovProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string email, string password)
         {
+            // Use the Service Layer (HEAD branch pattern)
             var (success, message, user) = await _accountService.LoginAsync(email, password);
 
             if (success && user != null)
             {
-                // Store data in session
+                // Store standardized data in session
                 HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetString("UserName", user.FullName);
+                HttpContext.Session.SetString("UserName", user.FullName ?? "User");
                 HttpContext.Session.SetString("UserRole", user.Role);
                 HttpContext.Session.SetString("UserEmail", user.Email);
 
-                if (user.Role == "Citizen")
+                // Role-Based Redirect Logic (Merged from Employer branch)
+                switch (user.Role)
                 {
-                    // Create or get citizen profile
-                    var citizen = await _citizenService.GetCitizenByUserIdAsync(user.Id);
-                    if (citizen == null)
-                    {
-                        await _citizenService.CreateCitizenProfileAsync(user.Id, user.FullName, user.Email);
-                    }
-                    return RedirectToAction("Dashboard", "Citizen");
-                }
+                    case "Citizen":
+                        var citizen = await _citizenService.GetCitizenByUserIdAsync(user.Id);
+                        if (citizen == null)
+                        {
+                            await _citizenService.CreateCitizenProfileAsync(user.Id, user.FullName, user.Email);
+                        }
+                        return RedirectToAction("Dashboard", "Citizen");
 
-                return RedirectToAction("Index", "Home");
+                    case "Employer":
+                        return RedirectToAction("Dashboard", "Employer");
+
+                    case "Admin":
+                        // Redirect to Home or Admin Panel if it exists
+                        return RedirectToAction("Index", "Home");
+
+                    default:
+                        return RedirectToAction("Index", "Home");
+                }
             }
 
+            // If login fails, use the descriptive message from the service
             ViewBag.Error = message;
             return View();
         }
@@ -81,7 +88,6 @@ namespace WorkForceGovProject.Controllers
                 }
 
                 ViewBag.Error = message;
-                return View(model);
             }
 
             return View(model);

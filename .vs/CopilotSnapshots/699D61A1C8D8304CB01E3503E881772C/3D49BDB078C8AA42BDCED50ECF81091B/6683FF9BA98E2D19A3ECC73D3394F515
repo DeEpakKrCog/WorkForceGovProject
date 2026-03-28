@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Database Check";
+}
+
+<div class="container mt-5">
+    <h2>Database Debug Information</h2>
+    
+    <div class="alert alert-warning">
+        <strong>WARNING:</strong> This page should be removed in production!
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Statistics</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Total Users:</strong> @ViewBag.UserCount</p>
+            <p><strong>Total Employers:</strong> @ViewBag.EmployerCount</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Users Table</h4>
+        </div>
+        <div class="card-body">
+            @if (ViewBag.UserCount == 0)
+            {
+                <p class="text-danger">No users found in database!</p>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Password (First 10 chars)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in (IEnumerable<WorkForceGovProject.Models.User>)ViewBag.Users)
+                        {
+                            <tr>
+                                <td>@user.Id</td>
+                                <td>@user.FullName</td>
+                                <td>@user.Email</td>
+                                <td><span class="badge bg-primary">@user.Role</span></td>
+                                <td>@(user.Password.Length > 10 ? user.Password.Substring(0, 10) + "..." : user.Password)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Employers Table</h4>
+        </div>
+        <div class="card-body">
+            @if (ViewBag.EmployerCount == 0)
+            {
+                <p class="text-danger">No employers found in database!</p>
+            }
+            else
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Company Name</th>
+                            <th>Industry</th>
+                            <th>Status</th>
+                            <th>User ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var emp in (IEnumerable<WorkForceGovProject.Models.Employer>)ViewBag.Employers)
+                        {
+                            <tr>
+                                <td>@emp.Id</td>
+                                <td>@emp.CompanyName</td>
+                                <td>@emp.Industry</td>
+                                <td><span class="badge bg-warning">@emp.Status</span></td>
+                                <td>@emp.UserId</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Login" class="btn btn-primary">Back to Login</a>
+        <a asp-controller="Employer" asp-action="Register" class="btn btn-success">Register New Employer</a>
+    </div>
+</div>

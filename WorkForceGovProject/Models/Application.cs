@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WorkForceGovProject.Models
@@ -19,6 +19,13 @@ namespace WorkForceGovProject.Models
 
         [ForeignKey("JobOpeningId")]
         public virtual JobOpening JobOpening { get; set; }
+
+        [NotMapped]
+        public int JobId
+        {
+            get => JobOpeningId;
+            set => JobOpeningId = value;
+        }
 
         [DataType(DataType.Date)]
         public DateTime SubmittedDate { get; set; } = DateTime.Now;

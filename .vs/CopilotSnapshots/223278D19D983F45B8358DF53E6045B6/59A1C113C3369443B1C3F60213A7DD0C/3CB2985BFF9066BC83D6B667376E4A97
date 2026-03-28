@@ -1,0 +1,334 @@
+﻿<<<<<<< HEAD
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Repositories;
+
+namespace WorkForceGovProject.Services
+{
+    /// <summary>
+    /// Notification Service Implementation
+    /// Handles notification operations
+    /// </summary>
+    public class NotificationService : INotificationService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<NotificationService> _logger;
+
+        public NotificationService(IUnitOfWork unitOfWork, ILogger<NotificationService> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+        }
+
+        public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId)
+        {
+            return await _unitOfWork.NotificationRepository.GetUserNotificationsAsync(userId);
+        }
+
+        public async Task<IEnumerable<Notification>> GetUnreadNotificationsAsync(int userId)
+        {
+            return await _unitOfWork.NotificationRepository.GetUnreadNotificationsAsync(userId);
+=======
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Services
+{
+    public class NotificationService : INotificationService
+    {
+        private readonly INotificationRepository _notificationRepository;
+        private readonly IApplicationRepository _applicationRepository;
+        private readonly ICitizenRepository _citizenRepository;
+        private readonly IJobOpeningRepository _jobOpeningRepository;
+        private readonly IEmployerRepository _employerRepository;
+
+        public NotificationService(
+            INotificationRepository notificationRepository,
+            IApplicationRepository applicationRepository,
+            ICitizenRepository citizenRepository,
+            IJobOpeningRepository jobOpeningRepository,
+            IEmployerRepository employerRepository)
+        {
+            _notificationRepository = notificationRepository;
+            _applicationRepository = applicationRepository;
+            _citizenRepository = citizenRepository;
+            _jobOpeningRepository = jobOpeningRepository;
+            _employerRepository = employerRepository;
+        }
+
+        public async Task<Notification> CreateNotificationAsync(int userId, string message, string category, int? entityId = null, int? employerId = null)
+        {
+            var notification = new Notification
+            {
+                UserId = userId,
+                EntityId = entityId,
+                Message = message,
+                Category = category,
+                Status = "Unread",
+                CreatedDate = DateTime.Now,
+                EmployerId = employerId
+            };
+
+            return await _notificationRepository.CreateNotificationAsync(notification);
+        }
+
+        public async Task CreateApplicationStatusNotificationAsync(int applicationId, string status)
+        {
+            var application = await _applicationRepository.GetApplicationByIdAsync(applicationId);
+            if (application == null) return;
+
+            var citizen = await _citizenRepository.GetCitizenByIdAsync(application.CitizenId);
+            if (citizen == null) return;
+
+            var job = await _jobOpeningRepository.GetJobOpeningByIdAsync(application.JobId);
+            if (job == null) return;
+
+            string message = status switch
+            {
+                "Shortlisted" => $"Your application for '{job.Title}' has been shortlisted!",
+                "Approved" => $"Congratulations! You have been hired for '{job.Title}'!",
+                "Rejected" => $"Your application for '{job.Title}' has been reviewed.",
+                _ => $"Your application status for '{job.Title}' has been updated to {status}."
+            };
+
+            string category = status == "Approved" ? "Hiring" : "Application Update";
+
+            await CreateNotificationAsync(citizen.UserId, message, category, applicationId);
+        }
+
+        public async Task CreateJobApplicationNotificationAsync(int jobId, int employerId)
+        {
+            var job = await _jobOpeningRepository.GetJobOpeningByIdAsync(jobId);
+            if (job == null) return;
+
+            var employer = await _employerRepository.GetEmployerByIdAsync(employerId);
+            if (employer == null) return;
+
+            var applicationsCount = await _applicationRepository.GetApplicationsCountByJobIdAsync(jobId);
+
+            string message = $"New application received for '{job.Title}'. Total applications: {applicationsCount}";
+
+            await CreateNotificationAsync(employer.UserId, message, "Job Application", jobId, employerId);
+        }
+
+        public async Task CreateDocumentVerificationNotificationAsync(int employerId, string status)
+        {
+            var employer = await _employerRepository.GetEmployerByIdAsync(employerId);
+            if (employer == null) return;
+
+            string message = status == "Verified"
+                ? "Your document has been verified successfully!"
+                : "Your document verification requires attention.";
+
+            await CreateNotificationAsync(employer.UserId, message, "Document Verification", null, employerId);
+        }
+
+        public async Task<IEnumerable<Notification>> GetNotificationsByUserIdAsync(int userId)
+        {
+            return await _notificationRepository.GetNotificationsByUserIdAsync(userId);
+        }
+
+        public async Task<IEnumerable<Notification>> GetUnreadNotificationsByUserIdAsync(int userId)
+        {
+            return await _notificationRepository.GetUnreadNotificationsByUserIdAsync(userId);
+        }
+
+        public async Task<IEnumerable<Notification>> GetRecentNotificationsAsync(int userId, int count)
+        {
+            return await _notificationRepository.GetRecentNotificationsAsync(userId, count);
+        }
+
+        public async Task<bool> MarkAsReadAsync(int notificationId)
+        {
+            return await _notificationRepository.MarkAsReadAsync(notificationId);
+        }
+
+        public async Task<bool> MarkAllAsReadAsync(int userId)
+        {
+            return await _notificationRepository.MarkAllAsReadAsync(userId);
+        }
+
+        public async Task<bool> DeleteNotificationAsync(int notificationId)
+        {
+            return await _notificationRepository.DeleteNotificationAsync(notificationId);
+>>>>>>> origin/Employer
+        }
+
+        public async Task<int> GetUnreadCountAsync(int userId)
+        {
+<<<<<<< HEAD
+            return await _unitOfWork.NotificationRepository.GetUnreadCountAsync(userId);
+        }
+
+        public async Task<(bool Success, Notification Notification)> CreateNotificationAsync(int userId, string message, string category, int? entityId, string entityType)
+        {
+            try
+            {
+                var notification = new Notification
+                {
+                    UserId = userId,
+                    Message = message,
+                    Category = category,
+                    EntityId = entityId,
+                    EntityType = entityType,
+                    CreatedDate = DateTime.Now,
+                    IsRead = false,
+                    Status = "Active"
+                };
+
+                await _unitOfWork.Notifications.AddAsync(notification);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                if (saved)
+                {
+                    _logger.LogInformation($"Notification created for user {userId}");
+                    return (true, notification);
+                }
+
+                return (false, null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Create notification error: {ex.Message}");
+                return (false, null);
+            }
+        }
+
+        public async Task<(bool Success, IEnumerable<Notification>)> CreateNotificationsAsync(List<(int userId, string message, string category, int? entityId, string entityType)> notifications)
+        {
+            try
+            {
+                var notificationEntities = notifications.Select(n => new Notification
+                {
+                    UserId = n.userId,
+                    Message = n.message,
+                    Category = n.category,
+                    EntityId = n.entityId,
+                    EntityType = n.entityType,
+                    CreatedDate = DateTime.Now,
+                    IsRead = false,
+                    Status = "Active"
+                }).ToList();
+
+                await _unitOfWork.Notifications.AddRangeAsync(notificationEntities);
+                var saved = await _unitOfWork.SaveChangesAsync();
+
+                if (saved)
+                {
+                    _logger.LogInformation($"{notificationEntities.Count} notifications created");
+                    return (true, notificationEntities);
+                }
+
+                return (false, null);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Create notifications error: {ex.Message}");
+                return (false, null);
+            }
+        }
+
+        public async Task<(bool Success, string Message)> MarkAsReadAsync(int notificationId)
+        {
+            try
+            {
+                var result = await _unitOfWork.NotificationRepository.MarkAsReadAsync(notificationId);
+                if (result)
+                {
+                    var saved = await _unitOfWork.SaveChangesAsync();
+                    return saved ? (true, "Notification marked as read.") : (false, "Failed to mark as read.");
+                }
+
+                return (false, "Notification not found.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Mark as read error: {ex.Message}");
+                return (false, "An error occurred while marking notification as read.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> MarkAllAsReadAsync(int userId)
+        {
+            try
+            {
+                var result = await _unitOfWork.NotificationRepository.MarkAllAsReadAsync(userId);
+                if (result)
+                {
+                    var saved = await _unitOfWork.SaveChangesAsync();
+                    return saved ? (true, "All notifications marked as read.") : (false, "Failed to mark notifications as read.");
+                }
+
+                return (false, "No unread notifications.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Mark all as read error: {ex.Message}");
+                return (false, "An error occurred while marking notifications as read.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> DeleteNotificationAsync(int notificationId)
+        {
+            try
+            {
+                var notification = await _unitOfWork.Notifications.GetByIdAsync(notificationId);
+                if (notification == null)
+                    return (false, "Notification not found.");
+
+                var deleted = await _unitOfWork.Notifications.DeleteAsync(notification);
+                if (deleted)
+                {
+                    var saved = await _unitOfWork.SaveChangesAsync();
+                    return saved ? (true, "Notification deleted successfully.") : (false, "Failed to delete notification.");
+                }
+
+                return (false, "Failed to delete notification.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Delete notification error: {ex.Message}");
+                return (false, "An error occurred while deleting notification.");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> DeleteOldNotificationsAsync(int daysOld)
+        {
+            try
+            {
+                var result = await _unitOfWork.NotificationRepository.DeleteOldNotificationsAsync(daysOld);
+                if (result)
+                {
+                    var saved = await _unitOfWork.SaveChangesAsync();
+                    return saved ? (true, "Old notifications deleted.") : (false, "Failed to delete old notifications.");
+                }
+
+                return (false, "No old notifications found.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Delete old notifications error: {ex.Message}");
+                return (false, "An error occurred while deleting old notifications.");
+            }
+        }
+
+        public async Task<IEnumerable<Notification>> GetNotificationsByCategoryAsync(int userId, string category)
+        {
+            return await _unitOfWork.NotificationRepository.GetNotificationsByCategoryAsync(userId, category);
+        }
+
+        public async Task<string> GetNotificationMessageAsync(string template, Dictionary<string, string> parameters)
+        {
+            var message = template;
+
+            foreach (var param in parameters)
+            {
+                message = message.Replace($"{{{param.Key}}}", param.Value);
+            }
+
+            return await Task.FromResult(message);
+=======
+            return await _notificationRepository.GetUnreadCountAsync(userId);
+>>>>>>> origin/Employer
+        }
+    }
+}

@@ -1,0 +1,100 @@
+@model IEnumerable<WorkForceGovProject.Models.Application>
+
+@if (!Model.Any())
+{
+    <div class="card shadow-sm border-0 text-center py-5">
+        <div class="card-body">
+            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+            <p class="mt-3 mb-0 text-muted">No applications in this category</p>
+        </div>
+    </div>
+}
+else
+{
+    var applicationDetails = ViewBag.ApplicationDetails as IEnumerable<dynamic>;
+    
+    <div class="row">
+        @foreach (var detail in applicationDetails ?? Enumerable.Empty<dynamic>())
+        {
+            var app = detail.Application as WorkForceGovProject.Models.Application;
+            if (Model.Contains(app))
+            {
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-white border-0 py-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1 fw-bold">@detail.CitizenName</h5>
+                                    <p class="text-muted mb-0 small">
+                                        <i class="bi bi-envelope me-1"></i>@detail.CitizenEmail
+                                    </p>
+                                </div>
+                                <span class="badge @(app.Status == "Pending" ? "bg-warning" : 
+                                                     app.Status == "Shortlisted" ? "bg-info" : 
+                                                     app.Status == "Approved" ? "bg-success" : "bg-secondary") fs-6">
+                                    @app.Status
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="small text-muted mb-1">
+                                    <i class="bi bi-briefcase"></i> Applied For
+                                </div>
+                                <div class="fw-semibold">@detail.JobTitle</div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <div class="small text-muted">
+                                        <i class="bi bi-calendar-event"></i> Submitted
+                                    </div>
+                                    <div class="fw-semibold">@app.SubmittedDate.ToString("MMM dd, yyyy")</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="small text-muted">
+                                        <i class="bi bi-hash"></i> Application ID
+                                    </div>
+                                    <div class="fw-semibold">#@app.Id</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2 flex-wrap">
+                                <a asp-action="ApplicationDetails" asp-route-id="@app.Id" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye me-1"></i>View Details
+                                </a>
+
+                                @if (app.Status == "Pending")
+                                {
+                                    <form asp-action="ShortlistApplication" asp-route-id="@app.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-info btn-sm">
+                                            <i class="bi bi-star me-1"></i>Shortlist
+                                        </button>
+                                    </form>
+                                }
+
+                                @if (app.Status == "Pending" || app.Status == "Shortlisted")
+                                {
+                                    <form asp-action="ApproveApplication" asp-route-id="@app.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Are you sure you want to hire this candidate?')">
+                                            <i class="bi bi-check-circle me-1"></i>Hire
+                                        </button>
+                                    </form>
+
+                                    <form asp-action="RejectApplication" asp-route-id="@app.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to reject this application?')">
+                                            <i class="bi bi-x-circle me-1"></i>Reject
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}

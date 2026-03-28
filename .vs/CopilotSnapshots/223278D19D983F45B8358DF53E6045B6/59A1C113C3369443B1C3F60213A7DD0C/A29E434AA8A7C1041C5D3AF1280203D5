@@ -1,0 +1,51 @@
+﻿<<<<<<< HEAD
+﻿using System.ComponentModel.DataAnnotations;
+=======
+using System.ComponentModel.DataAnnotations;
+>>>>>>> origin/Employer
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WorkForceGovProject.Models
+{
+    public class Application
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+<<<<<<< HEAD
+        public int CitizenId { get; set; }
+
+        [ForeignKey("CitizenId")]
+        public virtual Citizen Citizen { get; set; }
+
+        [Required]
+        public int JobOpeningId { get; set; }
+
+        [ForeignKey("JobOpeningId")]
+        public virtual JobOpening JobOpening { get; set; }
+
+=======
+>>>>>>> origin/Employer
+        [DataType(DataType.Date)]
+        public DateTime SubmittedDate { get; set; } = DateTime.Now;
+
+        [Required]
+<<<<<<< HEAD
+        public string Status { get; set; } = "Pending"; // Pending, Under Review, Approved, Rejected, Withdrawn
+
+        public string CoverLetter { get; set; }
+
+        public DateTime? ReviewedDate { get; set; }
+
+        public string ReviewNotes { get; set; }
+=======
+        [StringLength(50)]
+        public string Status { get; set; } = "Pending"; // Pending / Approved / Rejected / Shortlisted
+
+        public int CitizenId { get; set; }
+
+        public int JobId { get; set; }
+>>>>>>> origin/Employer
+    }
+}

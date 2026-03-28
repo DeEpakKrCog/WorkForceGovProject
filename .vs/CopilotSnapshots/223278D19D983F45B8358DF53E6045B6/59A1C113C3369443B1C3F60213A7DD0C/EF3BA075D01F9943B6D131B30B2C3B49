@@ -1,0 +1,223 @@
+﻿using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Data;
+<<<<<<< HEAD
+=======
+using WorkForceGovProject.Interfaces;
+>>>>>>> origin/Employer
+using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Repositories
+{
+<<<<<<< HEAD
+    /// <summary>
+    /// Notification Repository Implementation
+    /// Handles notification data operations
+    /// </summary>
+    public class NotificationRepository : Repository<Notification>, INotificationRepository
+    {
+        public NotificationRepository(ApplicationDbContext context) : base(context) { }
+
+        public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId)
+        {
+            return await _dbSet
+=======
+    public class NotificationRepository : INotificationRepository
+    {
+        private readonly ApplicationDbContext _context;
+
+        public NotificationRepository(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<Notification> CreateNotificationAsync(Notification notification)
+        {
+            _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
+            return notification;
+        }
+
+        public async Task<IEnumerable<Notification>> CreateBulkNotificationsAsync(IEnumerable<Notification> notifications)
+        {
+            _context.Notifications.AddRange(notifications);
+            await _context.SaveChangesAsync();
+            return notifications;
+        }
+
+        public async Task<Notification> GetNotificationByIdAsync(int id)
+        {
+            return await _context.Notifications.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<Notification>> GetNotificationsByUserIdAsync(int userId)
+        {
+            return await _context.Notifications
+>>>>>>> origin/Employer
+                .Where(n => n.UserId == userId)
+                .OrderByDescending(n => n.CreatedDate)
+                .ToListAsync();
+        }
+
+<<<<<<< HEAD
+        public async Task<IEnumerable<Notification>> GetUnreadNotificationsAsync(int userId)
+        {
+            return await _dbSet
+                .Where(n => n.UserId == userId && !n.IsRead)
+=======
+        public async Task<IEnumerable<Notification>> GetNotificationsByEmployerIdAsync(int employerId)
+        {
+            return await _context.Notifications
+                .Where(n => n.EmployerId == employerId)
+>>>>>>> origin/Employer
+                .OrderByDescending(n => n.CreatedDate)
+                .ToListAsync();
+        }
+
+<<<<<<< HEAD
+        public async Task<int> GetUnreadCountAsync(int userId)
+        {
+            return await _dbSet.CountAsync(n => n.UserId == userId && !n.IsRead);
+        }
+
+        public async Task<IEnumerable<Notification>> GetNotificationsByCategoryAsync(int userId, string category)
+        {
+            return await _dbSet
+                .Where(n => n.UserId == userId && n.Category == category)
+=======
+        public async Task<IEnumerable<Notification>> GetUnreadNotificationsByUserIdAsync(int userId)
+        {
+            return await _context.Notifications
+                .Where(n => n.UserId == userId && n.Status == "Unread")
+>>>>>>> origin/Employer
+                .OrderByDescending(n => n.CreatedDate)
+                .ToListAsync();
+        }
+
+<<<<<<< HEAD
+        public async Task<bool> MarkAsReadAsync(int notificationId)
+        {
+            var notification = await _dbSet.FindAsync(notificationId);
+            if (notification == null) return false;
+
+            notification.IsRead = true;
+=======
+        public async Task<IEnumerable<Notification>> GetNotificationsByCategoryAsync(string category)
+        {
+            return await _context.Notifications
+                .Where(n => n.Category == category)
+                .OrderByDescending(n => n.CreatedDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Notification>> GetRecentNotificationsAsync(int userId, int count)
+        {
+            return await _context.Notifications
+                .Where(n => n.UserId == userId)
+                .OrderByDescending(n => n.CreatedDate)
+                .Take(count)
+                .ToListAsync();
+        }
+
+        public async Task<Notification> UpdateNotificationAsync(Notification notification)
+        {
+            _context.Notifications.Update(notification);
+            await _context.SaveChangesAsync();
+            return notification;
+        }
+
+        public async Task<bool> MarkAsReadAsync(int id)
+        {
+            var notification = await GetNotificationByIdAsync(id);
+            if (notification == null) return false;
+
+            notification.Status = "Read";
+            await _context.SaveChangesAsync();
+>>>>>>> origin/Employer
+            return true;
+        }
+
+        public async Task<bool> MarkAllAsReadAsync(int userId)
+        {
+<<<<<<< HEAD
+            var notifications = await _dbSet
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .ToListAsync();
+
+            if (!notifications.Any()) return false;
+
+            foreach (var notification in notifications)
+                notification.IsRead = true;
+
+            return true;
+        }
+
+        public async Task<bool> DeleteOldNotificationsAsync(int daysOld)
+        {
+            var cutoffDate = DateTime.Now.AddDays(-daysOld);
+            var oldNotifications = await _dbSet
+                .Where(n => n.CreatedDate < cutoffDate)
+                .ToListAsync();
+
+            if (!oldNotifications.Any()) return false;
+
+            _dbSet.RemoveRange(oldNotifications);
+            return true;
+        }
+=======
+            var notifications = await _context.Notifications
+                .Where(n => n.UserId == userId && n.Status == "Unread")
+                .ToListAsync();
+
+            foreach (var notification in notifications)
+            {
+                notification.Status = "Read";
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteNotificationAsync(int id)
+        {
+            var notification = await GetNotificationByIdAsync(id);
+            if (notification == null) return false;
+
+            _context.Notifications.Remove(notification);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeleteAllNotificationsByUserIdAsync(int userId)
+        {
+            var notifications = await _context.Notifications
+                .Where(n => n.UserId == userId)
+                .ToListAsync();
+
+            _context.Notifications.RemoveRange(notifications);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> NotificationExistsAsync(int id)
+        {
+            return await _context.Notifications.AnyAsync(n => n.Id == id);
+        }
+
+        public async Task<int> GetUnreadCountAsync(int userId)
+        {
+            return await _context.Notifications
+                .CountAsync(n => n.UserId == userId && n.Status == "Unread");
+        }
+
+        public async Task<IEnumerable<Notification>> GetNotificationsByDateRangeAsync(int userId, DateTime startDate, DateTime endDate)
+        {
+            return await _context.Notifications
+                .Where(n => n.UserId == userId && 
+                           n.CreatedDate >= startDate && 
+                           n.CreatedDate <= endDate)
+                .OrderByDescending(n => n.CreatedDate)
+                .ToListAsync();
+        }
+>>>>>>> origin/Employer
+    }
+}

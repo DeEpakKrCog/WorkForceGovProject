@@ -7,15 +7,13 @@ namespace WorkForceGovProject.Models
     {
         [Key]
         public int Id { get; set; }
-
+        [Required]
+        public string Message { get; set; }
         [Required]
         public int UserId { get; set; }
 
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
-
-        [Required]
-        public string Message { get; set; }
 
         public string Category { get; set; } // JobApplication, DocumentVerification, ProgramEnrollment, BenefitApproval
 

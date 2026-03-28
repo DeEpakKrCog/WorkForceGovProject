@@ -1,0 +1,135 @@
+﻿using Microsoft.EntityFrameworkCore;
+using WorkForceGovProject.Data;
+using WorkForceGovProject.Interfaces;
+using WorkForceGovProject.Repositories;
+using WorkForceGovProject.Services;
+
+namespace WorkForceGovProject
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            // 1. Register the DbContext (ADD THIS LINE)
+            // This tells the app to use SQL Server and looks for a connection string in appsettings.json
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // 2. Register Repositories for Dependency Injection
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ICitizenRepository, CitizenRepository>();
+            builder.Services.AddScoped<IEmployerRepository, EmployerRepository>();
+            builder.Services.AddScoped<IEmployerDocumentRepository, EmployerDocumentRepository>();
+            builder.Services.AddScoped<IJobOpeningRepository, JobOpeningRepository>();
+            builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+            // 3. Register Services for Business Logic
+            builder.Services.AddScoped<IEmployerService, EmployerService>();
+            builder.Services.AddScoped<IJobOpeningService, JobOpeningService>();
+            builder.Services.AddScoped<IApplicationService, ApplicationService>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IEmployerDocumentService, EmployerDocumentService>();
+
+            // Add services to the container.
+            builder.Services.AddControllersWithViews();
+
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession();
+
+
+            var app = builder.Build();
+
+            // Configure the HTTP request pipeline.
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseSession();
+
+            app.UseAuthorization();
+
+            app.MapStaticAssets();
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}")
+                .WithStaticAssets();
+
+            // Seed test data on startup
+            using (var scope = app.Services.CreateScope())
+            {
+                try
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                    // Check if employer user already exists
+                    if (!context.Users.Any(u => u.Email == "employer@test.com"))
+                    {
+                        Console.WriteLine("🌱 Seeding test data...");
+
+                        // Create employer user
+                        var user = new User
+                        {
+                            FullName = "Tech Solutions Inc",
+                            Email = "employer@test.com",
+                            Password = "Test123!",
+                            Role = "Employer"
+                        };
+                        context.Users.Add(user);
+                        context.SaveChanges();
+
+                        // Create employer profile
+                        var employer = new Employer
+                        {
+                            UserId = user.Id,
+                            CompanyName = "Tech Solutions Inc",
+                            Industry = "Information Technology",
+                            Address = "123 Tech Street, San Francisco, CA",
+                            ContactInfo = "+1-555-0123",
+                            RegistrationDate = DateTime.Now,
+                            Status = "Verified"
+                        };
+                        context.Employers.Add(employer);
+                        context.SaveChanges();
+
+                        // Create a sample job
+                        var job = new JobOpening
+                        {
+                            EmployerId = employer.Id,
+                            Title = "Software Developer",
+                            Description = "Looking for experienced .NET developer",
+                            Location = "San Francisco, CA",
+                            Salary = 100000.00m,
+                            Requirements = "5+ years .NET experience",
+                            PostedDate = DateTime.Now,
+                            Status = "Open"
+                        };
+                        context.JobOpenings.Add(job);
+                        context.SaveChanges();
+
+                        Console.WriteLine("✅ Test data seeded successfully!");
+                        Console.WriteLine("📧 Login: employer@test.com");
+                        Console.WriteLine("🔑 Password: Test123!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("✅ Test data already exists!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ Error seeding: {ex.Message}");
+                }
+            }
+
+            app.Run();
+        }
+    }
+}

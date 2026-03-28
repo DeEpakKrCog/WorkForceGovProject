@@ -1,0 +1,44 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WorkForceGovProject.Models
+{
+    public class Employer
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        public string CompanyName { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string Industry { get; set; }
+
+        [Required]
+        public string Address { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        public string ContactInfo { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime RegistrationDate { get; set; } = DateTime.Now;
+
+        [Required]
+        [StringLength(50)]
+        public string Status { get; set; } = "Pending"; // Active / Verified / Pending
+
+        // Relationship to the User table (Foreign Key)
+        public int UserId { get; set; }
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
+
+        // Navigation properties
+        public virtual ICollection<EmployerDocument> EmployerDocuments { get; set; }
+        public virtual ICollection<JobOpening> JobOpenings { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
+    }
+}
