@@ -7,8 +7,10 @@ namespace WorkForceGovProject.Models
     {
         [Key]
         public int Id { get; set; }
+        
         [Required]
         public string Message { get; set; }
+        
         [Required]
         public int UserId { get; set; }
 
@@ -27,5 +29,12 @@ namespace WorkForceGovProject.Models
         public bool IsRead { get; set; } = false;
 
         public string Status { get; set; } = "Active"; // Active, Archived
+
+        // Compatibility aliases for ProgramManager branch
+        [NotMapped]
+        public int NotificationID { get => Id; set => Id = value; }
+
+        [NotMapped]
+        public int UserID { get => UserId; set => UserId = value; }
     }
 }

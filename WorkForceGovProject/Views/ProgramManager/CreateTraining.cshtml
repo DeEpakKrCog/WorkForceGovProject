@@ -1,0 +1,126 @@
+@model WorkForceGovProject.Models.Training
+@{
+    ViewData["Title"] = "Create Training";
+}
+
+<link rel="stylesheet" href="~/css/Dashboard.css" />
+<link rel="stylesheet" href="~/css/CreateProgram.css" />
+
+<div class="dashboard-container">
+    <div class="sidebar-nav d-none d-md-block shadow">
+        <a asp-action="Dashboard" asp-controller="ProgramManager">🏠 Dashboard</a>
+        <a asp-action="ProgramManagement" asp-controller="ProgramManager">📋 Programs</a>
+        <a asp-action="TrainingManagement" asp-controller="ProgramManager" class="active">🎓 Trainings</a>
+        <a asp-action="BudgetMonitoring" asp-controller="ProgramManager">💰 Budget</a>
+        <a asp-action="PerformanceTracking" asp-controller="ProgramManager">📊 Performance</a>
+        <a asp-action="ResourceManagement" asp-controller="ProgramManager">📦 Resources</a>
+        <a asp-action="BenefitManagement" asp-controller="ProgramManager">🎁 Benefits</a>
+        <a asp-action="Reports" asp-controller="ProgramManager">📈 Reports</a>
+        <a asp-action="Logout" asp-controller="Account" class="text-danger mt-5 fw-bold">🚪 Sign Out</a>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-2">Create New Training</h2>
+                <p class="text-muted">Add a new training session to a program</p>
+            </div>
+            <a asp-action="TrainingManagement" asp-controller="ProgramManager" class="btn btn-secondary shadow-sm px-4">
+                <i class="bi bi-arrow-left"></i> Back to Trainings
+            </a>
+        </div>
+
+        <div class="bg-white rounded-3 border shadow-sm p-4">
+            <form asp-action="CreateTraining" asp-controller="ProgramManager" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row g-3">
+                    <!-- Program Selection -->
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label asp-for="ProgramID" class="form-label fw-bold">Select Program <span class="text-danger">*</span></label>
+                            <select asp-for="ProgramID" class="form-select form-select-lg" asp-items="ViewBag.Programs">
+                                <option value="">-- Select Program --</option>
+                            </select>
+                            <span asp-validation-for="ProgramID" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Training Title -->
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label asp-for="Title" class="form-label fw-bold">Training Title <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter training title" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Training Description -->
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label asp-for="Description" class="form-label fw-bold">Description <span class="text-danger">*</span></label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter detailed training description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="StartDate" class="form-label fw-bold">Start Date <span class="text-danger">*</span></label>
+                            <input asp-for="StartDate" type="date" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="EndDate" class="form-label fw-bold">End Date <span class="text-danger">*</span></label>
+                            <input asp-for="EndDate" type="date" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Status" class="form-label fw-bold">Status <span class="text-danger">*</span></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="">-- Select Status --</option>
+                                <option value="Active" selected>Active</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Information Box -->
+                <div class="alert alert-info d-flex align-items-center mt-4" role="alert">
+                    <i class="bi bi-info-circle-fill me-2" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <strong>Note:</strong> Select a program to associate this training with. 
+                        Ensure dates align with the program schedule.
+                    </div>
+                </div>
+
+                <!-- Form Buttons -->
+                <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
+                    <a asp-action="TrainingManagement" asp-controller="ProgramManager" class="btn btn-lg btn-outline-secondary px-5">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-lg btn-primary px-5 shadow-sm">
+                        <i class="bi bi-check-circle"></i> Create Training
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

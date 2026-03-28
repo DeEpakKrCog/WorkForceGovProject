@@ -1,0 +1,70 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WorkForceGovProject.Models
+{
+    public class Benefit
+    {
+<<<<<<< HEAD
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public int ProgramId { get; set; }
+
+        [ForeignKey("ProgramId")]
+        public virtual EmploymentProgram Program { get; set; }
+
+        [Required]
+        public int CitizenId { get; set; }
+
+        [ForeignKey("CitizenId")]
+        public virtual Citizen Citizen { get; set; }
+
+        [Required]
+        public string BenefitType { get; set; } // Cash, Subsidy, Training
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Amount { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime BenefitDate { get; set; } = DateTime.Now;
+
+        public string Status { get; set; } = "Active"; // Active, Completed, Withdrawn
+
+        public string Description { get; set; }
+=======
+        [Key] // Primary Key
+        public int BenefitID { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(18,2)")] // Currency precision
+        [Display(Name = "Benefit Amount")]
+        public decimal Amount { get; set; }
+
+        [Required]
+        [StringLength(100)]
+        [Display(Name = "Benefit Type")]
+        public string Type { get; set; } = "Cash Assistance";
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Benefit Date")]
+        public DateTime Date { get; set; }
+
+        // Foreign Key relationship to EmploymentProgram
+        [Required]
+        public int ProgramID { get; set; }
+
+        [ForeignKey("ProgramID")]
+        public virtual EmploymentProgram? EmploymentProgram { get; set; }
+
+        // Foreign Key relationship to Citizen
+        [Required]
+        public int CitizenID { get; set; }
+
+        [ForeignKey("CitizenID")]
+        public virtual Citizen? Citizen { get; set; }
+>>>>>>> origin/ProgramManager
+    }
+}

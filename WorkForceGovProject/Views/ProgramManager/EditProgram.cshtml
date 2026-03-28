@@ -1,0 +1,190 @@
+@model WorkForceGovProject.Models.EmploymentProgram
+@{
+    ViewData["Title"] = "Edit Program";
+}
+
+<link rel="stylesheet" href="~/css/Dashboard.css" />
+<link rel="stylesheet" href="~/css/CreateProgram.css" />
+
+<div class="dashboard-container">
+    <div class="sidebar-nav d-none d-md-block shadow">
+        <a asp-action="Dashboard" asp-controller="ProgramManager">🏠 Dashboard</a>
+        <a asp-action="ProgramManagement" asp-controller="ProgramManager" class="active">📋 Programs</a>
+        <a asp-action="TrainingManagement" asp-controller="ProgramManager">🎓 Trainings</a>
+        <a asp-action="BudgetMonitoring" asp-controller="ProgramManager">💰 Budget</a>
+        <a asp-action="PerformanceTracking" asp-controller="ProgramManager">📊 Performance</a>
+        <a asp-action="ResourceManagement" asp-controller="ProgramManager">📦 Resources</a>
+        <a asp-action="BenefitManagement" asp-controller="ProgramManager">🎁 Benefits</a>
+        <a asp-action="Reports" asp-controller="ProgramManager">📈 Reports</a>
+        <a asp-action="Logout" asp-controller="Account" class="text-danger mt-5 fw-bold">🚪 Sign Out</a>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-2">Edit Program</h2>
+                <p class="text-muted">Update employment program details</p>
+            </div>
+            <a asp-action="ProgramManagement" asp-controller="ProgramManager" class="btn btn-secondary shadow-sm px-4">
+                <i class="bi bi-arrow-left"></i> Back to Programs
+            </a>
+        </div>
+
+        <div class="bg-white rounded-3 border shadow-sm p-4">
+            <form asp-action="EditProgram" asp-controller="ProgramManager" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <!-- Hidden field for ProgramID -->
+                <input type="hidden" asp-for="ProgramID" />
+
+                <div class="row g-3">
+                    <!-- Program Title -->
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label asp-for="Title" class="form-label fw-bold">Program Title <span class="text-danger">*</span></label>
+                            <input asp-for="Title" class="form-control form-control-lg" placeholder="Enter program title" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Program Description -->
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label asp-for="Description" class="form-label fw-bold">Description <span class="text-danger">*</span></label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter detailed program description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="StartDate" class="form-label fw-bold">Start Date <span class="text-danger">*</span></label>
+                            <input asp-for="StartDate" type="date" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="EndDate" class="form-label fw-bold">End Date <span class="text-danger">*</span></label>
+                            <input asp-for="EndDate" type="date" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Budget -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Budget" class="form-label fw-bold">Program Budget <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Budget" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="Budget" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Status" class="form-label fw-bold">Status <span class="text-danger">*</span></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="">-- Select Status --</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warning Box -->
+                <div class="alert alert-warning d-flex align-items-center mt-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <strong>Important:</strong> Changing the budget may affect existing trainings, resources, and benefits associated with this program. 
+                        Review all dependencies before making significant changes.
+                    </div>
+                </div>
+
+                <!-- Program Information -->
+                <div class="bg-light rounded-3 border p-3 mt-3">
+                    <h6 class="fw-bold mb-2">📊 Current Program Statistics</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <small class="text-muted">Program ID:</small>
+                            <p class="mb-1 fw-bold">#@Model.ProgramID</p>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">Trainings:</small>
+                            <p class="mb-1 fw-bold">@(Model.Trainings?.Count ?? 0) associated</p>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">Benefits Distributed:</small>
+                            <p class="mb-1 fw-bold">@(Model.Benefits?.Count ?? 0) benefits</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Buttons -->
+                <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
+                    <a asp-action="ProgramManagement" asp-controller="ProgramManager" class="btn btn-lg btn-outline-secondary px-5">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-lg btn-success px-5 shadow-sm">
+                        <i class="bi bi-check-circle"></i> Update Program
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Help Section -->
+        <div class="bg-light rounded-3 border p-4 mt-4">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-question-circle text-primary"></i> Editing Guidelines
+            </h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <strong>Title:</strong> Keep it clear and descriptive
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <strong>Dates:</strong> Ensure end date is after start date
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <strong>Budget:</strong> Consider existing allocations
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-info-circle-fill text-info me-2"></i>
+                            <strong>Tip:</strong> Use "Inactive" status to pause programs
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-info-circle-fill text-info me-2"></i>
+                            <strong>Tip:</strong> "Completed" status for finished programs
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-info-circle-fill text-info me-2"></i>
+                            <strong>Tip:</strong> Review budget before reducing amounts
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

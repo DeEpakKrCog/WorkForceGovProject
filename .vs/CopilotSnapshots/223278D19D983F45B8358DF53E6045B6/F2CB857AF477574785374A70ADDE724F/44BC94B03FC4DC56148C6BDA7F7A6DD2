@@ -1,0 +1,67 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WorkForceGovProject.Models
+{
+    public class EmploymentProgram
+    {
+<<<<<<< HEAD
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public string ProgramName { get; set; }
+
+        public string Description { get; set; }
+
+        public string ProgramType { get; set; } // Cash, Subsidy, Training
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TotalBudget { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime StartDate { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime? EndDate { get; set; }
+
+        public string Status { get; set; } = "Active"; // Active, Closed, Paused
+
+        public virtual ICollection<Benefit> Benefits { get; set; } = new List<Benefit>();
+=======
+        [Key] // Primary Key
+        public int ProgramID { get; set; }
+
+        [Required]
+        [StringLength(200)]
+        public string Title { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Start Date")]
+        public DateTime StartDate { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "End Date")]
+        public DateTime EndDate { get; set; }
+
+        [Required]
+        [Column(TypeName = "decimal(18,2)")] // Currency precision
+        [Display(Name = "Program Budget")]
+        public decimal Budget { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string Status { get; set; } = "Active";
+
+        // Navigation properties for One-to-Many relationships
+        public virtual ICollection<Training>? Trainings { get; set; }
+        public virtual ICollection<Resource>? Resources { get; set; }
+        public virtual ICollection<Benefit>? Benefits { get; set; }
+>>>>>>> origin/ProgramManager
+    }
+}

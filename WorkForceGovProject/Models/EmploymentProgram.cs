@@ -27,5 +27,24 @@ namespace WorkForceGovProject.Models
         public string Status { get; set; } = "Active"; // Active, Closed, Paused
 
         public virtual ICollection<Benefit> Benefits { get; set; } = new List<Benefit>();
+
+        // Compatibility aliases for ProgramManager branch
+        [NotMapped]
+        public int ProgramID { get => Id; set => Id = value; }
+
+        [NotMapped]
+        public string Title { get => ProgramName; set => ProgramName = value; }
+
+        [NotMapped]
+        public decimal Budget { get => TotalBudget; set => TotalBudget = value; }
+
+        [NotMapped]
+        public DateTime? ApplicationEndDate { get => EndDate; set => EndDate = value; }
+
+        [NotMapped]
+        public ICollection<Training> Trainings { get; set; } = new List<Training>();
+
+        [NotMapped]
+        public ICollection<Resource> Resources { get; set; } = new List<Resource>();
     }
 }

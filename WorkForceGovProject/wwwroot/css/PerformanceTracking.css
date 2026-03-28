@@ -1,0 +1,277 @@
+/* ================================
+   Performance Tracking Styles
+================================ */
+
+/* Performance Summary Cards */
+.stat-card .icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Performance Metrics Table */
+.performance-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.performance-metric .fw-bold {
+    font-size: 1rem;
+}
+
+/* Program Detail Cards */
+.program-detail-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.program-detail-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.program-detail-card .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.25rem;
+    border-bottom: none;
+}
+
+.program-detail-card .card-header h5 {
+    font-size: 1.125rem;
+    margin-bottom: 0.25rem;
+}
+
+.program-detail-card .card-header small {
+    opacity: 0.9;
+}
+
+.program-detail-card .card-body {
+    padding: 1.5rem;
+}
+
+/* Metric Rows */
+.metric-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.metric-row:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.metric-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* Table Styling */
+.table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    background-color: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+}
+
+/* Badge Styling */
+.badge {
+    padding: 0.375rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.3px;
+    border-radius: 6px;
+}
+
+.badge.bg-success {
+    background-color: #10b981 !important;
+}
+
+.badge.bg-info {
+    background-color: #3b82f6 !important;
+}
+
+.badge.bg-warning {
+    background-color: #f59e0b !important;
+    color: white;
+}
+
+.badge.bg-danger {
+    background-color: #ef4444 !important;
+}
+
+.badge.bg-primary {
+    background-color: #8b5cf6 !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6b7280 !important;
+}
+
+/* Progress Bar */
+.progress {
+    border-radius: 8px;
+    background-color: #e5e7eb;
+    height: 8px;
+}
+
+.progress-bar {
+    border-radius: 8px;
+    transition: width 0.6s ease;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state h4 {
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    color: #94a3b8;
+    margin-bottom: 1.5rem;
+}
+
+/* Export Button */
+.btn-info {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.btn-info:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ================================
+   Responsive Design
+================================ */
+@media (max-width: 768px) {
+    .program-detail-card .card-header h5 {
+        font-size: 1rem;
+    }
+
+    .metric-row {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .metric-item {
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .metric-item:last-child {
+        border-bottom: none;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .badge {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .stat-card .icon {
+        font-size: 2rem;
+    }
+
+    .program-detail-card .card-body {
+        padding: 1rem;
+    }
+}
+
+/* ================================
+   Print Styles
+================================ */
+@media print {
+    .sidebar-nav,
+    .btn {
+        display: none !important;
+    }
+
+    .main-content {
+        padding: 0 !important;
+        background: white !important;
+    }
+
+    .dashboard-container {
+        display: block;
+    }
+
+    .program-detail-card,
+    .stat-card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+        page-break-inside: avoid;
+    }
+
+    .badge,
+    .progress-bar {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

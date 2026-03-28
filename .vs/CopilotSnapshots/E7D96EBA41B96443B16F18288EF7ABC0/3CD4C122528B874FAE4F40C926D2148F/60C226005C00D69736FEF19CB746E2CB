@@ -1,0 +1,170 @@
+﻿@{
+    ViewData["Title"] = "Program Manager Dashboard";
+}
+
+<style>
+    /* Custom Sidebar styling */
+    .dashboard-container { display: flex; margin-top: -24px; min-height: 100vh; }
+    .sidebar-nav { width: 260px; background: #1e293b; color: white; padding-top: 20px; }
+    .sidebar-nav a { 
+        display: block; padding: 12px 24px; color: #94a3b8; text-decoration: none; 
+        transition: 0.3s; margin: 4px 12px; border-radius: 8px;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active { background: #3b82f6; color: white; }
+    .main-content { flex: 1; padding: 40px; background: #f8fafc; }
+    
+    .stat-card { background: white; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .stat-card .icon { font-size: 2rem; margin-bottom: 10px; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 10px; background: #3b82f6; }
+    .quick-action-btn { padding: 12px 20px; border-radius: 8px; transition: 0.3s; }
+</style>
+
+<div class="dashboard-container">
+    <div class="sidebar-nav d-none d-md-block shadow">
+        <a href="#" class="active">🏠 Dashboard</a>
+        <a asp-action="ProgramManagement" asp-controller="ProgramManager">📋 Programs</a>
+        <a asp-action="TrainingManagement" asp-controller="ProgramManager">🎓 Trainings</a>
+        <a asp-action="BudgetMonitoring" asp-controller="ProgramManager">💰 Budget</a>
+        <a asp-action="PerformanceTracking" asp-controller="ProgramManager">📊 Performance</a>
+        <a asp-action="ResourceManagement" asp-controller="ProgramManager">📦 Resources</a>
+        <a asp-action="BenefitManagement" asp-controller="ProgramManager">🎁 Benefits</a>
+        <a asp-action="Reports" asp-controller="ProgramManager">📈 Reports</a>
+        <a asp-action="Logout" asp-controller="Account" class="text-danger mt-5 fw-bold">🚪 Sign Out</a>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <p class="text-muted mb-1">@DateTime.Now.ToString("D")</p>
+                <h2 class="fw-bold text-dark">Program Manager Dashboard</h2>
+                <p class="text-muted">Welcome, @(Context.Session.GetString("UserName") ?? "Program Manager")</p>
+            </div>
+            <a asp-action="CreateProgram" asp-controller="ProgramManager" class="btn btn-primary shadow-sm px-4 fw-bold">+ Create Program</a>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="icon text-primary">📋</div>
+                    <small class="text-uppercase text-muted fw-bold">Total Programs</small>
+                    <p class="h3 mb-0 mt-2 fw-bold text-dark">@ViewBag.TotalPrograms</p>
+                    <small class="text-success">@ViewBag.ActivePrograms Active</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="icon text-success">💰</div>
+                    <small class="text-uppercase text-muted fw-bold">Total Budget</small>
+                    <p class="h3 mb-0 mt-2 fw-bold text-dark">@ViewBag.TotalBudget.ToString("C")</p>
+                    <small class="text-muted">Allocated Funds</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="icon text-info">🎓</div>
+                    <small class="text-uppercase text-muted fw-bold">Active Trainings</small>
+                    <p class="h3 mb-0 mt-2 fw-bold text-dark">@ViewBag.ActiveTrainings</p>
+                    <small class="text-muted">In Progress</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="icon text-warning">🎁</div>
+                    <small class="text-uppercase text-muted fw-bold">Total Benefits</small>
+                    <p class="h3 mb-0 mt-2 fw-bold text-dark">@ViewBag.TotalBenefits.ToString("C")</p>
+                    <small class="text-muted">Distributed</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-8">
+                <div class="bg-white p-4 rounded-3 border shadow-sm">
+                    <h3 class="h5 fw-bold mb-4 text-dark">Quick Actions</h3>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a asp-action="CreateProgram" asp-controller="ProgramManager" class="btn btn-outline-primary w-100 quick-action-btn">
+                                <i class="bi bi-plus-circle"></i> Create New Program
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-action="ProgramManagement" asp-controller="ProgramManager" class="btn btn-outline-secondary w-100 quick-action-btn">
+                                <i class="bi bi-list-ul"></i> View All Programs
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-action="BudgetMonitoring" asp-controller="ProgramManager" class="btn btn-outline-success w-100 quick-action-btn">
+                                <i class="bi bi-cash-stack"></i> Monitor Budget
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-action="Reports" asp-controller="ProgramManager" class="btn btn-outline-info w-100 quick-action-btn">
+                                <i class="bi bi-graph-up"></i> Generate Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="bg-white p-4 rounded-3 border shadow-sm">
+                    <h3 class="h5 fw-bold mb-4 text-dark">System Status</h3>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-secondary">Active Programs</span>
+                            <span class="badge bg-success">@ViewBag.ActivePrograms</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-secondary">Active Trainings</span>
+                            <span class="badge bg-info">@ViewBag.ActiveTrainings</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-secondary">System Health</span>
+                            <span class="badge bg-success">Operational</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-3 border shadow-sm">
+            <h3 class="h5 fw-bold mb-4 text-dark">Recent Activity & Notifications</h3>
+            
+            <div class="py-3 border-bottom d-flex align-items-center">
+                <span class="status-dot"></span>
+                <span class="text-secondary">System is running smoothly. All programs are operational.</span>
+            </div>
+            
+            <div class="py-3 border-bottom d-flex align-items-center">
+                <span class="status-dot"></span>
+                <span class="text-secondary">Total budget allocation: @ViewBag.TotalBudget.ToString("C")</span>
+            </div>
+            
+            <div class="py-3 border-bottom d-flex align-items-center">
+                <span class="status-dot"></span>
+                <span class="text-secondary">@ViewBag.ActiveTrainings active training programs in progress.</span>
+            </div>
+            
+            <div class="py-3 d-flex align-items-center">
+                <span class="status-dot" style="background: #f59e0b;"></span>
+                <span class="text-secondary">Benefits totaling @ViewBag.TotalBenefits.ToString("C") have been distributed to citizens.</span>
+            </div>
+        </div>
+    </div>
+</div>

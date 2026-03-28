@@ -1,0 +1,158 @@
+﻿@model IEnumerable<WorkForceGovProject.Models.Benefit>
+@{
+    ViewData["Title"] = "Benefit Management";
+}
+
+<link rel="stylesheet" href="~/css/Dashboard.css" />
+
+<div class="dashboard-container">
+    <div class="sidebar-nav d-none d-md-block shadow">
+        <a asp-action="Dashboard" asp-controller="ProgramManager">🏠 Dashboard</a>
+        <a asp-action="ProgramManagement" asp-controller="ProgramManager">📋 Programs</a>
+        <a asp-action="TrainingManagement" asp-controller="ProgramManager">🎓 Trainings</a>
+        <a asp-action="BudgetMonitoring" asp-controller="ProgramManager">💰 Budget</a>
+        <a asp-action="PerformanceTracking" asp-controller="ProgramManager">📊 Performance</a>
+        <a asp-action="ResourceManagement" asp-controller="ProgramManager">📦 Resources</a>
+        <a href="#" class="active">🎁 Benefits</a>
+        <a asp-action="Reports" asp-controller="ProgramManager">📈 Reports</a>
+        <a asp-action="Logout" asp-controller="Account" class="text-danger mt-5 fw-bold">🚪 Sign Out</a>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-dark mb-2">Benefit Management</h2>
+                <p class="text-muted">Track benefits distributed to citizens</p>
+            </div>
+            <a asp-action="CreateBenefit" asp-controller="ProgramManager" class="btn btn-success shadow-sm px-4 fw-bold">
+                <i class="bi bi-plus-circle"></i> Distribute New Benefit
+            </a>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (Model != null && Model.Any())
+        {
+            <!-- Summary Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon text-success">🎁</div>
+                        <small class="text-uppercase text-muted fw-bold">Total Benefits</small>
+                        <p class="h3 mb-0 mt-2 fw-bold text-dark">@Model.Count()</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon text-primary">👥</div>
+                        <small class="text-uppercase text-muted fw-bold">Beneficiaries</small>
+                        <p class="h3 mb-0 mt-2 fw-bold text-dark">@Model.Select(b => b.CitizenID).Distinct().Count()</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="icon text-warning">💰</div>
+                        <small class="text-uppercase text-muted fw-bold">Total Amount</small>
+                        <p class="h3 mb-0 mt-2 fw-bold text-dark">@Model.Sum(b => b.Amount).ToString("C")</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefits Table -->
+            <div class="bg-white rounded-3 border shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4 py-3">Benefit ID</th>
+                                <th class="py-3">Program</th>
+                                <th class="py-3">Citizen</th>
+                                <th class="py-3 text-end">Amount</th>
+                                <th class="py-3">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var benefit in Model)
+                            {
+                                <tr>
+                                    <td class="px-4 py-3 fw-bold text-primary">#@benefit.BenefitID</td>
+                                    <td class="py-3">
+                                        @if (benefit.EmploymentProgram != null)
+                                        {
+                                            <div class="fw-bold text-dark">@benefit.EmploymentProgram.Title</div>
+                                            <small class="text-muted">Program #@benefit.ProgramID</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Program #@benefit.ProgramID</span>
+                                        }
+                                    </td>
+                                    <td class="py-3">
+                                        @if (benefit.Citizen != null)
+                                        {
+                                            <div class="fw-bold text-dark">@benefit.Citizen.FullName</div>
+                                            <small class="text-muted">@benefit.Citizen.Email</small>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Citizen #@benefit.CitizenID</span>
+                                        }
+                                    </td>
+                                    <td class="py-3 text-end fw-bold text-success">@benefit.Amount.ToString("C")</td>
+                                    <td class="py-3">@benefit.Date.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr class="fw-bold">
+                                <td colspan="3" class="px-4 py-3">TOTAL</td>
+                                <td class="py-3 text-end text-success">@Model.Sum(b => b.Amount).ToString("C")</td>
+                                <td class="py-3"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="bg-white rounded-3 border shadow-sm">
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-gift" style="font-size: 4rem; color: #cbd5e1;"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No Benefits Found</h4>
+                    <p class="text-muted mb-4">No benefits have been distributed yet.</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        color: #64748b;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.2s;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .table tfoot {
+        background-color: #f8fafc;
+    }
+</style>

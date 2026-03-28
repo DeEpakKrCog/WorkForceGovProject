@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WorkForceGovProject.Models
@@ -43,5 +43,9 @@ namespace WorkForceGovProject.Models
         public virtual ICollection<CitizenDocument> Documents { get; set; } = new List<CitizenDocument>();
         public virtual ICollection<Application> Applications { get; set; } = new List<Application>();
         public virtual ICollection<Benefit> Benefits { get; set; } = new List<Benefit>();
+
+        // Compatibility alias for ProgramManager branch
+        [NotMapped]
+        public int CitizenID { get => Id; set => Id = value; }
     }
 }

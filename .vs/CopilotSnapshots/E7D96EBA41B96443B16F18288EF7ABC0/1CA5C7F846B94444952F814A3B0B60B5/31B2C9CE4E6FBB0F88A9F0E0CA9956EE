@@ -1,0 +1,79 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using WorkForceGovProject.Data; // Added for Database access
+using WorkForceGovProject.Models;
+using System.Linq;
+
+namespace WorkForceGovProject.Controllers
+{
+    public class CitizenController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        // Constructor to inject the database context
+        public CitizenController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public IActionResult Dashboard()
+        {
+            // 1. In a real app, we get the Logged-in User's ID from the Session
+            HttpContext.Session.SetInt32("UserId", 1); // Simulating a logged-in user with ID 1
+            int? userId = HttpContext.Session.GetInt32("UserId");
+
+            if (userId == null)
+            {
+                // If not logged in, send them back to Login
+                return RedirectToAction("Login", "Account");
+            }
+
+            // 2. Fetch the Citizen record from the database that matches this User
+            var citizen = _context.Citizens.FirstOrDefault(c => c.UserId == userId);
+
+            // 3. If no citizen record exists yet, create a dummy one for the view 
+            // (Or handle as an error/profile setup page)
+            if (citizen == null)
+            {
+                citizen = new Citizen
+                {
+                    FullName = HttpContext.Session.GetString("UserName") ?? "Citizen",
+                    ActiveApplications = 0,
+                    AccountBalance = 0.00m,
+                    DocumentStatus = "Pending",
+                    NewJobMatches = 0
+                };
+            }
+
+            return View(citizen);
+        }
+
+        // GET: Citizen/CreateCitizen
+        public IActionResult CreateCitizen()
+        {
+            return View();
+        }
+
+        // POST: Citizen/CreateCitizen
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateCitizen(Citizen citizen)
+        {
+            if (ModelState.IsValid)
+            {
+                // Set default values
+                citizen.ActiveApplications = 0;
+                citizen.AccountBalance = 0.00m;
+                citizen.DocumentStatus = "Pending";
+                citizen.NewJobMatches = 0;
+                citizen.UserId = 1; // Default user ID for testing
+
+                _context.Citizens.Add(citizen);
+                _context.SaveChanges();
+                TempData["SuccessMessage"] = "Citizen registered successfully!";
+                return RedirectToAction("CreateCitizen");
+            }
+
+            return View(citizen);
+        }
+    }
+}

@@ -1,46 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WorkForceGovProject.Data;
 using WorkForceGovProject.Repositories;
 using WorkForceGovProject.Services;
 
-// Find the project root by searching for Views folder
-string FindProjectRoot()
-{
-    var currentDir = AppContext.BaseDirectory;
-
-    // Search up from bin\Debug\net10.0 to find the project root
-    while (!Directory.Exists(Path.Combine(currentDir, "Views")))
-    {
-        var parent = Directory.GetParent(currentDir);
-        if (parent == null)
-            throw new InvalidOperationException("Could not find project root directory with Views folder");
-        currentDir = parent.FullName;
-    }
-
-    return currentDir;
-}
-
-var projectRoot = FindProjectRoot();
-System.Console.WriteLine($"[DEBUG] AppContext.BaseDirectory: {AppContext.BaseDirectory}");
-System.Console.WriteLine($"[DEBUG] ProjectRoot found at: {projectRoot}");
-System.Console.WriteLine($"[DEBUG] Views folder exists: {Directory.Exists(Path.Combine(projectRoot, "Views"))}");
-
-var builder = WebApplication.CreateBuilder(new WebApplicationOptions
-{
-    ContentRootPath = projectRoot,
-    Args = args
-});
-
-System.Console.WriteLine($"[DEBUG] ContentRootPath set to: {builder.Environment.ContentRootPath}");
+// This is the starting point of your application
+var builder = WebApplication.CreateBuilder(args);
 
 // 1. Database Configuration
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Crucial for Views to work
-builder.Services.AddControllersWithViews();
+// 2. MVC and Razor Runtime Compilation (Requires NuGet package mentioned above)
+builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation();
 
-// 2. Repository Layer
+// 3. Repository Layer - Dependency Injection
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -49,7 +23,7 @@ builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
-// 3. Service Layer
+// 4. Service Layer - Dependency Injection
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICitizenService, CitizenService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
@@ -58,7 +32,7 @@ builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IBenefitService, BenefitService>();
 
-// 4. Session Configuration
+// 5. Session Configuration
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -72,18 +46,23 @@ builder.Services.AddLogging();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+// 6. HTTP Pipeline Configuration
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // This serves your CSS/JS from wwwroot
+app.UseStaticFiles();
 app.UseRouting();
 
-app.UseSession(); // Must be before Authorization
+// Order is critical: Session must come before Authorization
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
