@@ -77,6 +77,17 @@
     {
       "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\models\\citizendocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\models\\citizendocument.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\2481439\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1358104998\\ApplicationDbContextModelSnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|c:\\users\\2481439\\onedrive - cognizant\\documents\\project\\workforcegovproject\\workforcegovproject\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C33459D-E70C-542B-B4D8-E5B2F2F71763}|WorkForceGovProject\\WorkForceGovProject.csproj|solutionrelative:workforcegovproject\\models\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -86,19 +97,70 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "CitizenDocument.cs",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\CitizenDocument.cs",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Models\\CitizenDocument.cs",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\CitizenDocument.cs",
-              "RelativeToolTip": "WorkForceGovProject\\Models\\CitizenDocument.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADQAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 21,
+              "Title": "Role.cs",
+              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\Role.cs",
+              "RelativeDocumentMoniker": "WorkForceGovProject\\Models\\Role.cs",
+              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\Role.cs",
+              "RelativeToolTip": "WorkForceGovProject\\Models\\Role.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:09:42.575Z",
+              "WhenOpened": "2026-03-28T06:15:08.612Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\User.cs",
+              "RelativeDocumentMoniker": "WorkForceGovProject\\Models\\User.cs",
+              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\User.cs",
+              "RelativeToolTip": "WorkForceGovProject\\Models\\User.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAIBQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-28T06:15:02.714Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "ApplicationDbContextModelSnapshot.cs",
+              "DocumentMoniker": "C:\\Users\\2481439\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1358104998\\ApplicationDbContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "..\\..\\..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1358104998\\ApplicationDbContextModelSnapshot.cs",
+              "ToolTip": "C:\\Users\\2481439\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1358104998\\ApplicationDbContextModelSnapshot.cs",
+              "RelativeToolTip": "..\\..\\..\\..\\AppData\\Local\\Temp\\CopilotBaseline\\Deleted\\1358104998\\ApplicationDbContextModelSnapshot.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-28T06:14:47.992Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "WorkForceGovProject.csproj",
+              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\WorkForceGovProject.csproj",
+              "RelativeDocumentMoniker": "WorkForceGovProject\\WorkForceGovProject.csproj",
+              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\WorkForceGovProject.csproj",
+              "RelativeToolTip": "WorkForceGovProject\\WorkForceGovProject.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-03-28T06:13:27.373Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "WorkForceGovProject\\Controllers\\HomeController.cs",
+              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "WorkForceGovProject\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-28T06:13:27.419Z",
               "EditorCaption": ""
             },
             {
@@ -111,32 +173,19 @@
               "RelativeToolTip": "WorkForceGovProject\\Views\\Home\\Index.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-03-28T06:06:05.924Z"
+              "WhenOpened": "2026-03-28T06:13:27.368Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "WorkForceGovProject.csproj",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\WorkForceGovProject.csproj",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\WorkForceGovProject.csproj",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\WorkForceGovProject.csproj",
-              "RelativeToolTip": "WorkForceGovProject\\WorkForceGovProject.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-03-28T06:06:05.975Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "HomeController.cs",
-              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Controllers\\HomeController.cs",
-              "RelativeDocumentMoniker": "WorkForceGovProject\\Controllers\\HomeController.cs",
-              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Controllers\\HomeController.cs",
-              "RelativeToolTip": "WorkForceGovProject\\Controllers\\HomeController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "DocumentIndex": 18,
+              "Title": "CitizenDocument.cs",
+              "DocumentMoniker": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\CitizenDocument.cs",
+              "RelativeDocumentMoniker": "WorkForceGovProject\\Models\\CitizenDocument.cs",
+              "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Models\\CitizenDocument.cs",
+              "RelativeToolTip": "WorkForceGovProject\\Models\\CitizenDocument.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.034Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-28T06:13:27.336Z"
             },
             {
               "$type": "Document",
@@ -148,7 +197,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Models\\JobOpening.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.045Z"
+              "WhenOpened": "2026-03-28T06:13:27.427Z"
             },
             {
               "$type": "Document",
@@ -160,7 +209,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Program.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAowCMAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.045Z"
+              "WhenOpened": "2026-03-28T06:13:27.431Z"
             },
             {
               "$type": "Document",
@@ -172,7 +221,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Properties\\launchSettings.json",
               "ViewState": "AgIAAAcAAAAAAAAAAABBwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-28T06:06:06.052Z"
+              "WhenOpened": "2026-03-28T06:13:27.433Z"
             },
             {
               "$type": "Document",
@@ -184,7 +233,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Repositories\\ApplicationRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAE0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.056Z"
+              "WhenOpened": "2026-03-28T06:13:27.437Z"
             },
             {
               "$type": "Document",
@@ -196,7 +245,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Services\\EmployerDocumentService.cs",
               "ViewState": "AgIAAFIAAAAAAAAAAIBJwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.063Z"
+              "WhenOpened": "2026-03-28T06:13:27.44Z"
             },
             {
               "$type": "Document",
@@ -208,7 +257,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Controllers\\EmployerController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.067Z"
+              "WhenOpened": "2026-03-28T06:13:27.44Z"
             },
             {
               "$type": "Document",
@@ -218,9 +267,9 @@
               "RelativeDocumentMoniker": "WorkForceGovProject\\Data\\ApplicationDbContext.cs",
               "ToolTip": "C:\\Users\\2481439\\OneDrive - Cognizant\\Documents\\Project\\WorkForceGovProject\\WorkForceGovProject\\Data\\ApplicationDbContext.cs",
               "RelativeToolTip": "WorkForceGovProject\\Data\\ApplicationDbContext.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAABQwBMAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABUAAAAAAAAAAABQwBIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.071Z",
+              "WhenOpened": "2026-03-28T06:13:27.449Z",
               "EditorCaption": ""
             },
             {
@@ -233,7 +282,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Services\\NotificationService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAM0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.077Z"
+              "WhenOpened": "2026-03-28T06:13:27.449Z"
             },
             {
               "$type": "Document",
@@ -245,7 +294,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Services\\ApplicationService.cs",
               "ViewState": "AgIAAEMAAAAAAAAAAIBZwNAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.079Z"
+              "WhenOpened": "2026-03-28T06:13:27.449Z"
             },
             {
               "$type": "Document",
@@ -257,8 +306,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Models\\Application.cs",
               "ViewState": "AgIAADAAAAAAAAAAAIBQwDQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.079Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-28T06:13:27.457Z"
             },
             {
               "$type": "Document",
@@ -270,7 +318,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Repositories\\UserRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.088Z"
+              "WhenOpened": "2026-03-28T06:13:27.457Z"
             },
             {
               "$type": "Document",
@@ -282,7 +330,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Repositories\\CitizenRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAADUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.093Z"
+              "WhenOpened": "2026-03-28T06:13:27.457Z"
             },
             {
               "$type": "Document",
@@ -294,7 +342,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Models\\Notification.cs",
               "ViewState": "AgIAAAoAAAAAAAAAAAA+wAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.096Z"
+              "WhenOpened": "2026-03-28T06:13:27.464Z"
             },
             {
               "$type": "Document",
@@ -306,7 +354,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Repositories\\NotificationRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.098Z"
+              "WhenOpened": "2026-03-28T06:13:27.464Z"
             },
             {
               "$type": "Document",
@@ -318,7 +366,7 @@
               "RelativeToolTip": "WorkForceGovProject\\Controllers\\AccountController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-28T06:06:06.104Z"
+              "WhenOpened": "2026-03-28T06:13:27.467Z"
             }
           ]
         }

@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<section class="py-5 text-center bg-primary text-white" style="background: linear-gradient(135deg, #2c3e50, #2980b9) !important;">
+    <div class="container py-5">
+        <h1 class="display-4 fw-bold">Empowering the Workforce</h1>
+        <p class="lead mb-4 opacity-75">A unified governance platform for job seekers, employers, and government ministries.</p>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-success btn-lg px-5 fw-bold shadow">Register as Citizen</a>
+    </div>
+</section>
+
+<div class="container bg-white shadow-sm rounded-3 py-4 mt-n4 position-relative">
+    <div class="row text-center">
+        <div class="col-md-4">
+            <h2 class="text-primary fw-bold">250k+</h2>
+            <p class="text-muted mb-0">Users</p>
+        </div>
+        <div class="col-md-4 border-start border-end">
+            <h2 class="text-primary fw-bold">15k+</h2>
+            <p class="text-muted mb-0">Jobs</p>
+        </div>
+        <div class="col-md-4">
+            <h2 class="text-primary fw-bold">99.9%</h2>
+            <p class="text-muted mb-0">Uptime</p>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <h2 class="text-center mb-5 fw-bold" id="actors">Access Your Portal</h2>
+    <div class="row g-4 justify-content-center">
+        @foreach (var portal in new[] {
+            new { Role = "Citizen", Desc = "Apply for jobs and track your benefits.", Action = "Dashboard", Controller = "Citizen" },
+            new { Role = "Employer", Desc = "Post vacancies and manage your hires.", Action = "Login", Controller = "Account" },
+            new { Role = "Labor Officer", Desc = "Monitor compliance and validate applications.", Action = "Login", Controller = "Account" },
+            new { Role = "System Admin", Desc = "Manage users and system workflows.", Action = "Login", Controller = "Account" },
+            new { Role = "Program Manager", Desc = "Oversees programs and monitors budgets.", Action = "Login", Controller = "Account" }
+        })
+        {
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm text-center p-4">
+                    <div class="card-body">
+                        <h3 class="card-title h4 text-dark fw-bold">@portal.Role</h3>
+                        <p class="card-text text-muted mb-4">@portal.Desc</p>
+                        
+                        <a asp-controller="@portal.Controller"
+                               asp-action="@portal.Action"
+                               class="btn btn-outline-primary fw-bold px-4">
+                            Enter @portal.Role Portal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

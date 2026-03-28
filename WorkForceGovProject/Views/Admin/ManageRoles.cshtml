@@ -1,0 +1,92 @@
+@model List<RoleManagementViewModel>
+
+@{
+    ViewData["Title"] = "Manage Roles";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-user-tag"></i> Role Management</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("CreateRole", "Admin")" class="btn btn-success">
+                <i class="fas fa-plus"></i> Create Role
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (Model.Any())
+        {
+            @foreach (var role in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">@role.RoleName</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@role.Description</p>
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-users"></i> @role.UserCount assigned user(s)
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <a href="@Url.Action("EditRole", "Admin", new { id = role.RoleId })" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-role-id="@role.RoleId" data-role-name="@role.RoleName">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    No roles found. <a href="@Url.Action("CreateRole", "Admin")">Create one</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the role <strong id="roleName"></strong>?</p>
+                <p class="text-warning"><small><i class="fas fa-exclamation-triangle"></i> This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">Delete Role</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var roleId = button.getAttribute('data-role-id');
+        var roleName = button.getAttribute('data-role-name');
+        
+        document.getElementById('roleName').textContent = roleName;
+        document.getElementById('deleteForm').action = '@Url.Action("DeleteRole", "Admin")/' + roleId;
+    });
+</script>

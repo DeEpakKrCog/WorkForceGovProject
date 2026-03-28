@@ -18,5 +18,8 @@ namespace WorkForceGovProject.Data
         public DbSet<Benefit> Benefits { get; set; }
         public DbSet<EmploymentProgram> EmploymentPrograms { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<SystemLog> SystemLogs { get; set; }
+        public DbSet<Report> Reports { get; set; }
     }
 }

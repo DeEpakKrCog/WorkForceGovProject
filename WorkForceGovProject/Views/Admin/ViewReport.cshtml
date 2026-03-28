@@ -1,0 +1,73 @@
+@model Report
+
+@{
+    ViewData["Title"] = "View Report";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 class="mb-0"><i class="fas fa-file-alt"></i> @Model.ReportName</h5>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="#" class="btn btn-sm btn-light">
+                                <i class="fas fa-download"></i> Download PDF
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <h6 class="text-muted">Report Type</h6>
+                            <p><strong>@Model.ReportType</strong></p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-muted">Generated Date</h6>
+                            <p><strong>@Model.GeneratedDate.ToString("g")</strong></p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-muted">Start Date</h6>
+                            <p><strong>@(Model.StartDate?.ToString("yyyy-MM-dd") ?? "N/A")</strong></p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-muted">End Date</h6>
+                            <p><strong>@(Model.EndDate?.ToString("yyyy-MM-dd") ?? "N/A")</strong></p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <h6 class="mb-3">Report Content</h6>
+                    <div class="report-content bg-light p-4 rounded">
+                        @if (!string.IsNullOrEmpty(Model.ReportContent))
+                        {
+                            <p>@Html.Raw(Model.ReportContent)</p>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No content available for this report.</p>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <a href="@Url.Action("Reports", "Admin")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .report-content {
+        max-height: 600px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+    }
+</style>
