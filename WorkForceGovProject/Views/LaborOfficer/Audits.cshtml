@@ -1,0 +1,117 @@
+﻿@{
+    ViewData["Title"] = "Audit Logs";
+}
+
+<div class="container mt-4">
+    <h2>Audit Logs</h2>
+    
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>System Audit Trail</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" placeholder="Search by user..." id="userSearch">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="actionFilter">
+                                <option value="">All Actions</option>
+                                <option>Login</option>
+                                <option>Document Verification</option>
+                                <option>Application Review</option>
+                                <option>Compliance Check</option>
+                                <option>Data Update</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" class="form-control" id="startDate" value="@DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" class="form-control" id="endDate" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" onclick="filterAudits()">Filter</button>
+                        </div>
+                    </div>
+                    
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Entity Type</th>
+                                <th>Entity ID</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@DateTime.Now.AddMinutes(-15).ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                <td>Labor Officer</td>
+                                <td>Document Approved</td>
+                                <td>CitizenDocument</td>
+                                <td>DOC-1234</td>
+                                <td><button class="btn btn-sm btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>@DateTime.Now.AddHours(-1).ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                <td>Labor Officer</td>
+                                <td>Application Reviewed</td>
+                                <td>JobApplication</td>
+                                <td>APP-5678</td>
+                                <td><button class="btn btn-sm btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>@DateTime.Now.AddHours(-2).ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                <td>System Admin</td>
+                                <td>User Login</td>
+                                <td>User</td>
+                                <td>USR-0023</td>
+                                <td><button class="btn btn-sm btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>@DateTime.Now.AddHours(-3).ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                <td>Labor Officer</td>
+                                <td>Compliance Check</td>
+                                <td>Employer</td>
+                                <td>EMP-0045</td>
+                                <td><button class="btn btn-sm btn-info">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>@DateTime.Now.AddHours(-4).ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                <td>Labor Officer</td>
+                                <td>Document Rejected</td>
+                                <td>CitizenDocument</td>
+                                <td>DOC-1235</td>
+                                <td><button class="btn btn-sm btn-info">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <nav>
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterAudits() {
+            // Implement filtering logic here
+            console.log('Filtering audits...');
+        }
+    </script>
+}

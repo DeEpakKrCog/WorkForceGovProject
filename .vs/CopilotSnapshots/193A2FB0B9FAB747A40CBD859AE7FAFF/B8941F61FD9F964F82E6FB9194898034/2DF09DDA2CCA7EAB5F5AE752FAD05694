@@ -1,0 +1,609 @@
+﻿@{
+    ViewData["Title"] = "Document Verification";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/Dashboard.css" />
+
+<div class="dashboard-wrapper">
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-user-tie"></i> Labor Officer</h3>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="@Url.Action("Dashboard", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="@Url.Action("ViewDocuments", "LaborOfficer")" class="nav-item active">
+                <i class="fas fa-file-alt"></i>
+                <span>Document Verification</span>
+            </a>
+            <a href="@Url.Action("ViewEmployers", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-building"></i>
+                <span>Employer Compliance</span>
+            </a>
+            <a href="@Url.Action("ReviewApplications", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Job Applications</span>
+            </a>
+            <a href="@Url.Action("GenerateReports", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+            </a>
+            <a href="@Url.Action("ConductAudit", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Compliance Audit</span>
+            </a>
+            <a href="@Url.Action("Notifications", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+            </a>
+            <a href="@Url.Action("Settings", "LaborOfficer")" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="@Url.Action("Logout", "Account")" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-content">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-file-signature"></i> Document Verification</h1>
+            <p class="text-muted">Review and verify citizen documents for employment eligibility.</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <select class="form-select" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="verified">Verified</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <select class="form-select" id="typeFilter">
+                    <option value="">All Document Types</option>
+                    <option value="id">National ID</option>
+                    <option value="certificate">Certificates</option>
+                    <option value="resume">Resume/CV</option>
+                    <option value="other">Other</option>
+                </select>
+                <input type="date" class="form-control" id="dateFilter" placeholder="Filter by date">
+                <button class="btn btn-primary" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+                <button class="btn btn-secondary" onclick="clearFilters()">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid-small">
+            <div class="stat-card-small pending">
+                <div class="stat-content">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4>Pending Review</h4>
+                        <p class="stat-number">@(ViewBag.PendingCount ?? 15)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card-small success">
+                <div class="stat-content">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h4>Verified Today</h4>
+                        <p class="stat-number">@(ViewBag.VerifiedToday ?? 8)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card-small warning">
+                <div class="stat-content">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        <h4>Needs Attention</h4>
+                        <p class="stat-number">@(ViewBag.NeedsAttention ?? 3)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Table -->
+        <div class="documents-table-container">
+            <div class="table-header">
+                <h2><i class="fas fa-list"></i> Documents Pending Verification</h2>
+                <div class="table-actions">
+                    <button class="btn btn-success" onclick="verifySelected()">
+                        <i class="fas fa-check"></i> Verify Selected
+                    </button>
+                    <button class="btn btn-danger" onclick="rejectSelected()">
+                        <i class="fas fa-times"></i> Reject Selected
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="documents-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+                            <th>Document ID</th>
+                            <th>Citizen Name</th>
+                            <th>Document Type</th>
+                            <th>Submission Date</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* Sample data - Replace with actual data from controller *@
+                        <tr>
+                            <td><input type="checkbox" class="doc-checkbox" value="1"></td>
+                            <td>#DOC-001</td>
+                            <td>John Doe</td>
+                            <td><span class="badge bg-info">National ID</span></td>
+                            <td>2026-03-24 10:30 AM</td>
+                            <td><span class="status-badge pending">Pending</span></td>
+                            <td><span class="priority high">High</span></td>
+                            <td>
+                                <button class="btn-icon btn-view" onclick="viewDocument(1)" title="View Document">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-icon btn-approve" onclick="approveDocument(1)" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-icon btn-reject" onclick="rejectDocument(1)" title="Reject">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="doc-checkbox" value="2"></td>
+                            <td>#DOC-002</td>
+                            <td>Jane Smith</td>
+                            <td><span class="badge bg-warning">Certificate</span></td>
+                            <td>2026-03-24 09:15 AM</td>
+                            <td><span class="status-badge pending">Pending</span></td>
+                            <td><span class="priority medium">Medium</span></td>
+                            <td>
+                                <button class="btn-icon btn-view" onclick="viewDocument(2)" title="View Document">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-icon btn-approve" onclick="approveDocument(2)" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-icon btn-reject" onclick="rejectDocument(2)" title="Reject">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="doc-checkbox" value="3"></td>
+                            <td>#DOC-003</td>
+                            <td>Michael Johnson</td>
+                            <td><span class="badge bg-success">Resume/CV</span></td>
+                            <td>2026-03-23 04:20 PM</td>
+                            <td><span class="status-badge verified">Verified</span></td>
+                            <td><span class="priority low">Low</span></td>
+                            <td>
+                                <button class="btn-icon btn-view" onclick="viewDocument(3)" title="View Document">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-icon btn-download" onclick="downloadDocument(3)" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="doc-checkbox" value="4"></td>
+                            <td>#DOC-004</td>
+                            <td>Sarah Williams</td>
+                            <td><span class="badge bg-primary">Other</span></td>
+                            <td>2026-03-24 11:45 AM</td>
+                            <td><span class="status-badge pending">Pending</span></td>
+                            <td><span class="priority high">High</span></td>
+                            <td>
+                                <button class="btn-icon btn-view" onclick="viewDocument(4)" title="View Document">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-icon btn-approve" onclick="approveDocument(4)" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn-icon btn-reject" onclick="rejectDocument(4)" title="Reject">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    Showing 1 to 4 of 15 entries
+                </div>
+                <div class="pagination">
+                    <button class="page-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+    .filter-section {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-group {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group .form-select,
+    .filter-group .form-control {
+        flex: 1;
+        min-width: 180px;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .stats-grid-small {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card-small {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        border-left: 4px solid;
+    }
+
+    .stat-card-small.pending {
+        border-left-color: #f39c12;
+    }
+
+    .stat-card-small.success {
+        border-left-color: #27ae60;
+    }
+
+    .stat-card-small.warning {
+        border-left-color: #e74c3c;
+    }
+
+    .stat-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stat-content i {
+        font-size: 36px;
+        opacity: 0.7;
+    }
+
+    .stat-card-small.pending i {
+        color: #f39c12;
+    }
+
+    .stat-card-small.success i {
+        color: #27ae60;
+    }
+
+    .stat-card-small.warning i {
+        color: #e74c3c;
+    }
+
+    .stat-content h4 {
+        font-size: 14px;
+        color: #7f8c8d;
+        margin: 0 0 5px 0;
+    }
+
+    .stat-content .stat-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .documents-table-container {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .table-header h2 {
+        font-size: 22px;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .table-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .documents-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    .documents-table thead {
+        background: #f8f9fa;
+    }
+
+    .documents-table th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #2c3e50;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .documents-table td {
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+        color: #495057;
+    }
+
+    .documents-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-badge.pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-badge.verified {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-badge.rejected {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .priority {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .priority.high {
+        background: #ffe6e6;
+        color: #c0392b;
+    }
+
+    .priority.medium {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .priority.low {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .btn-icon {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.3s;
+    }
+
+    .btn-icon:hover {
+        background: #f0f0f0;
+    }
+
+    .btn-view {
+        color: #3498db;
+    }
+
+    .btn-approve {
+        color: #27ae60;
+    }
+
+    .btn-reject {
+        color: #e74c3c;
+    }
+
+    .btn-download {
+        color: #9b59b6;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .pagination-info {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 5px;
+    }
+
+    .page-btn {
+        padding: 8px 12px;
+        border: 1px solid #dee2e6;
+        background: #ffffff;
+        color: #495057;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+        background: #e9ecef;
+    }
+
+    .page-btn.active {
+        background: #3498db;
+        color: #ffffff;
+        border-color: #3498db;
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @@media (max-width: 768px) {
+        .filter-group {
+            flex-direction: column;
+        }
+
+        .filter-group .form-select,
+        .filter-group .form-control {
+            width: 100%;
+        }
+
+        .table-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .table-actions {
+            width: 100%;
+        }
+
+        .table-actions button {
+            flex: 1;
+        }
+    }
+</style>
+
+<script>
+    function toggleSelectAll(checkbox) {
+        const checkboxes = document.querySelectorAll('.doc-checkbox');
+        checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
+
+    function viewDocument(id) {
+        alert('Viewing document #' + id);
+        // Implement view document logic
+    }
+
+    function approveDocument(id) {
+        if (confirm('Are you sure you want to approve this document?')) {
+            alert('Document #' + id + ' approved');
+            // Implement approval logic
+        }
+    }
+
+    function rejectDocument(id) {
+        const reason = prompt('Enter rejection reason:');
+        if (reason) {
+            alert('Document #' + id + ' rejected. Reason: ' + reason);
+            // Implement rejection logic
+        }
+    }
+
+    function downloadDocument(id) {
+        alert('Downloading document #' + id);
+        // Implement download logic
+    }
+
+    function verifySelected() {
+        const selected = document.querySelectorAll('.doc-checkbox:checked');
+        if (selected.length === 0) {
+            alert('Please select at least one document');
+            return;
+        }
+        if (confirm('Verify ' + selected.length + ' selected document(s)?')) {
+            alert(selected.length + ' document(s) verified');
+            // Implement bulk verification logic
+        }
+    }
+
+    function rejectSelected() {
+        const selected = document.querySelectorAll('.doc-checkbox:checked');
+        if (selected.length === 0) {
+            alert('Please select at least one document');
+            return;
+        }
+        const reason = prompt('Enter rejection reason:');
+        if (reason) {
+            alert(selected.length + ' document(s) rejected');
+            // Implement bulk rejection logic
+        }
+    }
+
+    function applyFilters() {
+        const status = document.getElementById('statusFilter').value;
+        const type = document.getElementById('typeFilter').value;
+        const date = document.getElementById('dateFilter').value;
+        alert('Applying filters - Status: ' + status + ', Type: ' + type + ', Date: ' + date);
+        // Implement filter logic
+    }
+
+    function clearFilters() {
+        document.getElementById('statusFilter').value = '';
+        document.getElementById('typeFilter').value = '';
+        document.getElementById('dateFilter').value = '';
+        alert('Filters cleared');
+        // Implement clear filters logic
+    }
+</script>

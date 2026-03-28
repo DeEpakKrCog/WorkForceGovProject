@@ -1,0 +1,82 @@
+﻿@{
+    ViewData["Title"] = "Reports & Analytics";
+}
+
+<div class="container mt-4">
+    <h2>Reports & Analytics</h2>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Generate Reports</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Report Type</label>
+                                    <select class="form-select" name="reportType">
+                                        <option>Application Statistics</option>
+                                        <option>Employer Compliance</option>
+                                        <option>Document Verification Summary</option>
+                                        <option>Monthly Performance</option>
+                                        <option>Job Market Analysis</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" name="startDate" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" name="endDate" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary w-100">Generate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Quick Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Applications This Month:</strong> 145
+                    </div>
+                    <div class="mb-3">
+                        <strong>Documents Verified:</strong> 89
+                    </div>
+                    <div class="mb-3">
+                        <strong>Compliance Issues Resolved:</strong> 23
+                    </div>
+                    <div class="mb-3">
+                        <strong>Active Employers:</strong> 87
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Reports</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">

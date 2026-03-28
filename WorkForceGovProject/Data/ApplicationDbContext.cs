@@ -14,6 +14,7 @@ namespace WorkForceGovProject.Data
         public DbSet<EmployerDocument> EmployerDocuments { get; set; }
         public DbSet<JobOpening> JobOpenings { get; set; }
         public DbSet<Application> Applications { get; set; }
+        public DbSet<Application> JobApplications => Applications; // Alias for compatibility
         public DbSet<Benefit> Benefits { get; set; }
         public DbSet<EmploymentProgram> EmploymentPrograms { get; set; }
         public DbSet<Notification> Notifications { get; set; }

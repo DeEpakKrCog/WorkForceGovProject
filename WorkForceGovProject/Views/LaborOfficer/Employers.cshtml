@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Employer Management";
+}
+
+<div class="container mt-4">
+    <h2>Employer Management</h2>
+    
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Registered Employers</h5>
+                    <button class="btn btn-primary">Add New Employer</button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Search employers..." id="searchBox">
+                    </div>
+                    
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Employer ID</th>
+                                <th>Company Name</th>
+                                <th>Contact Person</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Active Jobs</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>EMP001</td>
+                                <td>ABC Corporation</td>
+                                <td>John Smith</td>
+                                <td>john@abc.com</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>12</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info">View</button>
+                                    <button class="btn btn-sm btn-warning">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EMP002</td>
+                                <td>XYZ Industries</td>
+                                <td>Sarah Johnson</td>
+                                <td>sarah@xyz.com</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>8</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info">View</button>
+                                    <button class="btn btn-sm btn-warning">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EMP003</td>
+                                <td>Tech Solutions Ltd</td>
+                                <td>Mike Brown</td>
+                                <td>mike@techsol.com</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>3</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info">View</button>
+                                    <button class="btn btn-sm btn-warning">Edit</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EMP004</td>
+                                <td>Global Services Inc</td>
+                                <td>Lisa Davis</td>
+                                <td>lisa@global.com</td>
+                                <td><span class="badge bg-danger">Suspended</span></td>
+                                <td>0</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info">View</button>
+                                    <button class="btn btn-sm btn-warning">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

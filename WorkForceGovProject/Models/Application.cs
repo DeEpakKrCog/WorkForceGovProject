@@ -38,5 +38,15 @@ namespace WorkForceGovProject.Models
         public DateTime? ReviewedDate { get; set; }
 
         public string ReviewNotes { get; set; }
+
+        // Compatibility aliases for other branch patterns
+        [NotMapped]
+        public DateTime ApplicationDate { get => SubmittedDate; set => SubmittedDate = value; }
+
+        [NotMapped]
+        public string ReviewedBy { get; set; }
+
+        [NotMapped]
+        public string OfficerNotes { get; set; }
     }
 }

@@ -32,5 +32,21 @@ namespace WorkForceGovProject.Models
 
         [DataType(DataType.Date)]
         public DateTime? VerificationDate { get; set; }
+
+        // Compatibility aliases for other branch patterns
+        [NotMapped]
+        public int DocumentID { get => Id; set => Id = value; }
+
+        [NotMapped]
+        public int CitizenID { get => CitizenId; set => CitizenId = value; }
+
+        [NotMapped]
+        public string DocType { get => DocumentType; set => DocumentType = value; }
+
+        [NotMapped]
+        public string FileURI { get => FilePath; set => FilePath = value; }
+
+        [NotMapped]
+        public string VerificationNotes { get => RejectionReason; set => RejectionReason = value; }
     }
 }

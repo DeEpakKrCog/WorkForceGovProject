@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["Title"] = "Labor Officer Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Labor Officer Dashboard</h2>
+    <hr />
+
+    <div class="row">
+        <!-- Pending Document Verifications -->
+        <div class="col-md-3">
+            <div class="card p-3 mb-3">
+                <h4>Pending Verifications</h4>
+                <p>
+                    Total Pending:
+                    <strong>@(ViewBag.PendingDocuments ?? 0)</strong>
+                </p>
+                <a href="@Url.Action("ViewDocuments", "LaborOfficer")" class="btn btn-primary btn-sm">
+                    View Documents
+                </a>
+            </div>
+        </div>
+
+        <!-- Compliance Alerts -->
+        <div class="col-md-3">
+            <div class="card p-3 mb-3">
+                <h4>Compliance Alerts</h4>
+                <p>
+                    Violations:
+                    <strong>@(ViewBag.ComplianceAlerts ?? 0)</strong>
+                </p>
+                <a href="@Url.Action("ViewEmployers", "LaborOfficer")" class="btn btn-warning btn-sm">
+                    View Employers
+                </a>
+            </div>
+        </div>
+
+        <!-- Applications -->
+        <div class="col-md-3">
+            <div class="card p-3 mb-3">
+                <h4>Applications</h4>
+                <ul>
+                    <li>Pending: @(ViewBag.PendingApplications ?? 0)</li>
+                    <li>Approved: @(ViewBag.ApprovedApplications ?? 0)</li>
+                    <li>Rejected: @(ViewBag.RejectedApplications ?? 0)</li>
+                </ul>
+                <a href="@Url.Action("ReviewApplications", "LaborOfficer")" class="btn btn-success btn-sm">
+                    Review Applications
+                </a>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="col-md-3">
+            <div class="card p-3 mb-3">
+                <h4>Notifications</h4>
+                @if (ViewBag.Notifications != null && ViewBag.Notifications.Count > 0)
+                {
+                    <ul>
+                        @foreach (var note in ViewBag.Notifications)
+                        {
+                            <li>@note</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>No notifications</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div>
+        <a href="@Url.Action("GenerateReports", "LaborOfficer")" class="btn btn-info">
+            Generate Reports
+        </a>
+        |
+        <a href="@Url.Action("ConductAudit", "LaborOfficer")" class="btn btn-secondary">
+            Conduct Audit
+        </a>
+    </div>
+</div>

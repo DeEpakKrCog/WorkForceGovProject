@@ -1,0 +1,27 @@
+﻿@{
+    Layout = "~/Views/Shared/_LaborOfficerLayout.cshtml";
+}
+
+<h4>Document Verification</h4>
+
+<table class="table table-bordered mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>Citizen</th>
+            <th>Document Type</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Sowmiya K</td>
+            <td>ID Proof</td>
+            <td>Pending</td>
+            <td>
+                <button class="btn btn-success btn-sm">Approve</button>
+                <button class="btn btn-danger btn-sm">Reject</button>
+            </td>
+        </tr>
+    </tbody>
+</table>

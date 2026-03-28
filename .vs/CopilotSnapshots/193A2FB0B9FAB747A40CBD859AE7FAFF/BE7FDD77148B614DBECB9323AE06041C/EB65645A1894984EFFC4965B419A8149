@@ -1,0 +1,77 @@
+﻿/* ================================
+   Global Styles
+================================ */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* ================================
+   Page Container
+================================ */
+.dashboard-container {
+    padding: 30px;
+}
+
+.dashboard-title {
+    font-size: 26px;
+    margin-bottom: 25px;
+    color: #1f2937;
+}
+
+/* ================================
+   Dashboard Cards
+================================ */
+.cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.card {
+    flex: 1;
+    min-width: 220px;
+    padding: 25px;
+    border-radius: 10px;
+    color: #ffffff;
+    text-align: center;
+}
+
+    /* Card Colors */
+    .card.programs {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    }
+
+    .card.budget {
+        background: linear-gradient(135deg, #10b981, #34d399);
+    }
+
+    .card.training {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    }
+
+    .card.performance {
+        background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+    }
+
+    .card h3 {
+        margin-bottom: 10px;
+        font-size: 18px;
+    }
+
+    .card p {
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+/* ================================
+   Responsive Design
+================================ */
+@media (max-width: 768px) {
+    .cards {
+        flex-direction: column;
+    }
+}

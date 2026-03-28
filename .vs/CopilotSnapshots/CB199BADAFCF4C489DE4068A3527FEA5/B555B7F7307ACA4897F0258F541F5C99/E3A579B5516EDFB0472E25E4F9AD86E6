@@ -1,0 +1,55 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+
+namespace YourProject.Controllers
+{
+    public class LaborOfficerController : Controller
+    {
+        public IActionResult Dashboard()
+        {
+            ViewBag.PendingDocuments = 12;
+            ViewBag.ComplianceAlerts = 4;
+            ViewBag.PendingApplications = 20;
+            ViewBag.ApprovedApplications = 45;
+            ViewBag.RejectedApplications = 6;
+
+            ViewBag.Notifications = new List<string>
+            {
+                "New document pending verification",
+                "Employer compliance violation detected"
+            };
+
+            return View();
+        }
+
+        public IActionResult DocumentVerification()
+        {
+            return View();
+        }
+
+        public IActionResult Applications()
+        {
+            return View();
+        }
+
+        public IActionResult Compliance()
+        {
+            return View();
+        }
+
+        public IActionResult Employers()
+        {
+            return View();
+        }
+
+        public IActionResult Reports()
+        {
+            return View();
+        }
+
+        public IActionResult AuditLogs()
+        {
+            return View();
+        }
+    }
+}
