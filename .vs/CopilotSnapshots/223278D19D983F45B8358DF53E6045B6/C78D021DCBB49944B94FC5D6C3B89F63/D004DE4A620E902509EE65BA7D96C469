@@ -1,0 +1,218 @@
+﻿using System.Linq.Expressions;
+using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Repositories
+{
+    // Generic Repository Interface
+    public interface IRepository<T> where T : class
+    {
+        Task<T> GetByIdAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+        Task<int> CountAsync();
+        Task<int> CountAsync(Expression<Func<T, bool>> predicate);
+        Task<T> AddAsync(T entity);
+        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
+        Task<T> UpdateAsync(T entity);
+        Task<bool> DeleteAsync(T entity);
+        Task<bool> DeleteRangeAsync(IEnumerable<T> entities);
+    }
+
+    // Specific Repository Interfaces
+    public interface IUserRepository : IRepository<User>
+    {
+        Task<User> GetUserByEmailAsync(string email);
+        Task<bool> UserExistsByEmailAsync(string email);
+        Task<User> GetUserWithCitizenAsync(int userId);
+        Task<IEnumerable<User>> GetUsersByRoleAsync(string role);
+    }
+
+    public interface ICitizenRepository : IRepository<Citizen>
+    {
+        Task<Citizen> GetCitizenByUserIdAsync(int userId);
+        Task<Citizen> GetCitizenWithDocumentsAsync(int citizenId);
+        Task<Citizen> GetCitizenWithApplicationsAsync(int citizenId);
+        Task<Citizen> GetCitizenWithBenefitsAsync(int citizenId);
+        Task<IEnumerable<Citizen>> GetPendingDocumentVerificationAsync();
+    }
+
+    public interface IJobRepository : IRepository<JobOpening>
+    {
+        Task<JobOpening> GetJobWithApplicationsAsync(int jobId);
+        Task<IEnumerable<JobOpening>> GetJobsByLocationAsync(string location);
+        Task<IEnumerable<JobOpening>> GetJobsByCategoryAsync(string category);
+        Task<IEnumerable<JobOpening>> GetOpenJobsAsync();
+        Task<IEnumerable<JobOpening>> SearchJobsAsync(string location, string category);
+        Task<IEnumerable<JobOpening>> GetRecentJobsAsync(int count);
+    }
+
+    public interface IApplicationRepository : IRepository<Application>
+    {
+        Task<Application> GetApplicationWithDetailsAsync(int applicationId);
+        Task<IEnumerable<Application>> GetApplicationsByCitizenAsync(int citizenId);
+        Task<IEnumerable<Application>> GetApplicationsByJobAsync(int jobId);
+        Task<IEnumerable<Application>> GetApplicationsByStatusAsync(string status);
+        Task<Application> GetCitizenJobApplicationAsync(int citizenId, int jobId);
+        Task<int> GetApplicationCountByCitizenAsync(int citizenId);
+        Task<int> GetApplicationCountByJobAsync(int jobId);
+        Task<IEnumerable<Application>> GetPendingApplicationsAsync();
+    }
+
+    public interface INotificationRepository : IRepository<Notification>
+    {
+        Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId);
+        Task<IEnumerable<Notification>> GetUnreadNotificationsAsync(int userId);
+        Task<int> GetUnreadCountAsync(int userId);
+        Task<IEnumerable<Notification>> GetNotificationsByCategoryAsync(int userId, string category);
+        Task<bool> MarkAsReadAsync(int notificationId);
+        Task<bool> MarkAllAsReadAsync(int userId);
+        Task<bool> DeleteOldNotificationsAsync(int daysOld);
+    }
+
+    // Compliance-specific Repository Interfaces
+    public interface IComplianceRepository : IRepository<ComplianceRecord>
+    {
+        Task<IEnumerable<ComplianceRecord>> GetByEntityTypeAsync(string entityType);
+        Task<IEnumerable<ComplianceRecord>> GetByResultAsync(string result);
+        Task<IEnumerable<ComplianceRecord>> GetPendingAsync();
+    }
+
+    public interface IAuditRepository : IRepository<Audit>
+    {
+        Task<IEnumerable<Audit>> GetByOfficerAsync(int officerId);
+        Task<IEnumerable<Audit>> GetByStatusAsync(string status);
+        Task<IEnumerable<Audit>> GetCompletedAsync();
+        Task<IEnumerable<Audit>> GetRecentAuditsAsync(DateTime startDate);
+    }
+
+    public interface IReportRepository : IRepository<Report>
+    {
+        Task<IEnumerable<Report>> GetByReportTypeAsync(string reportType);
+        Task<IEnumerable<Report>> GetRecentReportsAsync(DateTime startDate);
+        Task<Report> GetLatestReportByTypeAsync(string reportType);
+    }
+
+    // Unit of Work Interface
+    public interface IUnitOfWork
+    {
+        IRepository<User> Users { get; }
+        IRepository<Citizen> Citizens { get; }
+        IRepository<CitizenDocument> CitizenDocuments { get; }
+        IRepository<JobOpening> JobOpenings { get; }
+        IRepository<Application> Applications { get; }
+        IRepository<Benefit> Benefits { get; }
+        IRepository<EmploymentProgram> EmploymentPrograms { get; }
+        IRepository<Notification> Notifications { get; }
+        IRepository<ComplianceRecord> ComplianceRecords { get; }
+        IRepository<Audit> Audits { get; }
+        IRepository<Report> Reports { get; }
+
+        IUserRepository UserRepository { get; }
+        ICitizenRepository CitizenRepository { get; }
+        IJobRepository JobRepository { get; }
+        IApplicationRepository ApplicationRepository { get; }
+        INotificationRepository NotificationRepository { get; }
+        IComplianceRepository ComplianceRepository { get; }
+        IAuditRepository AuditRepository { get; }
+        IReportRepository ReportRepository { get; }
+
+        Task<bool> SaveChangesAsync();
+        Task<bool> BeginTransactionAsync();
+        Task<bool> CommitTransactionAsync();
+        Task<bool> RollbackTransactionAsync();
+    }
+}
+
+namespace WorkForceGovProject.Services
+{
+    using WorkForceGovProject.Models;
+
+    // Service Interfaces
+    public interface IAccountService
+    {
+        Task<(bool Success, string Message, User User)> LoginAsync(string email, string password);
+        Task<(bool Success, string Message)> RegisterAsync(User user);
+        Task<(bool Success, string Message)> LogoutAsync();
+        Task<User> GetUserByIdAsync(int userId);
+        Task<User> GetUserByEmailAsync(string email);
+        Task<bool> UserExistsAsync(string email);
+        Task<(bool Success, string Message)> UpdateUserAsync(User user);
+        Task<(bool Success, string Message)> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
+        Task<bool> ValidateCredentialsAsync(string email, string password);
+    }
+
+    public interface ICitizenService
+    {
+        Task<Citizen> GetCitizenByIdAsync(int id);
+        Task<Citizen> GetCitizenByUserIdAsync(int userId);
+        Task<Citizen> GetCitizenProfileAsync(int citizenId);
+        Task<(bool Success, string Message)> CreateCitizenProfileAsync(int userId, string fullName, string email);
+        Task<(bool Success, string Message)> UpdateCitizenProfileAsync(Citizen citizen);
+        Task<(int ActiveApplications, decimal AccountBalance, string DocumentStatus, int NewJobMatches)> GetDashboardStatsAsync(int citizenId);
+        Task<(bool Success, string Message)> UpdateDashboardStatsAsync(int citizenId);
+        Task<(bool Success, string Message)> UpdatePersonalInfoAsync(int citizenId, string fullName, DateTime? dob, string gender, string address, string phone);
+    }
+
+    public interface IDocumentService
+    {
+        Task<CitizenDocument> GetDocumentByIdAsync(int id);
+        Task<IEnumerable<CitizenDocument>> GetCitizenDocumentsAsync(int citizenId);
+        Task<(bool Success, string Message, CitizenDocument Document)> UploadDocumentAsync(int citizenId, string documentType, IFormFile file);
+        Task<(bool Success, string Message)> DeleteDocumentAsync(int documentId);
+        Task<(bool Success, string Message)> VerifyDocumentAsync(int documentId);
+        Task<(bool Success, string Message)> RejectDocumentAsync(int documentId, string reason);
+    }
+
+    public interface IJobService
+    {
+        Task<JobOpening> GetJobByIdAsync(int id);
+        Task<IEnumerable<JobOpening>> GetAllJobsAsync();
+        Task<IEnumerable<JobOpening>> GetOpenJobsAsync();
+        Task<IEnumerable<JobOpening>> GetRecentJobsAsync(int count);
+        Task<IEnumerable<JobOpening>> SearchJobsAsync(string location = "", string category = "");
+        Task<IEnumerable<JobOpening>> GetJobsByLocationAsync(string location);
+        Task<IEnumerable<JobOpening>> GetJobsByCategoryAsync(string category);
+        Task<(bool Success, string Message, JobOpening Job)> CreateJobAsync(JobOpening job);
+        Task<(bool Success, string Message)> UpdateJobAsync(JobOpening job);
+        Task<(bool Success, string Message)> CloseJobAsync(int jobId);
+    }
+
+    public interface IApplicationService
+    {
+        Task<Application> GetApplicationByIdAsync(int id);
+        Task<IEnumerable<Application>> GetApplicationsByCitizenAsync(int citizenId);
+        Task<IEnumerable<Application>> GetApplicationsByJobAsync(int jobId);
+        Task<(bool Success, string Message, Application Application)> ApplyForJobAsync(int citizenId, int jobId, string coverLetter = "");
+        Task<(bool Success, string Message)> WithdrawApplicationAsync(int applicationId);
+        Task<Application> GetApplicationWithDetailsAsync(int applicationId);
+        Task<bool> HasAppliedAsync(int citizenId, int jobId);
+        Task<IEnumerable<Application>> GetApplicationsByStatusAsync(string status);
+        Task<(bool Success, string Message)> ApproveApplicationAsync(int applicationId, string notes = "");
+        Task<(bool Success, string Message)> RejectApplicationAsync(int applicationId, string notes = "");
+    }
+
+    public interface IBenefitService
+    {
+        Task<Benefit> GetBenefitByIdAsync(int id);
+        Task<IEnumerable<Benefit>> GetCitizenBenefitsAsync(int citizenId);
+        Task<IEnumerable<Benefit>> GetActiveBenefitsAsync(int citizenId);
+        Task<(bool Success, string Message, Benefit Benefit)> AllocateBenefitAsync(int citizenId, int programId, string benefitType, decimal amount, string description = "");
+        Task<(bool Success, string Message)> CompleteBenefitAsync(int benefitId);
+        Task<(bool Success, string Message)> WithdrawBenefitAsync(int benefitId);
+    }
+
+    public interface INotificationService
+    {
+        Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId);
+        Task<IEnumerable<Notification>> GetUnreadNotificationsAsync(int userId);
+        Task<int> GetUnreadCountAsync(int userId);
+        Task<(bool Success, Notification Notification)> CreateNotificationAsync(int userId, string message, string category, int? entityId, string entityType);
+        Task<(bool Success, IEnumerable<Notification>)> CreateNotificationsAsync(List<(int userId, string message, string category, int? entityId, string entityType)> notifications);
+        Task<(bool Success, string Message)> MarkAsReadAsync(int notificationId);
+        Task<(bool Success, string Message)> MarkAllAsReadAsync(int userId);
+        Task<(bool Success, string Message)> DeleteNotificationAsync(int notificationId);
+        Task<(bool Success, string Message)> DeleteOldNotificationsAsync(int daysOld);
+    }
+}

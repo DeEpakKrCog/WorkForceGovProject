@@ -1,0 +1,11 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Repositories
+{
+    public interface IReportRepository : IRepository<Report>
+    {
+        Task<List<Report>> GetByScopeAsync(string scope);
+        Task<List<Report>> GetRecentReportsAsync(int days = 30);
+        Task<Report> GetLatestReportByScopeAsync(string scope);
+    }
+}

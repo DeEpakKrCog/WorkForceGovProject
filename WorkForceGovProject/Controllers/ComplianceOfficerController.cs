@@ -1,0 +1,103 @@
+using Microsoft.AspNetCore.Mvc;
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Services;
+
+namespace WorkForceGovProject.Controllers
+{
+    [Route("ComplianceOfficer")]
+    public class ComplianceOfficerController : Controller
+    {
+        private readonly IComplianceService _complianceService;
+        private readonly IReportingService _reportingService;
+        private readonly ILogger<ComplianceOfficerController> _logger;
+
+        public ComplianceOfficerController(
+            IComplianceService complianceService,
+            IReportingService reportingService,
+            ILogger<ComplianceOfficerController> logger)
+        {
+            _complianceService = complianceService;
+            _reportingService = reportingService;
+            _logger = logger;
+        }
+
+        [Route("Dashboard")]
+        public async Task<IActionResult> Dashboard()
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            var pendingCount = await _complianceService.GetPendingCountAsync();
+            var violationCount = await _complianceService.GetViolationCountAsync();
+            var complaints = await _complianceService.GetPendingComplaintsAsync();
+
+            ViewBag.PendingCount = pendingCount;
+            ViewBag.ViolationCount = violationCount;
+            ViewBag.Complaints = complaints;
+
+            return View();
+        }
+
+        [Route("EmployerReview")]
+        public async Task<IActionResult> EmployerReview()
+        {
+            var complaints = await _complianceService.GetAllComplaintsAsync();
+            return View(complaints);
+        }
+
+        [Route("InvestigateComplaint/{id}")]
+        public async Task<IActionResult> InvestigateComplaint(int id)
+        {
+            var complaint = await _complianceService.GetAllComplaintsAsync();
+            var specific = complaint.FirstOrDefault(c => c.ComplianceID == id);
+            return View(specific);
+        }
+
+        [HttpPost]
+        [Route("InvestigateComplaint/{id}")]
+        public async Task<IActionResult> InvestigateComplaintPost(int id, string findings)
+        {
+            var (success, message) = await _complianceService.InvestigateComplaintAsync(id, findings);
+            if (success)
+                TempData["SuccessMessage"] = message;
+            else
+                TempData["ErrorMessage"] = message;
+
+            return RedirectToAction("EmployerReview");
+        }
+
+        [Route("RecordViolation")]
+        public IActionResult RecordViolation()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("RecordViolation")]
+        public async Task<IActionResult> RecordViolationPost(int employerId, string violationType, string description)
+        {
+            var (success, message) = await _complianceService.IssueViolationAsync(employerId, violationType, description);
+            if (success)
+                TempData["SuccessMessage"] = message;
+            else
+                TempData["ErrorMessage"] = message;
+
+            return RedirectToAction("Dashboard");
+        }
+
+        [Route("ComplianceReports")]
+        public async Task<IActionResult> ComplianceReports()
+        {
+            var reports = await _reportingService.GetRecentReportsAsync(30);
+            return View(reports.Where(r => r.ReportType == "Compliance").ToList());
+        }
+
+        [Route("GenerateReport")]
+        public async Task<IActionResult> GenerateReport(string scope)
+        {
+            var report = await _reportingService.GenerateComplianceReportAsync(scope);
+            TempData["SuccessMessage"] = "Compliance report generated successfully";
+            return RedirectToAction("ComplianceReports");
+        }
+    }
+}

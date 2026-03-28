@@ -1,0 +1,178 @@
+@{
+    ViewData["Title"] = "Alerts & Notifications";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-bell"></i> Alerts & Notifications</h2>
+            <p class="text-muted">System alerts and important notifications for auditors</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Dashboard", "GovernmentAuditor")" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Summary -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center border-danger">
+                <div class="card-body">
+                    <i class="fas fa-exclamation-circle fa-2x text-danger mb-2"></i>
+                    <h5 class="card-title">Critical</h5>
+                    <h3 class="text-danger">5</h3>
+                    <small class="text-muted">Alerts</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                    <h5 class="card-title">High</h5>
+                    <h3 class="text-warning">12</h3>
+                    <small class="text-muted">Alerts</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-info">
+                <div class="card-body">
+                    <i class="fas fa-info-circle fa-2x text-info mb-2"></i>
+                    <h5 class="card-title">Medium</h5>
+                    <h3 class="text-info">24</h3>
+                    <small class="text-muted">Alerts</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-secondary">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-2x text-secondary mb-2"></i>
+                    <h5 class="card-title">Low</h5>
+                    <h3 class="text-secondary">8</h3>
+                    <small class="text-muted">Alerts</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts List -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> Recent Alerts</h5>
+        </div>
+        <div class="list-group list-group-flush">
+            <!-- Critical Alert -->
+            <a href="#" class="list-group-item list-group-item-action border-start-5 border-danger p-3">
+                <div class="d-flex w-100 justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">
+                            <i class="fas fa-ban"></i> Critical: Compliance Violation Detected
+                        </h6>
+                        <p class="mb-1 small">TechCorp Industries - Multiple wage violations identified during audit</p>
+                        <small class="text-muted">
+                            <i class="fas fa-user"></i> Assigned to: Sarah Johnson
+                            <i class="fas fa-calendar ms-2"></i> 2 hours ago
+                        </small>
+                    </div>
+                    <span class="badge bg-danger">CRITICAL</span>
+                </div>
+            </a>
+
+            <!-- High Priority Alert -->
+            <a href="#" class="list-group-item list-group-item-action border-start-5 border-warning p-3">
+                <div class="d-flex w-100 justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">
+                            <i class="fas fa-exclamation-triangle"></i> High: Missing Documentation
+                        </h6>
+                        <p class="mb-1 small">Global Industries - Required employee verification documents not found</p>
+                        <small class="text-muted">
+                            <i class="fas fa-user"></i> Assigned to: Michael Chen
+                            <i class="fas fa-calendar ms-2"></i> 6 hours ago
+                        </small>
+                    </div>
+                    <span class="badge bg-warning">HIGH</span>
+                </div>
+            </a>
+
+            <!-- Medium Priority Alert -->
+            <a href="#" class="list-group-item list-group-item-action border-start-5 border-info p-3">
+                <div class="d-flex w-100 justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">
+                            <i class="fas fa-info-circle"></i> Medium: Training Program Update
+                        </h6>
+                        <p class="mb-1 small">Job Training Initiative - Quarterly compliance training update required</p>
+                        <small class="text-muted">
+                            <i class="fas fa-user"></i> Assigned to: Emily Rodriguez
+                            <i class="fas fa-calendar ms-2"></i> 1 day ago
+                        </small>
+                    </div>
+                    <span class="badge bg-info">MEDIUM</span>
+                </div>
+            </a>
+
+            <!-- Medium Priority Alert -->
+            <a href="#" class="list-group-item list-group-item-action border-start-5 border-info p-3">
+                <div class="d-flex w-100 justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">
+                            <i class="fas fa-info-circle"></i> Medium: Budget Review Pending
+                        </h6>
+                        <p class="mb-1 small">Apprenticeship Program - Q3 budget allocation needs approval</p>
+                        <small class="text-muted">
+                            <i class="fas fa-user"></i> Assigned to: David Park
+                            <i class="fas fa-calendar ms-2"></i> 2 days ago
+                        </small>
+                    </div>
+                    <span class="badge bg-info">MEDIUM</span>
+                </div>
+            </a>
+
+            <!-- Low Priority Alert -->
+            <a href="#" class="list-group-item list-group-item-action border-start-5 border-secondary p-3">
+                <div class="d-flex w-100 justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">
+                            <i class="fas fa-check-circle"></i> Low: System Maintenance Scheduled
+                        </h6>
+                        <p class="mb-1 small">Scheduled maintenance on Friday, 10 PM - 2 AM EST</p>
+                        <small class="text-muted">
+                            <i class="fas fa-user"></i> Assigned to: All Users
+                            <i class="fas fa-calendar ms-2"></i> 3 days away
+                        </small>
+                    </div>
+                    <span class="badge bg-secondary">LOW</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <a href="#" class="btn btn-outline-primary">
+                <i class="fas fa-eye"></i> View All Alerts
+            </a>
+            <a href="#" class="btn btn-outline-secondary">
+                <i class="fas fa-times"></i> Dismiss All
+            </a>
+            <a href="#" class="btn btn-outline-info">
+                <i class="fas fa-cog"></i> Configure Alerts
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-start-5 {
+        border-left-width: 5px !important;
+    }
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>

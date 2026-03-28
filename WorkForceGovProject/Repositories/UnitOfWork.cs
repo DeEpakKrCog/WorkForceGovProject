@@ -22,6 +22,9 @@ namespace WorkForceGovProject.Repositories
         private IRepository<Benefit> _benefitRepository;
         private IRepository<EmploymentProgram> _programRepository;
         private IRepository<Notification> _notificationRepository;
+        private IRepository<ComplianceRecord> _complianceRepository;
+        private IRepository<Audit> _auditRepository;
+        private IRepository<Report> _reportRepository;
 
         // Specific repositories
         private IUserRepository _userRepositorySpecific;
@@ -29,6 +32,9 @@ namespace WorkForceGovProject.Repositories
         private IJobRepository _jobRepositorySpecific;
         private IApplicationRepository _applicationRepositorySpecific;
         private INotificationRepository _notificationRepositorySpecific;
+        private IComplianceRepository _complianceRepositorySpecific;
+        private IAuditRepository _auditRepositorySpecific;
+        private IReportRepository _reportRepositorySpecific;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -44,6 +50,9 @@ namespace WorkForceGovProject.Repositories
         public IRepository<Benefit> Benefits => _benefitRepository ??= new Repository<Benefit>(_context);
         public IRepository<EmploymentProgram> EmploymentPrograms => _programRepository ??= new Repository<EmploymentProgram>(_context);
         public IRepository<Notification> Notifications => _notificationRepository ??= new Repository<Notification>(_context);
+        public IRepository<ComplianceRecord> ComplianceRecords => _complianceRepository ??= new Repository<ComplianceRecord>(_context);
+        public IRepository<Audit> Audits => _auditRepository ??= new Repository<Audit>(_context);
+        public IRepository<Report> Reports => _reportRepository ??= new Repository<Report>(_context);
 
         // Specific repository properties
         public IUserRepository UserRepository => _userRepositorySpecific ??= new UserRepository(_context);
@@ -51,6 +60,9 @@ namespace WorkForceGovProject.Repositories
         public IJobRepository JobRepository => _jobRepositorySpecific ??= new JobRepository(_context);
         public IApplicationRepository ApplicationRepository => _applicationRepositorySpecific ??= new ApplicationRepository(_context);
         public INotificationRepository NotificationRepository => _notificationRepositorySpecific ??= new NotificationRepository(_context);
+        public IComplianceRepository ComplianceRepository => _complianceRepositorySpecific ??= new ComplianceRepository(_context);
+        public IAuditRepository AuditRepository => _auditRepositorySpecific ??= new AuditRepository(_context);
+        public IReportRepository ReportRepository => _reportRepositorySpecific ??= new ReportRepository(_context);
 
         public async Task<bool> SaveChangesAsync()
         {

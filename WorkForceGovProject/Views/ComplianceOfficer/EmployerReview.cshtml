@@ -1,0 +1,101 @@
+@model IEnumerable<WorkForceGovProject.Models.ComplianceRecord>
+
+@{
+    ViewData["Title"] = "Employer Compliance Review";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-building"></i> Employer Compliance Review</h2>
+            <p class="text-muted">Review and assess employer compliance with regulations</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Dashboard", "ComplianceOfficer")" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Compliance Records</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th><i class="fas fa-id-badge"></i> ID</th>
+                            <th><i class="fas fa-briefcase"></i> Entity</th>
+                            <th><i class="fas fa-info-circle"></i> Type</th>
+                            <th><i class="fas fa-gavel"></i> Result</th>
+                            <th><i class="fas fa-calendar"></i> Date</th>
+                            <th><i class="fas fa-notes-medical"></i> Notes</th>
+                            <th><i class="fas fa-tools"></i> Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var record in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">@record.ComplianceID</span>
+                                </td>
+                                <td>@record.EntityID</td>
+                                <td>
+                                    <span class="badge bg-info">@record.Type</span>
+                                </td>
+                                <td>
+                                    @{
+                                        var badgeClass = record.Result switch
+                                        {
+                                            "Compliant" => "bg-success",
+                                            "Non-Compliant" => "bg-danger",
+                                            "Under Review" => "bg-warning",
+                                            "Violation" => "bg-danger",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+                                    <span class="badge @badgeClass">@record.Result</span>
+                                </td>
+                                <td>@record.Date.ToString("MMM dd, yyyy")</td>
+                                <td>@Html.DisplayTextFor(modelItem => record.Notes)</td>
+                                <td>
+                                    <a href="@Url.Action("InvestigateComplaint", "ComplianceOfficer", new { id = record.ComplianceID })" 
+                                       class="btn btn-sm btn-info" title="Investigate">
+                                        <i class="fas fa-search"></i>
+                                    </a>
+                                    @if (record.Result != "Compliant")
+                                    {
+                                        <button class="btn btn-sm btn-warning" data-bs-toggle="modal" 
+                                                data-bs-target="#reviewModal_@record.ComplianceID" title="Review">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i> No compliance records found.
+        </div>
+    }
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+    .badge {
+        padding: 0.5em 0.75em;
+        font-size: 0.85em;
+    }
+</style>

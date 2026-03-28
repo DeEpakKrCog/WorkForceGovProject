@@ -1,0 +1,12 @@
+﻿using WorkForceGovProject.Models;
+
+namespace WorkForceGovProject.Repositories
+{
+    public interface IAuditRepository : IRepository<Audit>
+    {
+        Task<List<Audit>> GetByOfficerAsync(int officerId);
+        Task<List<Audit>> GetByStatusAsync(string status);
+        Task<List<Audit>> GetCompletedAsync();
+        Task<List<Audit>> GetRecentAuditsAsync(DateTime startDate);
+    }
+}

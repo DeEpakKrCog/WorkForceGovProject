@@ -1,0 +1,115 @@
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Repositories;
+
+namespace WorkForceGovProject.Services
+{
+    public class ComplianceService : IComplianceService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<ComplianceService> _logger;
+
+        public ComplianceService(IUnitOfWork unitOfWork, ILogger<ComplianceService> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+        }
+
+        public async Task<List<ComplianceRecord>> GetAllComplaintsAsync()
+        {
+            var records = await _unitOfWork.ComplianceRepository.GetAllAsync();
+            return records.ToList();
+        }
+
+        public async Task<List<ComplianceRecord>> GetPendingComplaintsAsync()
+        {
+            return await _unitOfWork.ComplianceRepository.GetPendingAsync();
+        }
+
+        public async Task<List<ComplianceRecord>> GetEmployerComplianceAsync(int employerId)
+        {
+            var records = await _unitOfWork.ComplianceRepository.GetByEntityTypeAsync("Employer");
+            return records.Where(r => r.EntityID == employerId).ToList();
+        }
+
+        public async Task<(bool Success, string Message)> ReviewEmployerAsync(int employerId, string result, string notes)
+        {
+            try
+            {
+                var record = new ComplianceRecord
+                {
+                    EntityID = employerId,
+                    Type = "Employer",
+                    Result = result,
+                    Notes = notes,
+                    Date = DateTime.Now
+                };
+
+                await _unitOfWork.ComplianceRecords.AddAsync(record);
+                var success = await _unitOfWork.SaveChangesAsync();
+                return (success, success ? "Employer reviewed successfully" : "Failed to review employer");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error reviewing employer");
+                return (false, $"Error: {ex.Message}");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> InvestigateComplaintAsync(int complianceId, string findings)
+        {
+            try
+            {
+                var record = await _unitOfWork.ComplianceRecords.GetByIdAsync(complianceId);
+                if (record == null) return (false, "Compliance record not found");
+
+                record.Result = "Investigated";
+                record.Notes = findings;
+                
+                await _unitOfWork.ComplianceRecords.UpdateAsync(record);
+                var success = await _unitOfWork.SaveChangesAsync();
+                return (success, success ? "Complaint investigated successfully" : "Failed to investigate complaint");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error investigating complaint");
+                return (false, $"Error: {ex.Message}");
+            }
+        }
+
+        public async Task<(bool Success, string Message)> IssueViolationAsync(int employerId, string violationType, string description)
+        {
+            try
+            {
+                var record = new ComplianceRecord
+                {
+                    EntityID = employerId,
+                    Type = "Employer",
+                    Result = "Violation",
+                    Notes = $"{violationType}: {description}",
+                    Date = DateTime.Now
+                };
+
+                await _unitOfWork.ComplianceRecords.AddAsync(record);
+                var success = await _unitOfWork.SaveChangesAsync();
+                return (success, success ? "Violation issued successfully" : "Failed to issue violation");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error issuing violation");
+                return (false, $"Error: {ex.Message}");
+            }
+        }
+
+        public async Task<int> GetPendingCountAsync()
+        {
+            var pending = await _unitOfWork.ComplianceRepository.GetPendingAsync();
+            return pending.Count;
+        }
+
+        public async Task<int> GetViolationCountAsync()
+        {
+            var violations = await _unitOfWork.ComplianceRepository.GetByResultAsync("Violation");
+            return violations.Count;
+        }
+    }
+}

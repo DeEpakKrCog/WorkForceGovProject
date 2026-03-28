@@ -82,12 +82,18 @@ namespace WorkForceGovProject.Repositories
         IRepository<Benefit> Benefits { get; }
         IRepository<EmploymentProgram> EmploymentPrograms { get; }
         IRepository<Notification> Notifications { get; }
+        IRepository<ComplianceRecord> ComplianceRecords { get; }
+        IRepository<Audit> Audits { get; }
+        IRepository<Report> Reports { get; }
 
         IUserRepository UserRepository { get; }
         ICitizenRepository CitizenRepository { get; }
         IJobRepository JobRepository { get; }
         IApplicationRepository ApplicationRepository { get; }
         INotificationRepository NotificationRepository { get; }
+        IComplianceRepository ComplianceRepository { get; }
+        IAuditRepository AuditRepository { get; }
+        IReportRepository ReportRepository { get; }
 
         Task<bool> SaveChangesAsync();
         Task<bool> BeginTransactionAsync();

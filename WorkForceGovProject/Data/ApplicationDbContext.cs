@@ -21,5 +21,9 @@ namespace WorkForceGovProject.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<SystemLog> SystemLogs { get; set; }
         public DbSet<Report> Reports { get; set; }
+        public DbSet<ComplianceRecord> ComplianceRecords { get; set; }
+        public DbSet<Audit> Audits { get; set; }
+        public DbSet<Training> Trainings { get; set; }
+        public DbSet<Resource> Resources { get; set; }
     }
 }

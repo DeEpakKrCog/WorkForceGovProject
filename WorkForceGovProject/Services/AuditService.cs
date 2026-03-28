@@ -1,0 +1,97 @@
+using WorkForceGovProject.Models;
+using WorkForceGovProject.Repositories;
+
+namespace WorkForceGovProject.Services
+{
+    public class AuditService : IAuditService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<AuditService> _logger;
+
+        public AuditService(IUnitOfWork unitOfWork, ILogger<AuditService> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+        }
+
+        public async Task<List<Audit>> GetAllAuditsAsync()
+        {
+            var audits = await _unitOfWork.AuditRepository.GetAllAsync();
+            return audits.ToList();
+        }
+
+        public async Task<List<Audit>> GetPendingAuditsAsync()
+        {
+            return await _unitOfWork.AuditRepository.GetByStatusAsync("Pending");
+        }
+
+        public async Task<List<Audit>> GetCompletedAuditsAsync()
+        {
+            return await _unitOfWork.AuditRepository.GetCompletedAsync();
+        }
+
+        public async Task<(bool Success, string Message, Audit Audit)> CreateAuditAsync(int officerId, string scope, string findings)
+        {
+            try
+            {
+                var audit = new Audit
+                {
+                    OfficerID = officerId,
+                    Scope = scope,
+                    Findings = findings,
+                    Status = "Pending",
+                    Date = DateTime.Now
+                };
+
+                await _unitOfWork.Audits.AddAsync(audit);
+                var success = await _unitOfWork.SaveChangesAsync();
+                return (success, success ? "Audit created successfully" : "Failed to create audit", audit);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating audit");
+                return (false, $"Error: {ex.Message}", null);
+            }
+        }
+
+        public async Task<(bool Success, string Message)> CompleteAuditAsync(int auditId, string finalFindings)
+        {
+            try
+            {
+                var audit = await _unitOfWork.Audits.GetByIdAsync(auditId);
+                if (audit == null) return (false, "Audit not found");
+
+                audit.Status = "Completed";
+                audit.Findings = finalFindings;
+                
+                await _unitOfWork.Audits.UpdateAsync(audit);
+                var success = await _unitOfWork.SaveChangesAsync();
+                return (success, success ? "Audit completed successfully" : "Failed to complete audit");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error completing audit");
+                return (false, $"Error: {ex.Message}");
+            }
+        }
+
+        public async Task<int> GetComplianceStatusAsync()
+        {
+            var completed = await _unitOfWork.AuditRepository.GetCompletedAsync();
+            var total = await _unitOfWork.Audits.CountAsync();
+            return total > 0 ? (completed.Count * 100) / total : 0;
+        }
+
+        public async Task<Dictionary<string, int>> GetAuditStatisticsAsync()
+        {
+            var allAudits = await _unitOfWork.AuditRepository.GetAllAsync();
+            var stats = new Dictionary<string, int>
+            {
+                { "Total", allAudits.Count() },
+                { "Pending", allAudits.Count(a => a.Status == "Pending") },
+                { "Completed", allAudits.Count(a => a.Status == "Completed") }
+            };
+            return stats;
+        }
+    }
+}

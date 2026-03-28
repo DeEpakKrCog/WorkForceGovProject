@@ -1,0 +1,140 @@
+﻿using WorkForceGovProject.Models;
+using WorkForceGovProject.Repositories;
+using Microsoft.EntityFrameworkCore;
+
+namespace WorkForceGovProject.Services
+{
+    public class ReportingService : IReportingService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<ReportingService> _logger;
+
+        public ReportingService(IUnitOfWork unitOfWork, ILogger<ReportingService> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+        }
+
+        public async Task<Report> GenerateComplianceReportAsync(string scope)
+        {
+            try
+            {
+                var report = new Report
+                {
+                    ReportName = $"Compliance Report - {scope}",
+                    GeneratedDate = DateTime.Now,
+                    ReportContent = $"Compliance metrics for {scope}",
+                    ReportType = "Compliance",
+                    GeneratedBy = 1,
+                    StartDate = DateTime.Now.AddDays(-30),
+                    EndDate = DateTime.Now
+                };
+
+                await _unitOfWork.Reports.AddAsync(report);
+                await _unitOfWork.SaveChangesAsync();
+                return report;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating compliance report");
+                return null;
+            }
+        }
+
+        public async Task<Report> GenerateProgramReportAsync()
+        {
+            try
+            {
+                var programs = await _unitOfWork.EmploymentPrograms.GetAllAsync();
+                var benefits = await _unitOfWork.Benefits.GetAllAsync();
+
+                var report = new Report
+                {
+                    ReportName = "Program Performance Report",
+                    GeneratedDate = DateTime.Now,
+                    ReportContent = $"Programs: {programs.Count()}, Benefits Distributed: {benefits.Count()}",
+                    ReportType = "Program",
+                    GeneratedBy = 1,
+                    StartDate = DateTime.Now.AddDays(-30),
+                    EndDate = DateTime.Now
+                };
+
+                await _unitOfWork.Reports.AddAsync(report);
+                await _unitOfWork.SaveChangesAsync();
+                return report;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating program report");
+                return null;
+            }
+        }
+
+        public async Task<Report> GenerateApplicationReportAsync()
+        {
+            try
+            {
+                var applications = await _unitOfWork.Applications.GetAllAsync();
+                var statuses = applications.GroupBy(a => a.Status).ToDictionary(g => g.Key, g => g.Count());
+
+                var report = new Report
+                {
+                    ReportName = "Application Analytics Report",
+                    GeneratedDate = DateTime.Now,
+                    ReportContent = string.Join(", ", statuses.Select(s => $"{s.Key}: {s.Value}")),
+                    ReportType = "Application",
+                    GeneratedBy = 1,
+                    StartDate = DateTime.Now.AddDays(-30),
+                    EndDate = DateTime.Now
+                };
+
+                await _unitOfWork.Reports.AddAsync(report);
+                await _unitOfWork.SaveChangesAsync();
+                return report;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating application report");
+                return null;
+            }
+        }
+
+        public async Task<List<Report>> GetRecentReportsAsync(int days = 30)
+        {
+            var startDate = DateTime.Now.AddDays(-days);
+            var reports = await _unitOfWork.ReportRepository.GetRecentReportsAsync(startDate);
+            return reports.ToList();
+        }
+
+        public async Task<Dictionary<string, object>> GetDashboardMetricsAsync()
+        {
+            var applications = await _unitOfWork.Applications.GetAllAsync();
+            var benefits = await _unitOfWork.Benefits.GetAllAsync();
+            var citizens = await _unitOfWork.Citizens.GetAllAsync();
+            var audits = await _unitOfWork.Audits.GetAllAsync();
+
+            return new Dictionary<string, object>
+            {
+                { "TotalApplications", applications.Count() },
+                { "BenefitsDistributed", benefits.Count() },
+                { "TotalCitizens", citizens.Count() },
+                { "CompletedAudits", audits.Count(a => a.Status == "Completed") },
+                { "PendingAudits", audits.Count(a => a.Status == "Pending") },
+                { "ApprovedApplications", applications.Count(a => a.Status == "Approved") },
+                { "RejectedApplications", applications.Count(a => a.Status == "Rejected") }
+            };
+        }
+
+        private string GenerateComplianceMetrics(string scope)
+        {
+            var metrics = scope switch
+            {
+                "Employer" => "Employer compliance checks completed",
+                "Program" => "Program compliance verification done",
+                "Application" => "Application compliance review finished",
+                _ => "General compliance assessment"
+            };
+            return metrics;
+        }
+    }
+}

@@ -1,0 +1,134 @@
+@model WorkForceGovProject.Models.ComplianceRecord
+
+@{
+    ViewData["Title"] = "Investigate Complaint";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-search"></i> Investigate Complaint</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model != null)
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold"><i class="fas fa-id-badge"></i> Complaint ID</label>
+                                    <input type="text" class="form-control" value="@Model.ComplianceID" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold"><i class="fas fa-calendar"></i> Date Reported</label>
+                                    <input type="text" class="form-control" value="@Model.Date.ToString("MMM dd, yyyy HH:mm")" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold"><i class="fas fa-building"></i> Entity ID</label>
+                                    <input type="text" class="form-control" value="@Model.EntityID" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label fw-bold"><i class="fas fa-tag"></i> Type</label>
+                                    <span class="badge bg-info p-2">@Model.Type</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-group">
+                                <label class="form-label fw-bold"><i class="fas fa-align-left"></i> Complaint Details</label>
+                                <textarea class="form-control" rows="4" readonly>@Model.Notes</textarea>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-group">
+                                <label class="form-label fw-bold"><i class="fas fa-gavel"></i> Current Status</label>
+                                @{
+                                    var badgeClass = Model.Result switch
+                                    {
+                                        "Compliant" => "bg-success",
+                                        "Non-Compliant" => "bg-danger",
+                                        "Under Review" => "bg-warning",
+                                        "Violation" => "bg-danger",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <div>
+                                    <span class="badge @badgeClass p-2" style="font-size: 1em;">@Model.Result</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <form method="post" asp-action="InvestigateComplaintPost" asp-route-id="@Model.ComplianceID">
+                            <div class="mb-3">
+                                <label for="findings" class="form-label fw-bold"><i class="fas fa-pen-fancy"></i> Investigation Findings</label>
+                                <textarea class="form-control" id="findings" name="findings" rows="4" placeholder="Enter your investigation findings..." required></textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fas fa-check"></i> Save Investigation
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="@Url.Action("EmployerReview", "ComplianceOfficer")" class="btn btn-secondary w-100">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle"></i> Complaint not found.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Investigation Guide</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-2">Steps:</h6>
+                    <ol class="small">
+                        <li>Review the complaint details carefully</li>
+                        <li>Gather relevant documentation</li>
+                        <li>Conduct interviews if necessary</li>
+                        <li>Document all findings</li>
+                        <li>Make a determination</li>
+                        <li>Submit your findings</li>
+                    </ol>
+
+                    <hr>
+
+                    <h6 class="mb-2">Tips:</h6>
+                    <ul class="small">
+                        <li>Be thorough and impartial</li>
+                        <li>Document all evidence</li>
+                        <li>Follow proper procedures</li>
+                        <li>Maintain confidentiality</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

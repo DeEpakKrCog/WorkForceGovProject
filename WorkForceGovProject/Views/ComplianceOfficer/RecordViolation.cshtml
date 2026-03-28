@@ -1,0 +1,134 @@
+@{
+    ViewData["Title"] = "Record Violation";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-ban"></i> Record Violation</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="RecordViolation">
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>Important:</strong> 
+                            Recording a violation is a serious matter. Ensure all information is accurate and complete.
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="employerId" class="form-label fw-bold"><i class="fas fa-building"></i> Employer ID *</label>
+                                    <input type="number" class="form-control" id="employerId" name="employerId" 
+                                           placeholder="Enter employer ID" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="violationType" class="form-label fw-bold"><i class="fas fa-list"></i> Violation Type *</label>
+                                    <select class="form-select" id="violationType" name="violationType" required>
+                                        <option value="">-- Select Violation Type --</option>
+                                        <option value="Wage Violation">Wage Violation</option>
+                                        <option value="Hour Violation">Hour Violation</option>
+                                        <option value="Safety Violation">Safety Violation</option>
+                                        <option value="Document Violation">Document Violation</option>
+                                        <option value="Reporting Violation">Reporting Violation</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-group">
+                                <label for="description" class="form-label fw-bold"><i class="fas fa-align-left"></i> Violation Description *</label>
+                                <textarea class="form-control" id="description" name="description" rows="5" 
+                                          placeholder="Provide detailed description of the violation..." required></textarea>
+                                <small class="form-text text-muted">Include relevant dates, affected employees, and evidence</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="severity" class="form-label fw-bold"><i class="fas fa-flag"></i> Severity Level *</label>
+                                    <select class="form-select" id="severity" name="severity" required>
+                                        <option value="">-- Select Severity --</option>
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Critical">Critical</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="actionRequired" class="form-label fw-bold"><i class="fas fa-tasks"></i> Action Required</label>
+                                    <select class="form-select" id="actionRequired" name="actionRequired">
+                                        <option value="">-- Select Action --</option>
+                                        <option value="Warning">Warning</option>
+                                        <option value="Fine">Fine</option>
+                                        <option value="Suspension">Suspension</option>
+                                        <option value="Review">Review Required</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-group">
+                                <label for="evidence" class="form-label fw-bold"><i class="fas fa-paperclip"></i> Supporting Evidence</label>
+                                <textarea class="form-control" id="evidence" name="evidence" rows="3" 
+                                          placeholder="List documents, witnesses, or other evidence..."></textarea>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="fas fa-exclamation"></i> Record Violation
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="@Url.Action("Dashboard", "ComplianceOfficer")" class="btn btn-secondary w-100">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-book"></i> Violation Standards</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="mb-2">Severity Guidelines:</h6>
+                    <ul class="small">
+                        <li><strong>Low:</strong> Minor infractions, first-time</li>
+                        <li><strong>Medium:</strong> Repeated issues, moderate impact</li>
+                        <li><strong>High:</strong> Serious violations, significant impact</li>
+                        <li><strong>Critical:</strong> Severe breach, immediate action</li>
+                    </ul>
+
+                    <hr>
+
+                    <h6 class="mb-2">Documentation:</h6>
+                    <p class="small">Always include:</p>
+                    <ul class="small">
+                        <li>Specific dates and times</li>
+                        <li>Names of witnesses</li>
+                        <li>Relevant policy references</li>
+                        <li>Direct quotes if applicable</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

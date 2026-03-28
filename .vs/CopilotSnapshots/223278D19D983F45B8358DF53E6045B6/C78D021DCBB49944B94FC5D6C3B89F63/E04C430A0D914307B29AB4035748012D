@@ -1,0 +1,31 @@
+﻿using WorkForceGovProject.Data;
+using WorkForceGovProject.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace WorkForceGovProject.Repositories
+{
+    public class ComplianceRepository : Repository<ComplianceRecord>, IComplianceRepository
+    {
+        public ComplianceRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+
+        public async Task<List<ComplianceRecord>> GetByEntityTypeAsync(string entityType)
+        {
+            return await _dbSet.Where(c => c.EntityType == entityType).ToListAsync();
+        }
+
+        public async Task<List<ComplianceRecord>> GetByResultAsync(string result)
+        {
+            return await _dbSet.Where(c => c.Result == result).ToListAsync();
+        }
+
+        public async Task<List<ComplianceRecord>> GetByOfficerAsync(int officerId)
+        {
+            return await _dbSet.Where(c => c.OfficerId == officerId).ToListAsync();
+        }
+
+        public async Task<List<ComplianceRecord>> GetPendingAsync()
+        {
+            return await _dbSet.Where(c => c.Result == "Pending").ToListAsync();
+        }
+    }
+}

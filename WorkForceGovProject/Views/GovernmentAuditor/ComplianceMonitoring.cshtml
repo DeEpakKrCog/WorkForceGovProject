@@ -1,0 +1,177 @@
+@{
+    ViewData["Title"] = "Compliance Monitoring";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-chart-line"></i> Compliance Monitoring</h2>
+            <p class="text-muted">Real-time compliance status across all employers and programs</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Dashboard", "GovernmentAuditor")" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Compliance Status Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                    <h5 class="card-title">Compliant</h5>
+                    <h2 class="text-success">247</h2>
+                    <small class="text-muted">Employers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-exclamation-circle fa-3x text-warning mb-2"></i>
+                    <h5 class="card-title">At Risk</h5>
+                    <h2 class="text-warning">43</h2>
+                    <small class="text-muted">Employers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-times-circle fa-3x text-danger mb-2"></i>
+                    <h5 class="card-title">Non-Compliant</h5>
+                    <h2 class="text-danger">12</h2>
+                    <small class="text-muted">Employers</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-hourglass-half fa-3x text-info mb-2"></i>
+                    <h5 class="card-title">Under Review</h5>
+                    <h2 class="text-info">18</h2>
+                    <small class="text-muted">Cases</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Compliance Trend Chart -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-chart-line"></i> Compliance Trend (Last 6 Months)</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="complianceTrendChart" height="80"></canvas>
+        </div>
+    </div>
+
+    <!-- Recent Issues -->
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="fas fa-bell"></i> Recent Issues</h5>
+        </div>
+        <div class="list-group list-group-flush">
+            <a href="#" class="list-group-item list-group-item-action border-start-5 border-danger">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1"><i class="fas fa-ban"></i> Violation Notice - TechCorp Inc</h6>
+                    <small class="text-danger">2 hours ago</small>
+                </div>
+                <p class="mb-1 small">Wage violation detected during last audit review</p>
+                <small class="text-muted">Compliance Officer: John Smith</small>
+            </a>
+
+            <a href="#" class="list-group-item list-group-item-action border-start-5 border-warning">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1"><i class="fas fa-exclamation-triangle"></i> Compliance Alert - Global Industries</h6>
+                    <small class="text-warning">5 hours ago</small>
+                </div>
+                <p class="mb-1 small">Missing documentation for employee verification</p>
+                <small class="text-muted">Status: Investigation Pending</small>
+            </a>
+
+            <a href="#" class="list-group-item list-group-item-action border-start-5 border-info">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1"><i class="fas fa-info-circle"></i> Update - Innovation Labs</h6>
+                    <small class="text-info">1 day ago</small>
+                </div>
+                <p class="mb-1 small">Previously reported issues have been resolved</p>
+                <small class="text-muted">Status: Resolved</small>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('complianceTrendChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
+                datasets: [
+                    {
+                        label: 'Compliant %',
+                        data: [85, 87, 88, 86, 89, 91],
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'At Risk %',
+                        data: [10, 9, 8, 10, 7, 6],
+                        borderColor: '#ffc107',
+                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Non-Compliant %',
+                        data: [5, 4, 4, 4, 4, 3],
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 8px;
+    }
+    .border-start-5 {
+        border-left-width: 5px !important;
+    }
+    .fa-3x {
+        font-size: 2.5em;
+    }
+</style>

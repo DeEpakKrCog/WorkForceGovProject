@@ -1,0 +1,85 @@
+@model IEnumerable<WorkForceGovProject.Models.Report>
+
+@{
+    ViewData["Title"] = "Compliance Reports";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-file-alt"></i> Compliance Reports</h2>
+            <p class="text-muted">View and manage all compliance reports</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("GenerateReport", "ComplianceOfficer")" class="btn btn-primary">
+                <i class="fas fa-file-export"></i> Generate New Report
+            </a>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var report in Model)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-file-pdf"></i> @report.ReportName
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <span class="badge bg-info">@report.ReportType</span>
+                                <span class="badge bg-secondary">ID: @report.ReportId</span>
+                            </div>
+
+                            <p class="card-text text-muted small">
+                                <i class="fas fa-calendar"></i> 
+                                Generated: @report.GeneratedDate.ToString("MMM dd, yyyy HH:mm")
+                            </p>
+
+                            @if (report.StartDate.HasValue && report.EndDate.HasValue)
+                            {
+                                <p class="card-text small">
+                                    <i class="fas fa-calendar-range"></i>
+                                    Period: @report.StartDate.Value.ToString("MMM dd") - @report.EndDate.Value.ToString("MMM dd, yyyy")
+                                </p>
+                            }
+
+                            <p class="card-text">
+                                @if (!string.IsNullOrEmpty(report.ReportContent))
+                                {
+                                    <span>@report.ReportContent.Substring(0, Math.Min(100, report.ReportContent.Length))...</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No content</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <a href="#" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="#" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            <a href="#" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i> No compliance reports found. 
+            <a href="@Url.Action("GenerateReport", "ComplianceOfficer")" class="alert-link">Generate your first report</a>.
+        </div>
+    }
+</div>

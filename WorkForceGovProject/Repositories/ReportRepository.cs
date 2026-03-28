@@ -1,0 +1,26 @@
+using WorkForceGovProject.Data;
+using WorkForceGovProject.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace WorkForceGovProject.Repositories
+{
+    public class ReportRepository : Repository<Report>, IReportRepository
+    {
+        public ReportRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+
+        public async Task<List<Report>> GetByReportTypeAsync(string reportType)
+        {
+            return await _dbSet.Where(r => r.ReportType == reportType).OrderByDescending(r => r.GeneratedDate).ToListAsync();
+        }
+
+        public async Task<List<Report>> GetRecentReportsAsync(DateTime startDate)
+        {
+            return await _dbSet.Where(r => r.GeneratedDate >= startDate).OrderByDescending(r => r.GeneratedDate).ToListAsync();
+        }
+
+        public async Task<Report> GetLatestReportByTypeAsync(string reportType)
+        {
+            return await _dbSet.Where(r => r.ReportType == reportType).OrderByDescending(r => r.GeneratedDate).FirstOrDefaultAsync();
+        }
+    }
+}
